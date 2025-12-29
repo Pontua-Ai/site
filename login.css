@@ -1,0 +1,104 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    font-family: 'Open Sans', sans-serif;
+    background-image: url(./img/fundo.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    display: flex;
+    background-color: white;
+    justify-content: space-between;
+    width: 556px;
+    height: 580px;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow:
+        -5px 0 10px rgba(0, 0, 0, 0.15),
+        7px 0 10px rgba(0, 0, 0, 0.15),
+        0 -5px 10px rgba(0, 0, 0, 0.15),
+        0 7px 10px rgba(0, 0, 0, 0.15);
+    flex-direction: column;
+}
+
+.textGray {
+    text-align: center;
+    color: #a6a6a6;
+    font-size: 15px;
+}
+
+button {
+    width: 250px;
+    height: 60px;
+    background-color: #31b69f;
+    border: none;
+    font-weight: bold;
+    border-radius: 20px;
+    font-size: 22.2px;
+    box-shadow: 5px 5px 2px #217882;
+    color: white;
+    align-self: center;
+}
+
+input {
+    border: none;
+    border-bottom: 1px solid;
+    outline: none;
+}
+
+.boxSenha,
+.boxUser {
+    margin-left: 5%;
+    font-weight: bold;
+}
+
+.inputBox {
+    position: relative;
+    width: 90%;
+}
+
+.inputBox input {
+    width: 100%;
+    padding-right: 35px;
+}
+
+.inputBox .icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.icon {
+    width: 25px !important;
+    height: 25px !important;
+}
+
+.senha,
+.user{
+    margin-bottom: 2%;
+}
+
+a{
+    color: #31b69f;
+}
+
+.person {
+    height: 420px;
+    max-width: 100%;
+}
