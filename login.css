@@ -124,6 +124,11 @@ a {
     height: auto;
 }
 
+.icon-eye.active line {
+    display: none;
+}
+
+
 /* =========================
    RESPONSIVIDADE
    ========================= */
