@@ -17,11 +17,13 @@ html {
     display: flex;
     align-items: center;
     height: 100vh;
+    position: relative;
+    width: 100%;
 }
 
 .card {
     display: flex;
-    background-color: white;
+    background-color: #e2e2e2;
     justify-content: space-between;
     width: 556px;
     height: 580px;
@@ -58,6 +60,7 @@ input {
     border: none;
     border-bottom: 1px solid;
     outline: none;
+    background-color: #e2e2e2;
 }
 
 .boxSenha,
@@ -68,12 +71,16 @@ input {
 
 .inputBox {
     position: relative;
-    width: 90%;
+    width: 85%;
 }
 
 .inputBox input {
     width: 100%;
     padding-right: 35px;
+}
+
+input::placeholder {
+    color: #a6a6a6;
 }
 
 .inputBox .icon {
@@ -85,20 +92,223 @@ input {
 }
 
 .icon {
-    width: 25px !important;
-    height: 25px !important;
+    width: 25px;
+    height: 25px;
 }
 
 .senha,
-.user{
-    margin-bottom: 2%;
+.user {
+    margin-bottom: 1%;
+    font-size: 18px;
 }
 
-a{
+a {
     color: #31b69f;
 }
 
 .person {
-    height: 420px;
-    max-width: 100%;
+    position: absolute;
+    margin-left: 35%;
+    margin-top: 10%;
+}
+
+.imgLogo {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    width: 50%;
+    height: auto;
+}
+
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
+
+@media (max-width: 1500px) {
+    .card {
+        width: 45%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .logo {
+        width: 60%;
+    }
+
+    .person {
+        width: 20%;
+        position: absolute;
+        margin-left: 35%;
+        margin-top: 15%;
+    }
+
+    .textGray {
+        font-size: 14px;
+    }
+
+    .boxUser,
+    .boxSenha {
+        margin-left: 0;
+    }
+
+    .inputBox {
+        width: 85%;
+    }
+
+    .user,
+    .senha {
+        font-size: 15px;
+        margin-top: 5%;
+    }
+
+    button {
+        width: 80%;
+        height: 55px;
+        font-size: 20px;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .card {
+        width: 50%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .logo {
+        width: 60%;
+    }
+
+    .person {
+        width: 22%;
+        position: absolute;
+        margin-left: 40%;
+        margin-top: 15%;
+    }
+
+    .textGray {
+        font-size: 14px;
+    }
+
+    .boxUser,
+    .boxSenha {
+        margin-left: 0;
+    }
+
+    .inputBox {
+        width: 85%;
+    }
+
+    .user,
+    .senha {
+        font-size: 15px;
+        margin-top: 5%;
+    }
+
+    button {
+        width: 80%;
+        height: 55px;
+        font-size: 20px;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+}
+
+@media (max-width: 900px) {
+    .card {
+        width: 70%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .logo {
+        width: 60%;
+    }
+
+    .person {
+        display: none;
+    }
+
+    .textGray {
+        font-size: 14px;
+    }
+
+    .boxUser,
+    .boxSenha {
+        margin-left: 0;
+        font-size: 13px;
+    }
+
+    .inputBox {
+        width: 85%;
+    }
+
+    .user,
+    .senha {
+        font-size: 15px;
+        margin-top: 5%;
+    }
+
+    button {
+        width: 80%;
+        height: 55px;
+        font-size: 20px;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+    .container {
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .card {
+        width: 90%;
+        height: auto;
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+
+    .logo {
+        width: 70%;
+    }
+
+    .textGray {
+        font-size: 14px;
+    }
+
+    .boxUser,
+    .boxSenha {
+        margin-left: 0;
+        font-size: 12px;
+    }
+
+    .inputBox {
+        width: 100%;
+    }
+
+    .user,
+    .senha {
+        font-size: 14px;
+        margin-top: 5%;
+    }
+
+    button {
+        width: 60%;
+        height: 40px;
+        font-size: 20px;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+
+    .person{
+        display: none;
+    }
 }
