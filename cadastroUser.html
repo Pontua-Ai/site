@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
+    <title>Cadastro novo usuario</title>
     <link href="style.css" rel="stylesheet">
     <link rel="stylesheet" href="login.css">
 </head>
@@ -41,8 +41,8 @@
                     <label class="email">E-mail</label>
                     <div class="inputBox">
                         <input type="email" name="email" id="email" placeholder="Digite seu e-mail">
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a6a6a6" stroke-width="2.2"
-                            stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a6a6a6"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="5" width="18" height="14" rx="3" ry="3"></rect>
                             <path d="M3 7l9 7 9-7"></path>
                         </svg>
@@ -54,8 +54,9 @@
                     <label class="senha">Senha</label>
                     <div class="inputBox">
                         <input type="password" name="senha" id="senha" placeholder="Digite sua senha">
-                        <svg class="icon icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="#a6a6a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg id="svgOlho" class="icon icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="#a6a6a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                            style="cursor: pointer;">
                             <path d="M2 12s4.5-7 10-7 10 7 10 7-4.5 7-10 7S2 12 2 12z" />
                             <circle cx="12" cy="12" r="3" />
                             <line x1="3" y1="3" x2="21" y2="21" />
@@ -65,12 +66,27 @@
                 <button type="submit">
                     Cadastrar
                 </button>
-                <p class="textGray cadastro">Já possui cadastro  <a href="index.html">Clique aqui</a></p>
+                <p class="textGray cadastro">Já possui cadastro <a href="index.html">Clique aqui</a></p>
             </div>
             <img class="person" src="./img/person.png" alt="Estudante andando">
         </div>
         </div>
     </form>
+
+    <script>
+        const senhaInput = document.getElementById('senha');
+        const olho = document.getElementById('svgOlho');
+        olho.addEventListener('click', () => {
+            if (senhaInput.type === 'password') {
+                senhaInput.type = 'text';
+            } else {
+                senhaInput.type = 'password';
+            }
+            olho.classList.toggle('active');
+        });
+    </script>
+
+
 </body>
 
 </html>
