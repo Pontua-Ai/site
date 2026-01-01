@@ -23,7 +23,7 @@ html {
 
 .card {
     display: flex;
-    background-color: #e2e2e2;
+    background-color: var(--bs-gray-300);
     justify-content: space-between;
     width: 556px;
     height: 580px;
@@ -39,20 +39,20 @@ html {
 
 .textGray {
     text-align: center;
-    color: #a6a6a6;
+    color: var(--bs-gray-500);
     font-size: 15px;
 }
 
 button {
     width: 250px;
     height: 60px;
-    background-color: #31b69f;
+    background-color: var(--bs-primary);
     border: none;
     font-weight: bold;
     border-radius: 20px;
     font-size: 22.2px;
-    box-shadow: 5px 5px 2px #217882;
-    color: white;
+    box-shadow: 5px 5px 2px var(--bs-secundary);
+    color: var(--bs-light);
     align-self: center;
 }
 
@@ -60,7 +60,7 @@ input {
     border: none;
     border-bottom: 1px solid;
     outline: none;
-    background-color: #e2e2e2;
+    background-color:  var(--bs-gray-300);
 }
 
 .boxSenha,
@@ -81,7 +81,7 @@ input {
 }
 
 input::placeholder {
-    color: #a6a6a6;
+    color: var(--placeholder);
 }
 
 .inputBox .icon {
@@ -92,9 +92,10 @@ input::placeholder {
     cursor: pointer;
 }
 
-.icon {
-    width: 25px;
-    height: 25px;
+.icon{
+    width: 24px;
+    height: 24px;
+    color: var(--placeholder);
 }
 
 .senha,
@@ -105,7 +106,7 @@ input::placeholder {
 }
 
 a {
-    color: #31b69f;
+    color: var(--bs-primary);
 }
 
 .person {
@@ -124,177 +125,25 @@ a {
     height: auto;
 }
 
-.icon-eye.active line {
+.toggle-password .eye-slash {
+    display: block;
+}
+
+.toggle-password.active .eye-slash {
     display: none;
 }
 
 
-/* =========================
-   RESPONSIVIDADE
-   ========================= */
-
-@media (max-width: 1500px) {
-    .card {
-        width: 45%;
-        height: auto;
-        padding: 20px;
-    }
-
-    .logo {
-        width: 60%;
-    }
-
-    .person {
-        width: 20%;
-        position: absolute;
-        margin-left: 35%;
-        margin-top: 15%;
-    }
-
-    .textGray {
-        font-size: 14px;
-    }
-
-    .boxUser,
-    .boxSenha,
-    .boxEmail {
-        margin-left: 0;
-    }
-
-    .inputBox {
-        width: 85%;
-    }
-
-    .user,
-    .senha,
-    .email {
-        font-size: 15px;
-        margin-top: 5%;
-    }
-
-    button {
-        width: 80%;
-        height: 55px;
-        font-size: 20px;
-        margin-top: 5%;
-        margin-bottom: 5%;
-    }
-}
-
-@media (max-width: 1000px) {
-    .card {
-        width: 50%;
-        height: auto;
-        padding: 20px;
-    }
-
-    .logo {
-        width: 60%;
-    }
-
-    .person {
-        width: 22%;
-        position: absolute;
-        margin-left: 40%;
-        margin-top: 15%;
-    }
-
-    .textGray {
-        font-size: 14px;
-    }
-
-    .boxUser,
-    .boxSenha,
-    .boxEmail {
-        margin-left: 0;
-    }
-
-    .inputBox {
-        width: 85%;
-    }
-
-    .user,
-    .senha,
-    .email {
-        font-size: 15px;
-        margin-top: 5%;
-    }
-
-    button {
-        width: 80%;
-        height: 55px;
-        font-size: 20px;
-        margin-top: 5%;
-        margin-bottom: 5%;
-    }
-}
-
-@media (max-width: 900px) {
-    .card {
-        width: 70%;
-        height: auto;
-        padding: 20px;
-    }
-
-    .logo {
-        width: 60%;
-    }
-
-    .person {
-        display: none;
-    }
-
-    .textGray {
-        font-size: 14px;
-    }
-
-    .boxUser,
-    .boxSenha,
-    .boxEmail {
-        margin-left: 0;
-        font-size: 13px;
-    }
-
-    .inputBox {
-        width: 85%;
-    }
-
-    .user,
-    .senha,
-    .email {
-        font-size: 15px;
-        margin-top: 5%;
-    }
-
-    button {
-        width: 80%;
-        height: 55px;
-        font-size: 20px;
-        margin-top: 5%;
-        margin-bottom: 5%;
-    }
-}
-
-/* Celulares */
-@media (max-width: 600px) {
+@media (max-width: 1400px) {
     .container {
         justify-content: center;
         padding: 20px;
     }
 
     .card {
-        width: 90%;
+        width: 500px;
         height: auto;
         padding: 20px 15px;
-        border-radius: 15px;
-    }
-
-    .logo {
-        width: 70%;
-    }
-
-    .textGray {
-        font-size: 14px;
     }
 
     .boxUser,
