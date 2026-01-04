@@ -46,7 +46,7 @@ html {
 button {
     width: 250px;
     height: 60px;
-    background-color: var(--bs-primary);
+    background-color: var(--secundary);
     border: none;
     font-weight: bold;
     border-radius: 20px;
