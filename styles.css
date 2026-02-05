@@ -41,7 +41,6 @@ body {
     background: var(--neutral-50);
 }
 
-/* Sidebar Styles */
 .sidebar {
     width: var(--sidebar-width);
     background: var(--neutral-900);
