@@ -1,0 +1,64 @@
+html, body{
+    height: 100%;
+    width: 100%;
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    margin: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header{
+    height: 100%;
+    width: 15%;
+    background-color: var(--secundary);
+    display: flex;
+    flex-direction: column;
+}
+
+header img{
+    align-self: center;
+}
+
+img{
+    width: 50%;
+}
+
+hr{
+    width: 99%;
+    background-color: var(--hr);
+    border: 0.1px solid;
+}
+
+.menu{
+    height: 70%;
+}
+
+.materia,
+.conteudo,
+.historic,
+.estatisticas,
+.dicas,
+.sobre{
+    display: flex;
+}
+
+a{
+    color: var(--text-gray);
+    text-decoration: none;
+    font-size: 24px;
+    display: flex;
+    gap: 30px;
+    padding: 10% 0 10% 10%;
+    width: 100%;
+}
+
+a:hover{
+    color: var(--primary);
+    background-color: var(--background-color-transparent-10);
+    transition: all 0.5s;
+    border-radius: 10px;
+}
