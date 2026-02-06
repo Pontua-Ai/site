@@ -9,6 +9,27 @@
     --text-black: #000;
 
     --white: #fff;
+    --background-color: #edede9;
 
     --hr: #2a354d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-large: 24px;
+        --font-size-medium: 18px;
+        --font-size-small: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --font-size-large: 20px;
+        --font-size-medium: 16px;
+        --font-size-small: 12px;
+    }
 }
