@@ -13,6 +13,38 @@ main{
     padding-left: 6%;
 }
 
+@media (max-width: 768px) {
+    main {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .title {
+        font-size: var(--font-size-large);
+        margin-bottom: 15px;
+    }
+    
+    .text {
+        font-size: var(--font-size-medium);
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 15px;
+    }
+    
+    .title {
+        font-size: var(--font-size-medium);
+    }
+    
+    .text {
+        font-size: var(--font-size-small);
+    }
+}
+
 .sobre a{
     color: var(--primary);
     background-color: var(--background-color-transparent-10);

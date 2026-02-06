@@ -19,8 +19,14 @@ header{
     flex-direction: column;
 }
 
-header img{
-    align-self: center;
+.headermenu{
+    display: flex;
+}
+
+.idioma{
+    display: flex;
+    align-items: center;
+    color: var(--white);
 }
 
 img{
@@ -35,6 +41,9 @@ hr{
 
 .menu{
     height: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .materia,
@@ -44,6 +53,7 @@ hr{
 .dicas,
 .sobre{
     display: flex;
+    padding-bottom: 10px;
 }
 
 a{
@@ -61,4 +71,101 @@ a:hover{
     background-color: var(--background-color-transparent-10);
     transition: all 0.5s;
     border-radius: 10px;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-gray);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    header {
+        width: 100%;
+        height: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        flex-direction: row;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .menu {
+        height: auto;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--secundary);
+        padding: 20px;
+        display: none;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .menu.active {
+        display: flex;
+    }
+    
+    .menu > div {
+        padding-bottom: 10px;
+    }
+    
+    a {
+        padding: 10px;
+        font-size: 16px;
+        gap: 10px;
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    a span {
+        font-size: 14px;
+    }
+    
+    img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    hr {
+        display: none;
+    }
+    
+    body {
+        flex-direction: column;
+        padding-top: 80px;
+    }
+    
+    main {
+        width: 100% !important;
+        padding: 20px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    a {
+        font-size: 14px;
+    }
+    
+    a span {
+        font-size: 10px;
+    }
+    
+    .menu {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
 }
