@@ -12,24 +12,15 @@
     --background-color: #edede9;
 
     --hr: #2a354d;
+    
+    --font-size-xl: 28px;
+    --font-size-large: 24px;
+    --font-size-medium: 18px;
+    --font-size-small: 14px;
+    --font-size-xs: 12px;
+    --font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 * {
     box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-    :root {
-        --font-size-large: 24px;
-        --font-size-medium: 18px;
-        --font-size-small: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    :root {
-        --font-size-large: 20px;
-        --font-size-medium: 16px;
-        --font-size-small: 12px;
-    }
 }
