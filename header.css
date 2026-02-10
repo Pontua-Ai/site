@@ -1,18 +1,16 @@
 html, body{
-    height: 100%;
-    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body{
-    width: 100%;
-    height: 100%;
     display: flex;
+    min-height: 100vh;
     margin: 0;
     font-family: var(--font-family);
 }
 
 header{
-    height: 100%;
     width: 300px;
     background-color: var(--secundary);
     display: flex;
