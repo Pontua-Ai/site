@@ -13,7 +13,7 @@ body{
 
 header{
     height: 100%;
-    width: 15%;
+    width: 300px;
     background-color: var(--secundary);
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@ img{
 }
 
 hr{
-    width: 99%;
+    width: 100%;
     background-color: var(--hr);
     border: 0.1px solid;
 }
