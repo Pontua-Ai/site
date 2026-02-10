@@ -10,7 +10,7 @@
     display: flex;
     margin-top: 2%;
     margin-bottom: 1%;
-    padding-left: 4%;
+    width: 91%;
 }
 
 .search{
@@ -27,6 +27,7 @@ main{
     display: flex;
     flex-direction: column;
     font-family: var(--font-family);
+    align-items: center;
 }
 
 .searchTheme{
@@ -112,19 +113,23 @@ main{
 .task{
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
+    width: 90%;
     margin-top: 3%;
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.5s ease;
+}
+
+.task:hover{
+    background-color: var(--background-color-transparent-10);
 }
 
 .lineOne{
     display: flex;
-    height: 6.5%;
+    min-height: 50px;
     width: 100%;
-    align-items: center;
     gap: 30px;
-    justify-content: center;
-    margin-top: 1%;
 }
 
 .titleTask{
@@ -139,6 +144,7 @@ main{
     display: flex;
     gap: 20px;
     font-size: var(--font-size-small);
+    margin-top: 2%;
 }
 
 .date{
@@ -148,7 +154,7 @@ main{
 
 .action{
     height: 100%;
-    width: 50%;
+    width: 60%;
     display: flex;
     justify-content: flex-end;
     gap: 20px;
@@ -169,9 +175,9 @@ main{
 .lineTwo{
     width: 100%;
     display: flex;
-    justify-content: center;
 }
 
 .descrition{
-    width: 92%;
+    width: 100%;
+    margin-top: 1%;
 }
