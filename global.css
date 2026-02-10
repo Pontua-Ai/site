@@ -1,0 +1,28 @@
+:root{
+    --primary: #818cf8;
+    --secundary: #111827;
+    --background-color-transparent-10: #818df81e;
+    --background-color-transparent-40: #818df873;
+
+
+    --text-gray: #9ca3af;
+    --text-black: #000;
+
+    --white: #fff;
+    --background-color: #edede9;
+
+    --gray: #7777774b;
+
+    --hr: #2a354d;
+    
+    --font-size-xl: 28px;
+    --font-size-large: 24px;
+    --font-size-medium: 18px;
+    --font-size-small: 14px;
+    --font-size-xs: 12px;
+    --font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}

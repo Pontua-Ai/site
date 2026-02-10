@@ -1,0 +1,17 @@
+.title{
+    color: var(--primary);
+    font-size: var(--font-size-xl);
+}
+
+.text{
+    color: var(--text-black);
+    font-size: var(--font-size-medium);
+}
+
+main{
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 6%;
+    font-family: var(--font-family);
+}
