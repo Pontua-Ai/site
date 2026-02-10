@@ -162,6 +162,7 @@ main{
 
 .action button{
     width: 7%;
+    height: 40px;
     background-color: var(--gray);
     border: none;
     border-radius: 10px;
