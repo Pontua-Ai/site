@@ -38,10 +38,10 @@ hr{
 }
 
 .menu{
-    height: 70%;
+    height: 45%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 .materia,
@@ -51,7 +51,6 @@ hr{
 .dicas,
 .sobre{
     display: flex;
-    padding-bottom: 10px;
 }
 
 a{
