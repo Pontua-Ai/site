@@ -58,11 +58,16 @@ hr{
 .historic,
 .estatisticas,
 .dicas,
-.sobre,
+.sobre{
+    display: flex;
+    width: 100%;
+    padding: 15px 20px;
+}
+
 .conta{
     display: flex;
     width: 100%;
-    padding: 20px;
+    padding: 1px 20px;
 }
 
 .menu hr{
