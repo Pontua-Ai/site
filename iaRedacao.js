@@ -68,9 +68,6 @@ async function enviarParaIA(texto) {
 
         const dados = await resposta.json();
         
-        console.log("Status:", resposta.status);
-        console.log("Resposta completa:", dados);
-        
         if (dados.choices && dados.choices[0].message.content) {
             return dados.choices[0].message.content;
         } else if (dados.error) {
