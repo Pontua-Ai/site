@@ -57,6 +57,7 @@
             <p>Digite um texto ou pedido para a IA:</p>
             
             <textarea id="input-ia" placeholder="Ex: Escreva uma redação sobre sustentabilidade..."></textarea>
+            <p id="contador">Faltam 200 caracteres</p>
             
             <button onclick="testarIA()">Corrigir Redação ENEM</button>
             
@@ -66,12 +67,23 @@
 
     <script src="iaRedacao.js"></script>
     <script>
+        const textarea = document.getElementById("input-ia");
+        const contador = document.getElementById("contador");
+
+        textarea.addEventListener("input", () => {
+            const restantes = 200 - textarea.value.length;
+            if (restantes > 0) {
+                contador.textContent = `Faltam ${restantes} caracteres`;
+                contador.style.color = "#fff";
+            }
+        });
+
         async function testarIA() {
             const input = document.getElementById("input-ia").value;
             const respostaDiv = document.getElementById("resposta");
             
-            if (!input.trim()) {
-                respostaDiv.innerText = "Por favor, digite um texto.";
+            if (input.trim().length < 200) {
+                respostaDiv.innerText = "Mínimo de 200 caracteres necessários.";
                 return;
             }
             

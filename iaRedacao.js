@@ -6,16 +6,21 @@ Você irá avaliar uma redação dissertativo-argumentativa escrita nos moldes d
 Tarefa:
 Leia atentamente a redação.
 Avalie separadamente as 5 competências:
-Competência 1: Domínio da norma-padrão da língua escrita.
-Competência 2: Compreensão do tema e desenvolvimento dentro do formato dissertativo-argumentativo.
-Competência 3: Seleção e organização de argumentos.
-Competência 4: Coesão e mecanismos linguísticos.
-Competência 5: Proposta de intervenção (agente, ação, meio, finalidade e detalhamento, respeitando os Direitos Humanos).
+Competência 1: Domínio da norma-padrão da língua portuguesa. Avalia gramática (concordância, regência, crase), ortografia, acentuação e escolha de vocabulário, prezando pela escrita formal e evitando marcas de oralidade.
+Competência 2: Compreensão do tema e aplicação de áreas do conhecimento. Exige compreensão do tema, não fugir dele, usar o formato dissertativo-argumentativo e aplicar repertório sociocultural produtivo.
+Competência 3: Organização e interpretação de informações e argumentos. Avalia a capacidade de selecionar, relacionar, organizar e interpretar informações em defesa de um ponto de vista (tese), mostrando autoria.
+Competência 4: Conhecimento dos mecanismos linguísticos (coesão). Avalia o uso de conectivos, preposições, advérbios e a articulação entre frases e parágrafos, evitando repetições viciosas.
+Competência 5: Proposta de intervenção. Exige uma solução para o problema abordado, contendo 5 elementos: agente (quem), ação (o que), modo/meio (como), efeito (para que) e detalhamento.
 Para cada competência:
 Atribua uma nota (0, 40, 80, 120, 160 ou 200).
 Justifique detalhadamente a pontuação com base nos critérios oficiais.
 Aponte trechos específicos que fundamentem a nota.
 Calcule a nota final (soma das cinco competências).
+
+Critérios para atribuir nota 0 para redações:
+Atribua nota 0 a redação se não seguir o padrão das redações do enem.
+Atribua nota 0 caso tenha caracteres iguais proximos um do outro, exemplo: "zzzzzzzzzz"; "ooooooooo" e etc.
+
 Ao final, forneça:
 ✔️ Pontos fortes da redação
 ❌ Pontos a melhorar
