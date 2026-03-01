@@ -1,0 +1,22 @@
+:root{
+    --background: #fff;
+    --primary-color: #0B9395;
+    --secondary-color: #157f81;
+    --terceary-color: #46CF6E;
+    --header: #00BCBA;
+
+    --text-gray: #B9B5B5;
+    --text-primary: #222;
+    --text-secundary: #fff;
+
+    --gray: #EDEDED;
+}
+
+body.dark{
+    --background: #101019;
+    --primary-color: #04FBFF;
+    --header: #04FBFF;
+
+    --text-primary: #fff;
+    --text-secundary: #222;
+}
