@@ -1,0 +1,96 @@
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family:'jenkins', sans-serif;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 70%;
+}
+
+.entrar, 
+.senha,
+.nome,
+.email,
+.cpf{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    width: 500px;
+    height: 800px;
+}
+
+img{
+    width: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo h2{
+    font-size: 20px;
+    color: var(--text-gray);
+    text-align: center;
+}
+
+label{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+input{
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--gray);
+}
+
+button{
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover{
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.432);
+}
+
+.ajuda a{
+    color: var(--terceary-color);
+    text-decoration: none;
+}
+
+.ajuda{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 10px;
+}
