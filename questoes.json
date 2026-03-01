@@ -1,0 +1,126 @@
+{
+  "geometria": [
+    {
+      "id": 1,
+      "pergunta": "Qual é a soma dos ângulos internos de um triângulo?",
+      "opcoes": ["180°", "90°", "360°", "270°"],
+      "resposta": 0
+    },
+    {
+      "id": 2,
+      "pergunta": "Qual é o valor de Pi aproximadamente?",
+      "opcoes": ["2,14", "3,14", "4,14", "1,14"],
+      "resposta": 1
+    },
+    {
+      "id": 3,
+      "pergunta": "Quantos lados tem um hexágono?",
+      "opcoes": ["5", "6", "7", "8"],
+      "resposta": 1
+    },
+    {
+      "id": 4,
+      "pergunta": "Qual é a área de um quadrado de lado 5cm?",
+      "opcoes": ["10cm²", "20cm²", "25cm²", "15cm²"],
+      "resposta": 2
+    },
+    {
+      "id": 5,
+      "pergunta": "Um círculo tem quantos graus na circumference?",
+      "opcoes": ["180°", "270°", "360°", "90°"],
+      "resposta": 2
+    },
+    {
+      "id": 6,
+      "pergunta": "Qual é o perímetro de um retângulo de largura 3 e altura 4?",
+      "opcoes": ["7", "12", "14", "24"],
+      "resposta": 2
+    },
+    {
+      "id": 7,
+      "pergunta": "Como se chama o triângulo com todos os lados iguais?",
+      "opcoes": ["Escaleno", "Isósceles", "Equilátero", "Retângulo"],
+      "resposta": 2
+    },
+    {
+      "id": 8,
+      "pergunta": "Quantas arestas tem um cubo?",
+      "opcoes": ["6", "8", "10", "12"],
+      "resposta": 3
+    },
+    {
+      "id": 9,
+      "pergunta": "O que é uma linha paralela?",
+      "opcoes": ["Que se cruza", "Que nunca se encontra", "Que é perpendicular", "Que é curva"],
+      "resposta": 1
+    },
+    {
+      "id": 10,
+      "pergunta": "Qual é a fórmula da área do triângulo?",
+      "opcoes": ["b x h / 2", "b + h", "b x h", "b / h"],
+      "resposta": 0
+    }
+  ],
+  "soma": [
+    {
+      "id": 1,
+      "pergunta": "Quanto é 15 + 27?",
+      "opcoes": ["40", "42", "44", "38"],
+      "resposta": 1
+    },
+    {
+      "id": 2,
+      "pergunta": "Quanto é 100 - 37?",
+      "opcoes": ["63", "73", "53", "67"],
+      "resposta": 0
+    },
+    {
+      "id": 3,
+      "pergunta": "Quanto é 8 x 7?",
+      "opcoes": ["54", "56", "58", "52"],
+      "resposta": 1
+    },
+    {
+      "id": 4,
+      "pergunta": "Quanto é 144 ÷ 12?",
+      "opcoes": ["10", "11", "12", "14"],
+      "resposta": 2
+    },
+    {
+      "id": 5,
+      "pergunta": "Quanto é 25 x 4?",
+      "opcoes": ["90", "100", "110", "80"],
+      "resposta": 1
+    },
+    {
+      "id": 6,
+      "pergunta": "Quanto é 500 - 189?",
+      "opcoes": ["311", "301", "321", "291"],
+      "resposta": 0
+    },
+    {
+      "id": 7,
+      "pergunta": "Quanto é 9 x 9?",
+      "opcoes": ["81", "72", "90", "99"],
+      "resposta": 0
+    },
+    {
+      "id": 8,
+      "pergunta": "Quanto é 64 ÷ 8?",
+      "opcoes": ["6", "7", "8", "9"],
+      "resposta": 2
+    },
+    {
+      "id": 9,
+      "pergunta": "Quanto é 234 + 156?",
+      "opcoes": ["380", "390", "400", "370"],
+      "resposta": 1
+    },
+    {
+      "id": 10,
+      "pergunta": "Quanto é 1000 - 458?",
+      "opcoes": ["542", "552", "532", "562"],
+      "resposta": 0
+    }
+  ]
+}

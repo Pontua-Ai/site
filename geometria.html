@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste atividade - Geometria</title>
+    <style>
+        .questao { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .opcao { display: block; margin: 5px 0; cursor: pointer; }
+        .opcao:hover { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Questões de Geometria</h1>
+    <div id="questoes-container"></div>
+
+    <script>
+        const conteudo = "geometria"; // Altere aqui: "geometria" ou "matematica"
+        
+        async function carregarQuestoes() {
+            const response = await fetch('questoes.json');
+            const dados = await response.json();
+            const questoes = dados[conteudo];
+            
+            const aleatorias = questoes.sort(() => Math.random() - 0.5).slice(0, 10);
+            
+            const container = document.getElementById('questoes-container');
+            
+            aleatorias.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'questao';
+                div.innerHTML = `
+                    <p><strong>${index + 1}. ${q.pergunta}</strong></p>
+                    ${q.opcoes.map((op, i) => `
+                        <label class="opcao">
+                            <input type="radio" name="q${q.id}" value="${i}">
+                            ${op}
+                        </label>
+                    `).join('')}
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        carregarQuestoes();
+    </script>
+</body>
+</html>
