@@ -16,12 +16,12 @@ form{
 .entrar, 
 .senha,
 .nome,
-.email,
-.cpf{
+.email{
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 15px;
+    border-bottom: 2px solid transparent;
 }
 
 .login{
@@ -51,13 +51,6 @@ img{
 label{
     font-size: 18px;
     font-weight: bold;
-}
-
-input{
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background-color: var(--gray);
 }
 
 button{
@@ -93,4 +86,40 @@ button:hover{
     align-items: center;
     flex-direction: column;
     font-size: 10px;
+}
+
+.input-container{
+    position: relative;
+}
+
+.input-container input{
+    border: none;
+    width: 326px;
+    border-radius: 10px;
+    background-color: var(--gray);
+    border-bottom: 2px solid transparent;
+}
+
+.password-icon{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+}
+
+input{
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 10px;
+    background-color: var(--gray);
+    transition: all 0.7s ease;
+}
+
+input:focus{
+    outline: none;
+    border-bottom: 2px solid var(--primary-color);
+    border-radius: 0;
 }
