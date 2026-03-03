@@ -1,0 +1,131 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #a2a2a2;
+}
+
+.btn_default{
+    background-color: #6366f1;
+    display: flex;
+    align-items: center;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    justify-content: center;
+    gap: 8px;
+    height: fit-content;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
+
+.btn_default:hover{
+    background-color: #818cf8;
+}
+
+#form_container{
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    height: 100%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+#form_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form_title{
+    font-weight: 500;
+    color: #272727;
+    position: relative;
+}
+
+.form_title::after{
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 3px;
+    border-radius: 30px;
+    background-color: #6366f1;
+    left: 0;
+    bottom: 0;
+}
+
+form{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 32px;
+    height: 100%;
+}
+
+.input_container{
+    display: grid;
+    gap: 24px;
+}
+
+.form_label{
+    font-size: 12px;
+    color: #404044;
+    font-weight: 500;
+}
+
+.input_field{
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.input_field i{
+    display: flex;
+    align-items: center;
+    width: 30px;
+    height: 20px;
+    color: #404044;
+}
+
+.form_control{
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.input_field .password-icon:hover{
+    cursor: pointer;
+    color: #676770;
+}
+
+.form_control:focus{
+    outline: none;
+}
+
+.input_box .input_field:focus-within{
+    outline: 2px solid #6366f1;
+}
+
+input:-webkit-autofill{
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    color: #000;
+}
+

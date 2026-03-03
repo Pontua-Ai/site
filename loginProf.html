@@ -1,51 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt_BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="form.css">
+    <title>Cadastrar</title>
+    <link rel="stylesheet" href="src/styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
-
 <body>
-    <div class="login">
-        <div class="logo">
-            <img src="img/logo-horizontal.png" alt="Logo da plataforma">
-            <h2>Aprender ficou mais facil!</h2>
-        </div>
+    <main id="form_container">
+        <div id="form_header">
+            <h1 class="form_title">
+                Criar conta
+            </h1>
 
-        <form>
-            <div class="nome">
-                <label for="nome">Nome de usuario</label>
-                <input type="name" name="nome" id="nome" placeholder="Como podemos te chamar?">
-            </div>
-
-            <div class="email">
-                <label for="email">E-mail</label>
-                <input type="email" name="email" id="email" placeholder="Digite seu endereço de email">
-            </div>
-
-            <div class="senha">
-                <label for="senha">Senha</label>
-                <input type="password" placeholder="Digite sua senha">
-            </div>
-
-            <div class="cpf">
-                <label for="cpf">CPF</label>
-                <input type="number" placeholder="Digite seu cpf">
-            </div>
-            <button type="submit" class="btn-continue">
-                Continue &rarr;
+            <button class="btn_default">
+                Entrar
             </button>
-
-        </form>
-
-
-        <div class="ajuda">
-            <p>Já possui conta? <a href="inicio.html">Entre aqui</a> </p>
         </div>
-</body>
 
+        <form action="" id="form">
+            <div class="input_container">
+                <div class="input_box">
+                    <label for="name" class="form-label">
+                        Nome de usuario
+                    </label>
+                    <div class="input_field">
+                        <input type="text" name="name" id="name" class="form_control" placeholder="Digite seu nome">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="input_box">
+                    <label for="email" class="form-label">
+                        E-mail
+                    </label>
+                    <div class="input_field">
+                        <input 
+                            type="email"   
+                            name="email" 
+                            id="email" 
+                            class="form_control" 
+                            placeholder="Digite seu e-mail">
+                        <i class="fa-regular fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="input_box">
+                    <label for="password" class="form-label">
+                        Senha
+                    </label>
+                    <div class="input_field">
+                        <input 
+                            type="password"   
+                            name="password" 
+                            id="password" 
+                            class="form_control" 
+                            placeholder="Digite sua senha">
+                        <i class="fa-regular fa-eye-slash password-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input_box">
+                    <label for="-confirm_password" class="form-label">
+                        Confirmar senha
+                    </label>
+                    <div class="input_field">
+                        <input 
+                            type="password"   
+                            name="-confirm_password" 
+                            id="_confirm_password" 
+                            class="form_control" 
+                            placeholder="Digite sua senha">
+                        <i class="fa-regular fa-eye-slash password-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn_default">
+                <i class="fa-solid fa-check"></i>
+                Criar conta
+            </button>
+        </form>
+    </main>
+
+    <script src="src/script/script.js"></script>
+</body>
 </html>
