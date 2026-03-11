@@ -1,89 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt_BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar</title>
-    <link rel="stylesheet" href="src/styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <title>Login</title>
 </head>
 <body>
-    <main id="form_container">
-        <div id="form_header">
-            <h1 class="form_title">
-                Criar conta
-            </h1>
+    <label for="name">Digite seu email ou nome de usuario</label>
+    <input type="text" name="name" id="name">
 
-            <button class="btn_default">
-                Entrar
-            </button>
-        </div>
-
-        <form action="" id="form">
-            <div class="input_container">
-                <div class="input_box">
-                    <label for="name" class="form-label">
-                        Nome de usuario
-                    </label>
-                    <div class="input_field">
-                        <input type="text" name="name" id="name" class="form_control" placeholder="Digite seu nome">
-                        <i class="fa-regular fa-user"></i>
-                    </div>
-                </div>
-
-                <div class="input_box">
-                    <label for="email" class="form-label">
-                        E-mail
-                    </label>
-                    <div class="input_field">
-                        <input 
-                            type="email"   
-                            name="email" 
-                            id="email" 
-                            class="form_control" 
-                            placeholder="Digite seu e-mail">
-                        <i class="fa-regular fa-envelope"></i>
-                    </div>
-                </div>
-
-                <div class="input_box">
-                    <label for="password" class="form-label">
-                        Senha
-                    </label>
-                    <div class="input_field">
-                        <input 
-                            type="password"   
-                            name="password" 
-                            id="password" 
-                            class="form_control" 
-                            placeholder="Digite sua senha">
-                        <i class="fa-regular fa-eye-slash password-icon"></i>
-                    </div>
-                </div>
-
-                <div class="input_box">
-                    <label for="-confirm_password" class="form-label">
-                        Confirmar senha
-                    </label>
-                    <div class="input_field">
-                        <input 
-                            type="password"   
-                            name="-confirm_password" 
-                            id="_confirm_password" 
-                            class="form_control" 
-                            placeholder="Digite sua senha">
-                        <i class="fa-regular fa-eye-slash password-icon"></i>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="btn_default">
-                <i class="fa-solid fa-check"></i>
-                Criar conta
-            </button>
-        </form>
-    </main>
-
-    <script src="src/script/script.js"></script>
+    <label for="senha">Digite sua senha</label>
+    <input type="password" name="senha" id="senha">
 </body>
 </html>
