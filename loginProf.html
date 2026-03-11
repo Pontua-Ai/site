@@ -1,15 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
 </head>
-<body>
-    <label for="name">Digite seu email ou nome de usuario</label>
-    <input type="text" name="name" id="name">
 
-    <label for="senha">Digite sua senha</label>
-    <input type="password" name="senha" id="senha">
+<body>
+
+<label for="email">Digite seu email</label>
+<input type="text" id="email">
+
+<label for="senha">Digite sua senha</label>
+<input type="password" id="senha">
+
+<button id="btnLogin">Login</button>
+
+<!-- biblioteca do supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
