@@ -13,6 +13,7 @@ async function loginUsuario(login, senha) {
         return;
     }
     alert("Login realizado com sucesso!");
+    
 }
 
 document.getElementById("btnLogin").addEventListener("click", () => {
