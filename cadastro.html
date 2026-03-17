@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
@@ -9,12 +9,27 @@
 
 <body>
     <label for="email">Digite seu email</label>
-    <input type="text" id="email">
+    <input type="email" id="email">
+
+    <label for="username">Digite seu nome de usuário</label>
+    <input type="text" id="username">
 
     <label for="senha">Digite sua senha</label>
     <input type="password" id="senha">
 
-    <button id="btnLogin" onclick="window.location.href='inicio.html';">Login</button>
+    <label for="tipo">Você é:</label>
+    <select id="tipo">
+        <option value="aluno">Aluno</option>
+        <option value="professor">Professor</option>
+    </select>
+
+    <button id="btnCadastrar">Cadastrar</button>
+
+    <a href="login.html">Já tem conta? Faça login</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
