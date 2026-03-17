@@ -1,3 +1,11 @@
+async function hashSenha(senha) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(senha);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function loginUsuario(login, senha) {
     const { data, error } = await supabaseClient
         .from("users")
@@ -8,7 +16,8 @@ async function loginUsuario(login, senha) {
         alert("Usuário não encontrado");
         return;
     }
-    if (data.senha !== senha) {
+    const hashInput = await hashSenha(senha);
+    if (data.senha !== hashInput) {
         alert("Senha incorreta");
         return;
     }
@@ -105,9 +114,11 @@ async function cadastrarUsuario(email, senha, tipo, username) {
         return;
     }
 
+    const senhaHash = await hashSenha(senha);
+
     const { data, error } = await supabaseClient
         .from("users")
-        .insert([{ email: email, senha: senha, tipo: tipo, username: username }]);
+        .insert([{ email: email, senha: senhaHash, tipo: tipo, username: username }]);
 
     if (error) {
         alert("Erro ao cadastrar: " + error.message);
