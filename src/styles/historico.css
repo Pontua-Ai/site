@@ -1,0 +1,35 @@
+/*div{
+    border: 1px solid;
+}*/
+
+
+main{
+    width: 60%;
+}
+
+.buscatema{
+    width: 100%;
+}
+
+.inputTema, .categoria{
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+    background-color: var(--input);
+    width: 40%;
+}
+
+.inputTema::placeholder{
+    font-size: 16px;
+}
+
+h1{
+    color: var(--primary-color);
+    padding: 10px;
+}
+
+.buscas{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
