@@ -11,6 +11,7 @@
     <link rel="icon" href="img/pontuaAi-icon.png">
 </head>
 <body>
+
     <header>
         <nav>
             <ul>
@@ -25,14 +26,33 @@
         </nav>
     </header>
 
-    <div class="buscatema">
-        <h1>Histórico de atividades e redação</h1>
-        <input type="text" class="buscarTema" placeholder="Buscar por tema">
-        <select name="Categoria" id="categoria">
-            <option value="buscaCat">Buscar por categoria</option>
-            <option value="Redacao">Redação</option>
-            <option value="Atividade">Atividade</option>
-        </select>
-    </div>
+    <main>
+        <div class="buscatema">
+            <h1>Histórico de atividades e redação</h1>
+            <div class="buscas">
+                <input type="text" class="inputTema" placeholder="Buscar por tema">
+                <select name="Categoria" class="categoria" id="categoria">
+                    <option value="buscaCat">Buscar por categoria</option>
+                    <option value="Redacao">Redação</option>
+                    <option value="Atividade">Atividade</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="cardBox">
+            <div class="dados">
+                <h4>Titulo da atividade/redação</h4>
+                <p>data em xx/xx/xxxx e hora 00:00</p>
+                <p>000 pontuação</p>
+            </div>
+            <div class="botoesAcao">
+                <button class="olhar">Olhar</button>
+                <button class="refazer">Refazer?</button>
+            </div>
+            <div class="descricao">
+                <p>Parte da descrição da atividade ...</p>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
