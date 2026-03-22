@@ -18,32 +18,32 @@
             <h2>Aprender ficou mais facil!</h2>
         </div>
 
-        <form>
+        <form id="signupForm">
             <div class="nome">
-                <label for="nome">Nome de usuario</label>
-                <input type="name" name="nome" id="nome" placeholder="Como podemos te chamar?">
+                <label>Nome de usuario</label>
+                <input type="name" name="nome" id="signupName" placeholder="Como podemos te chamar?" required>
             </div>
 
             <div class="email">
-                <label for="email">E-mail</label>
-                <input type="email" name="email" id="email" placeholder="Digite seu endereço de email">
+                <label>E-mail</label>
+                <input type="email" name="email" id="signupEmail" placeholder="Digite seu endereço de email" required>
             </div>
 
             <div class="senha">
-                <label for="password">Senha</label>
+                <label>Senha</label>
 
                 <div class="input-container">
-                <input type="password" id="password" placeholder="Digite sua senha">
-                <i class="fa-regular fa-eye-slash password-icon"></i>
+                    <input type="password" id="signupPassword" placeholder="Digite sua senha" required>
+                    <i class="fa-regular fa-eye-slash password-icon"></i>
                 </div>
             </div>
 
             <div class="senha">
-                <label for="password">Confirmar senha</label>
+                <label for="confirmPassword">Confirmar senha</label>
 
                 <div class="input-container">
-                <input type="password" id="password" placeholder="Confirme sua senha">
-                <i class="fa-regular fa-eye-slash password-icon"></i>
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirme sua senha" required>
+                    <i class="fa-regular fa-eye-slash password-icon"></i>
                 </div>
             </div>
             <button type="submit" class="btn-continue">
@@ -58,6 +58,9 @@
         </div>
 
         <script src="src/scripts/validationFom.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script type="module" src="src/scripts/auth.js"></script>
+        <script type="module" src="src/scripts/app.js"></script>
 </body>
 
 </html>
