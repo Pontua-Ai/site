@@ -17,17 +17,16 @@
             <h2>Bem vindo de volta</h2>
         </div>
         
-        <form>
+        <form id="loginForm">
         <div class="entrar">
-            <label for="email">E-mail</label>
-            <input type="email" name="email" id="email" placeholder="Digite seu E-mail">
+            <label>E-mail</label>
+            <input type="email" name="email" id="loginEmail" placeholder="Digite seu E-mail" required>
         </div>
 
         <div class="senha">
-            <label for="password">Senha</label>
-
+            <label>Senha</label>
             <div class="input-container">
-            <input type="password" id="password" placeholder="Digite sua senha">
+            <input type="password" id="loginPassword" placeholder="Digite sua senha" required>
             <i class="fa-regular fa-eye-slash password-icon"></i>
             </div>
         </div>
@@ -38,7 +37,7 @@
         </form>
 
         <div class="ajuda">
-            <p>Ainda não possui conta? <a href="#">Cadastre-se gratuitamente</a> </p>
+            <p>Ainda não possui conta? <a href="cadastro-aluno.html">Cadastre-se gratuitamente</a> </p>
             <p>Logar como professor? <a href="cadastro-professor.html"> Clique aqui</a> </p>
             <a href="#">Esqueceu a senha?</a>
             
@@ -46,5 +45,6 @@
     </div>
 
     <script src="src/scripts/validationFom.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
 </body>
 </html>
