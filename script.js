@@ -22,12 +22,6 @@ async function loginUsuario(login, senha) {
         return;
     }
     alert("Login realizado com sucesso!");
-    
-    if (data.tipo === "professor") {
-        window.location.href = "inicio_professor.html";
-    } else {
-        window.location.href = "inicio_aluno.html";
-    }
 }
 
 function validarSenha(senha, username, email) {
@@ -85,7 +79,7 @@ function validarEmail(email) {
     return true;
 }
 
-async function cadastrarUsuario(email, senha, tipo, username) {
+async function cadastrarUsuario(email, senha, username) {
     if (!validarEmail(email)) {
         return;
     }
@@ -118,7 +112,7 @@ async function cadastrarUsuario(email, senha, tipo, username) {
 
     const { data, error } = await supabaseClient
         .from("users")
-        .insert([{ email: email, senha: senhaHash, tipo: tipo, username: username }]);
+        .insert([{ email: email, senha: senhaHash, username: username }]);
 
     if (error) {
         alert("Erro ao cadastrar: " + error.message);
@@ -144,8 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById("email").value;
             const username = document.getElementById("username").value;
             const senha = document.getElementById("senha").value;
-            const tipo = document.getElementById("tipo").value;
-            cadastrarUsuario(email, senha, tipo, username);
+            cadastrarUsuario(email, senha, username);
         });
     }
 });
