@@ -1,29 +1,33 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import supabaseClient from "./supabase.js";
 
-const supabaseURL = "https://nsacgpcnhqzxassfvuts.supabase.co";
-const supabaseKey = "sb_publishable_h7E_Yp2W314kFCmGo4qR5g_C8ctFv8n";
-
-const supabase = createClient(supabaseURL, supabaseKey);
-
-export async function signup(email, password, name, confirmPassword) {
-    try {
-        const {data, error} = await supabase.auth.signUp({email, password, options: {data: {name, confirmPassword}}});
-        if (error) throw new Error(error.message);
-        return {success: true, user: data.user};
-    }
-    catch (error) {
-        return {success: false, error: error.message};
-    }
+async function hashSenha(senha) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(senha);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+export async function signup(username, email, senha) {
+    const { data: existingUser } = await supabaseClient
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .single();
 
-export async function login(email, password) {
-    try {
-        const {data, error} = await supabase.auth.signInWithPassword({email, password});
-        if (error) throw new Error(error.message);
-        return {success: true, user: data.user};
+    if (existingUser) {
+        return { success: false, error: "Email já cadastrado" };
     }
-    catch (error) {
-        return {success: false, error: error.message};
+
+    const senhaHash = await hashSenha(senha);
+
+    const { data, error } = await supabaseClient
+        .from("users")
+        .insert([{ email: email, senha: senhaHash, username: username }]);
+
+    if (error) {
+        return { success: false, error: error.message };
     }
+
+    return { success: true };
 }
