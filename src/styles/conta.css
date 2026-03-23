@@ -2,22 +2,69 @@ main{
     width: 60%;
 }
 
+div{
+    border: 1px solid red;
+}
+
 .headerConta{
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 20px;
     padding: 20px;
     background-color: var(--gray);
     border-radius: 20px;
 }
 
-.headerConta img{
+.info{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.nameUser{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.editar{
+    border-radius: 20px;
+    font-size: 14px;
+    padding: 4px 12px;
+    display: inline-block;
+    margin-left: 35%;
+}
+
+.headerConta p{
+    color: var(--primary-color);
+}
+
+.headerConta .nameUser{
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.headerConta .tipo{
+    background-color: var(--header);
+    color: var(--text-secundary);
+    border-radius: 20px;
+    font-size: 14px;
+    padding: 4px 12px;
+    display: inline-block;
+    margin-left: 5%;
+}
+
+.img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+    height:100%;
+}
+
+.headerConta .img img{
     width: 100px;
     height: 100px;
     border-radius: 50%;
-}
-
-.mainConta{
-    padding: 20px;
-
 }
