@@ -37,7 +37,7 @@ export async function carregarConteudos() {
         return;
     }
     const select = document.getElementById("conteudo");
-    select.innerHTML = '<option value="">Selecione o conteúdo</option>';
+    select.innerHTML = '<option value="">Conteúdo</option>';
     data.forEach(conteudo => {
         const option = document.createElement("option");
         option.value = conteudo.id_conteudo;
