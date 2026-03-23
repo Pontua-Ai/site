@@ -1,0 +1,43 @@
+.subjects-container{
+    width: 60%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 300px;
+}
+
+.subjects-button{
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    width: 200px;
+    height: 50px;
+    margin: 5px;
+    font-size: 17px;
+    font-weight: bold;
+    transition: all 0.5s ease;
+}
+
+.subjects-button:hover{
+    border: none;
+    background-color: var(--secondary-color);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.205);
+}
+
+.card ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card ul a{
+    text-decoration: none;
+}

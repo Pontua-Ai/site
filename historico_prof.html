@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/header.css">
+    <link rel="stylesheet" href="src/styles/button.css">
+    <link rel="stylesheet" href="src/styles/historico.css">
+    <link rel="icon" href="img/pontuaAi-icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
+                <li><a href="sobre_prof.html">Sobre</a></li>
+                <li><a href="conteudo_prof.html">Conteudos</a></li>
+                <li><a href="historico_prof.html" style="color: var(--primary-color); font-weight: bold;">Histórico</a></li>
+                <li><a href="conta.html">Conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="buscatema">
+            <h1>Histórico de atividades e redação</h1>
+            <div class="buscas">
+                <input type="text" class="inputTema" placeholder="Buscar por tema">
+                <select name="Categoria" class="categoria" id="categoria">
+                    <option value="buscaCat">Buscar por categoria</option>
+                    <option value="Redacao">Redação</option>
+                    <option value="Atividade">Atividade</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="cardBox">
+            <div class="headerBox">
+                <h4>Titulo da atividade/redação</h4>
+                <div class="botoesAcoes">
+                    <button class="olho"><i class="fa-regular fa-eye"></i></button>
+                    <button class="mudar"><i class="fa-regular fa-pen-to-square"></i></button>
+                </div>
+            </div>
+            <div class="mainBox">
+                <p>xx/xx/xxxx às 00:00 000 Pontos</p>
+                <p>Descrição de atividade</p>
+            </div>
+        </div>
+        
+    </main>
+</body>
+
+</html>

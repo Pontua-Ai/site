@@ -1,0 +1,32 @@
+main{
+    width: 60%;
+}
+
+.collum1{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.text{
+    flex-direction: column;
+    width: 50%;
+    font-size: 20px;
+}
+
+.imagemMain{
+    width: 300px;
+    padding: 60px;
+}
+
+h1{
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.collum2{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
