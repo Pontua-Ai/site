@@ -31,3 +31,20 @@ export async function signup(username, email, senha) {
 
     return { success: true };
 }
+
+
+export async function loginUsuario(login, senha) {
+    const { data, error } = await supabaseClient
+        .from("users")
+        .select("*")
+        .or(`email.eq.${login},username.eq.${login}`)
+        .single();
+    if (error || !data) {
+        return { success: false, error: "Usuário não encontrado" };
+    }
+    const hashInput = await hashSenha(senha);
+    if (data.senha !== hashInput) {
+        return { success: false, error: "Senha incorreta" };
+    }
+    return { success: true, user: data };
+}
