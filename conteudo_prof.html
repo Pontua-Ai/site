@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre</title>
+    <title>Conteudo</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
+    <link rel="stylesheet" href="src/styles/conteudoProf.css">
     <link rel="icon" href="img/pontuaAi-icon.png">
 </head>
+
 <body>
     <header>
         <nav>
@@ -15,7 +18,8 @@
                 <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="sobre_prof.html">Sobre</a></li>
                 <li><a href="doc_prof.html">Doc</a></li>
-                <li><a href="conteudo_prof.html" style="color: var(--primary-color); font-weight: bold;">Conteudos</a></li>
+                <li><a href="conteudo_prof.html" style="color: var(--primary-color); font-weight: bold;">Conteudos</a>
+                </li>
                 <li><a href="historico_prof.html">Histórico</a></li>
                 <li><a href="conta.html">Conta</a></li>
             </ul>
@@ -24,22 +28,43 @@
 
     <main>
 
-        <div class="materia">
-            <p>Materia &darr;</p>
-            <p>conteudo &darr;</p>
+        <div class="title">
+            Cadastrar pergunta
         </div>
 
-        <div class="caixa">
-            <input type="text" placeholder="Digite o enunciado da questão com até 2000 caracteres">
+        <div class="escolher">
+            <div class="selecionarMateria">
+                <select id="materia" required>
+                    <option value="">Máteria</option>
+                </select>
+            </div>
+
+            <div class="selecionarConteudo">
+                <select id="conteudo" required>
+                    <option value="">Conteúdo</option>
+                </select>
+            </div>
         </div>
 
-        <ul>
-            <li>Alternativa A</li>
-            <li>Alternativa B</li>
-            <li>Alternativa C</li>
-            <li>Alternativa D</li>
-            <li>Alternativa E</li>
-        </ul>
+        <form id="formPergunta">
+            <input type="text" id="pergunta" placeholder="Digite o enunciado da questão com até 2000 caracteres" maxlength="2000" required>
+            <input type="text" id="alt1" placeholder="Alternativa 1">
+            <input type="text" id="alt2" placeholder="Alternativa 2">
+            <input type="text" id="alt3" placeholder="Alternativa 3">
+            <input type="text" id="alt4" placeholder="Alternativa 4">
+            <input type="text" id="alt5" placeholder="Alternativa 5">
+            <select id="correta">
+                <option value="correta">Selecione a alternativa correta</option>
+                <option value="1">Alternativa 1</option>
+                <option value="2">Alternativa 2</option>
+                <option value="3">Alternativa 3</option>
+                <option value="4">Alternativa 4</option>
+                <option value="5">Alternativa 5</option>
+            </select>
+            <button type="submit">Cadastrar pergunta</button>
+
+        </form>
     </main>
 </body>
+
 </html>
