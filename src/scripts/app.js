@@ -1,4 +1,5 @@
 import { signup, loginUsuario } from "./auth.js";
+import supabaseClient from "./supabase.js";
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 
 
@@ -83,11 +84,11 @@ document.getElementById("formPergunta").addEventListener("submit", async functio
             .select();
 
         if (!perguntaCriada || perguntaCriada.length === 0) {
-            alert("Erro ao criar pergunta");
+            alert("Erro ao criar pergunta" + (result?.error || "Erro desconhecido"));
             return;
         }
 
-        const idPergunta = perguntaCriada[0].id_pergunta;
+        const idPergunta = perguntaCriada[0].id;
 
         for (let i = 0; i < alternativas.length; i++) {
             await supabaseClient
