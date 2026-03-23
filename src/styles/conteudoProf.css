@@ -50,4 +50,15 @@ main{
 .perguntas{
     display: flex;
     flex-direction: column;
+    width: 60%;
+    gap: 30px;
+    margin-bottom: 10px;
+}
+
+.perguntas input{
+    border: none;
+}
+
+.perguntas input::placeholder{
+    color: var(--text-primary);
 }
