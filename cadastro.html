@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/form.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="icon" href="img/pontuaAi-icon.png">
+</head>
+
+<body>
+    <div class="login">
+        <div class="logo">
+            <img src="img/logo-horizontal.png" alt="Logo da plataforma">
+            <h2>Aprender ficou mais facil!</h2>
+        </div>
+
+        <form id="signupForm">
+            <div class="nome">
+                <label>Nome de usuario</label>
+                <input type="name" name="nome" id="username" placeholder="Como podemos te chamar?" required>
+            </div>
+
+            <div class="email">
+                <label>E-mail</label>
+                <input type="email" name="email" id="email" placeholder="Digite seu endereço de email" required>
+            </div>
+
+            <div class="senha">
+                <label>Senha</label>
+
+                <div class="input-container">
+                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                    <i class="fa-regular fa-eye-slash password-icon"></i>
+                </div>
+            </div>
+
+            <div class="senha">
+                <label for="confirmPassword">Confirmar senha</label>
+
+                <div class="input-container">
+                    <input type="password" id="confirmPassword" placeholder="Confirme sua senha" required>
+                    <i class="fa-regular fa-eye-slash password-icon"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-continue">
+                Continue &rarr;
+            </button>
+
+        </form>
+
+
+        <div class="ajuda">
+            <p>Já possui conta? <a href="inicio.html">Entre aqui</a> </p>
+        </div>
+
+        <script src="src/scripts/validationFom.js"></script>
+        <script type="module" src="src/scripts/app.js"></script>
+</body>
+
+</html>
