@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,99 @@
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <link rel="stylesheet" href="src/styles/historico.css">
+    <link rel="stylesheet" href="src/styles/conta.css">
     <link rel="icon" href="img/pontuaAi-icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
+
 <body>
-    
+    <header>
+        <nav>
+            <ul>
+                <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
+                <li><a href="sobre.html">Sobre</a></li>
+                <li><a href="materias.html">Materias</a></li>
+                <li><a href="conteudo.html">Conteudos</a></li>
+                <li><a href="redacao.html">Redação</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="conta.html" style="color: var(--primary-color); font-weight: bold;">Conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="headerConta">
+            <div class="img">
+                <img src="./img/logo-horizontal.png" alt="Imagem da conta do usuário">
+            </div>
+            <div class="info">
+                <p>Nome do Usuário</p>
+                <p>Membro desde mês/ano</p>
+            </div>
+            <div class="tipo">
+                <p>Tipo de conta (aluno/professor)</p>
+            </div>
+            <p><i class="fa-solid fa-pen"></i> Editar Perfil</p>
+        </div>
+
+        <div class="mainConta">
+            <div class="historicoAtividade">
+                <p>00</p>
+                <p>Atividades feitas</p>
+            </div>
+
+            <div class="historicoRedacao">
+                <p>00</p>
+                <p>Redações feitas</p>
+            </div>
+
+            <div class="historicoMediaRedacao">
+                <p>00</p>
+                <p>Média das redações</p>
+            </div>
+        </div>
+
+        <div class="footerConta">
+            <div class="historicoAtividadesRecentes">
+                <p>Atividades Recentes</p>
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+            </div>
+
+            <div class="configuracoes">
+                <p>Configurações</p>
+                <i class="fa-solid fa-lock"></i>
+                <p>Alterar senha</p>
+
+                <i class="fa-regular fa-envelope"></i>
+                <p>Alterar email</p>
+
+                <i class="fa-solid fa-moon"></i>
+                <p>Modo escuro</p>
+
+                <i class="fa-regular fa-trash-can"></i>
+                <p>Excluir conta</p>
+            </div>
+        </div>
+
+    </main>
 </body>
+
 </html>

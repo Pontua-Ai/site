@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await loginUsuario(login, password);
 
             if (result && result.success) {
-                alert("Login realizado com sucesso!");
                 window.location.href = "sobre.html";
             } else {
                 alert("Erro ao realizar login: " + (result?.error || "Erro desconhecido"));

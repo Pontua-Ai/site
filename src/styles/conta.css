@@ -1,0 +1,23 @@
+main{
+    width: 60%;
+}
+
+.headerConta{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: var(--gray);
+    border-radius: 20px;
+}
+
+.headerConta img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.mainConta{
+    padding: 20px;
+
+}
