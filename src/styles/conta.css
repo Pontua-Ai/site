@@ -2,10 +2,6 @@ main{
     width: 60%;
 }
 
-div{
-    border: 1px solid red;
-}
-
 .headerConta{
     display: flex;
     align-items: center;
@@ -67,4 +63,64 @@ div{
     width: 100px;
     height: 100px;
     border-radius: 50%;
+}
+
+.mainConta{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+}
+
+.cardInfos{
+    display: flex;
+    width: 25%;
+    height: 100px;
+    padding: 20px;
+    background-color: var(--gray);
+    border-radius: 20px;
+}
+
+.ativFeitas, .redaFeitas, .mediaRedacao{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+    color: var(--primary-color);
+}
+
+.ativFeitas .valor, .redaFeitas .valor, .mediaRedacao .valor{
+    font-size: 60px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: -10px;
+}
+
+.footerConta{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.historicoAtividadesRecentes, .configuracoes{
+    background-color: var(--gray);
+    border-radius: 20px;
+    padding: 10px;
+    color: var(--primary-color);
+}
+
+.title{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.cardAtividades, .cardConfi{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    border-radius: 20px;
+    margin-top: 10px;
 }
