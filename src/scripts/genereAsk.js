@@ -1,3 +1,5 @@
+import supabaseClient from "./supabase.js";
+
 export async function carregarMaterias() {
     const { data, error } = await supabaseClient
         .from("materia")
@@ -14,10 +16,13 @@ export async function carregarMaterias() {
         select.appendChild(option);
     });
 }
-carregarMaterias();
+if(document.getElementById("materia")){
+    carregarMaterias();
+}
 
-
-document.getElementById("materia").addEventListener("change", carregarConteudos);
+if(document.getElementById("materia")){
+    document.getElementById("materia").addEventListener("change", carregarConteudos)
+}
 
 export async function carregarConteudos() {
     const idMateria = document.getElementById("materia").value;
