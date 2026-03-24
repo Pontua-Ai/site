@@ -18,3 +18,8 @@ img{
     width: 300px;
     height: 300px;
 }
+
+.subjects-container button a{
+    color: var(--text-secundary);
+    text-decoration: none;
+}
