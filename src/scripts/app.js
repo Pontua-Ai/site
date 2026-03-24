@@ -1,5 +1,6 @@
 import { signup, loginUsuario } from "./auth.js";
 import supabaseClient from "./supabase.js";
+import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 
 
@@ -28,9 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginForm) {
         loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
-            const login = document.getElementById("loginEmail").value;
-            const password = document.getElementById("loginPassword").value;
-            const result = await loginUsuario(login, password);
+            const loginInput = document.getElementById("loginEmail");
+            const passwordInput = document.getElementById("loginPassword");
+            
+            if (!loginInput || !passwordInput) return;
+            
+            const result = await loginUsuario(loginInput.value, passwordInput.value);
 
             if (result && result.success) {
                 window.location.href = "sobre.html";
@@ -39,11 +43,32 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-});
 
+    const materiaMap = {
+        matematica: "Matemática",
+        portugues: "Português",
+        fisica: "Física",
+        quimica: "Química",
+        biologia: "Biologia",
+        historia: "História",
+        geografia: "Geografia",
+        ingles: "Inglês",
+        artes: "Artes",
+        espanhol: "Espanhol",
+        filosofia: "Filosofia",
+        sociologia: "Sociologia"
+    };
 
+    document.querySelectorAll('.subjects-button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const nomeMateria = materiaMap[btn.id] || btn.id;
+            window.location.href = `conteudo.html?nome_conteudo=${encodeURIComponent(nomeMateria)}`;
+        });
+    });
 
-document.getElementById("formPergunta").addEventListener("submit", async function (notReaload) {
+    const formPergunta = document.getElementById("formPergunta");
+    if (formPergunta) {
+        formPergunta.addEventListener("submit", async function (notReaload) {
     notReaload.preventDefault();
     const idMateria = document.getElementById("materia").value;
     const idConteudo = document.getElementById("conteudo").value;
@@ -115,4 +140,6 @@ document.getElementById("formPergunta").addEventListener("submit", async functio
     document.getElementById("alt5").value = "";
     document.getElementById("conteudo").value = "";
     document.getElementById("materia").value = "";
+        });
+    }
 });
