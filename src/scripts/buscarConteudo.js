@@ -45,7 +45,7 @@ export async function carregarConteudo() {
 
     data.forEach(conteudo => {
         const div = document.createElement("div");
-        div.innerHTML = `<h3>${conteudo.nome_conteudo}</h3>`;
+        div.innerHTML = `<button class="subjects-button">${conteudo.nome_conteudo}</button>`;
         container.appendChild(div);
     })
 }

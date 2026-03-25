@@ -27,14 +27,15 @@
 
 #conteudos{
     display: flex;
-    gap: 121px;
+    gap: 136.5px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
-#conteudos div{
-    width: 300px;
+.subjects-button{
+    width: 280px;
+    height: 60px;
     background-color: var(--primary-color);
     color: var(--text-secundary);
     text-align: center;
