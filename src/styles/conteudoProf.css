@@ -42,8 +42,7 @@ main{
     font-size: 12px;
     border-radius: 10px;
     border: none;
-    background-color: var(--gray);
-    color: var(--primary-color);
+    background-color: var(--input);
     margin-bottom: 20px;
 }
 
