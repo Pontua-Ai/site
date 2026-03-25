@@ -7,7 +7,7 @@ import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 document.addEventListener("DOMContentLoaded", () => {
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
-        signupForm.addEventListener("submit", async (event) => { 
+        signupForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const name = document.getElementById("username").value;
@@ -31,9 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             const loginInput = document.getElementById("loginEmail");
             const passwordInput = document.getElementById("loginPassword");
-            
+
             if (!loginInput || !passwordInput) return;
-            
+
             const result = await loginUsuario(loginInput.value, passwordInput.value);
 
             if (result && result.success) {
@@ -69,77 +69,78 @@ document.addEventListener("DOMContentLoaded", () => {
     const formPergunta = document.getElementById("formPergunta");
     if (formPergunta) {
         formPergunta.addEventListener("submit", async function (notReaload) {
-    notReaload.preventDefault();
-    const idMateria = document.getElementById("materia").value;
-    const idConteudo = document.getElementById("conteudo").value;
-    const pergunta = document.getElementById("pergunta").value;
+            notReaload.preventDefault();
+            const idMateria = document.getElementById("materia").value;
+            const idConteudo = document.getElementById("conteudo").value;
+            const pergunta = document.getElementById("pergunta").value;
 
-    if (!idConteudo || !pergunta || !idMateria) {
-        alert("SELECIONA A PORRA DO CONTEUDO OU DA PERGUNTA KRL");
-        return;
-    }
+            if (!idConteudo || !pergunta || !idMateria) {
+                alert("SELECIONA A PORRA DO CONTEUDO OU DA PERGUNTA KRL");
+                return;
+            }
 
-    console.log("idMateria:", idMateria, "idConteudo:", idConteudo);
+            console.log("idMateria:", idMateria, "idConteudo:", idConteudo);
 
-    const alternativas = [
-        document.getElementById("alt1").value,
-        document.getElementById("alt2").value,
-        document.getElementById("alt3").value,
-        document.getElementById("alt4").value,
-        document.getElementById("alt5").value,
-    ];
+            
+            const alternativas = document.querySelectorAll('.textAlternativa');
+            const alternativasValores = Array.from(alternativas).map(input => input.value);
 
-    const correta = document.getElementById("correta").value;
+            const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
+            
+            if (!correta) {
+                alert("Selecione a alternativa correta!");
+                return;
+            }
 
-    if (alternativas.some(a => a.trim() === "")) {
-            alert("Preencha todas as alternativas!");
-            return;
-        }
+            if (alternativasValores.some(a => a.trim() === "")) {
+                alert("Preencha todas as alternativas!");
+                return;
+            }
 
-    try {
-        const { data: perguntaCriada } = await supabaseClient
-            .from("perguntas")
-            .insert([
-                {
-                    pergunta_texto: pergunta,
-                    id_conteudo: idConteudo,
-                    id_materia: idMateria
+            try {
+                const { data: perguntaCriada } = await supabaseClient
+                    .from("perguntas")
+                    .insert([
+                        {
+                            pergunta_texto: pergunta,
+                            id_conteudo: idConteudo,
+                            id_materia: idMateria
+                        }
+                    ])
+                    .select();
+
+                if (!perguntaCriada || perguntaCriada.length === 0) {
+                    alert("Erro ao criar pergunta" + (result?.error || "Erro desconhecido"));
+                    return;
                 }
-            ])
-            .select();
 
-        if (!perguntaCriada || perguntaCriada.length === 0) {
-            alert("Erro ao criar pergunta" + (result?.error || "Erro desconhecido"));
-            return;
-        }
+                const idPergunta = perguntaCriada[0].id;
 
-        const idPergunta = perguntaCriada[0].id;
+                for (let i = 0; i < alternativasValores.length; i++) {
+                    await supabaseClient
+                        .from("alternativa")
+                        .insert([
+                            {
+                                nome_alternativa: alternativasValores[i],
+                                id_pergunta: idPergunta,
+                                correta: (i + 1).toString() === correta
+                            }
+                        ]);
+                }
 
-        for (let i = 0; i < alternativas.length; i++) {
-            await supabaseClient
-                .from("alternativa")
-                .insert([
-                    {
-                        nome_alternativa: alternativas[i],
-                        id_pergunta: idPergunta,
-                        correta: (i + 1) == correta
-                    }
-                ]);
-        }
-
-        alert("Pergunta cadastrada");
-    } catch (erro) {
-        console.error(erro);
-        alert("Erro ao cadastrar pergunta");
-    }
-    document.getElementById("pergunta").value = "";
-    document.getElementById("alt1").value = "";
-    document.getElementById("alt2").value = "";
-    document.getElementById("alt3").value = "";
-    document.getElementById("alt4").value = "";
-    document.getElementById("alt5").value = "";
-    document.getElementById("conteudo").value = "";
-    document.getElementById("materia").value = "";
+                alert("Pergunta cadastrada");
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro ao cadastrar pergunta");
+            }
+            document.getElementById("pergunta").value = "";
+            document.getElementById("alt1").value = "";
+            document.getElementById("alt2").value = "";
+            document.getElementById("alt3").value = "";
+            document.getElementById("alt4").value = "";
+            document.getElementById("alt5").value = "";
+            document.getElementById("conteudo").value = "";
+            document.getElementById("materia").value = "";
         });
     }
 });
