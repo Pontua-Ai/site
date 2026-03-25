@@ -3,7 +3,7 @@ import supabaseClient from "./supabase.js";
 const params = new URLSearchParams(window.location.search);
 const nome_materia = decodeURIComponent(params.get("nome_conteudo"));
 
-function irParaConteudos(nome_materia){
+function irParaConteudos(nome_materia) {
     window.location.href = `conteudo.html?nome_conteudo=${nome_materia}`;
 }
 
@@ -20,8 +20,10 @@ export async function carregarConteudo() {
         .single()
 
     if (!materia) {
-        document.getElementById("conteudos").innerHTML = "<p>Matéria não encontrada</p>";
+        document.getElementById("titleMateria").innerHTML = "Matéria não encontrada";
         return;
+    } else {
+        document.getElementById("titleMateria").innerText = nome_materia;
     }
 
     const { data, error } = await supabaseClient
@@ -29,7 +31,7 @@ export async function carregarConteudo() {
         .select("*")
         .eq("id_materia", materia.id_materia)
 
-    if(error){
+    if (error) {
         alert("Erro ao buscar: " + error.message);
         return;
     }
