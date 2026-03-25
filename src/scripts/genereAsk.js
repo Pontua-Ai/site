@@ -5,7 +5,7 @@ export async function carregarMaterias() {
         .from("materia")
         .select("id_materia, nome_materia");
     if (error) {
-        console.error("Erro:", error);
+        console.error("Erro:", error)
         return;
     }
     const select = document.getElementById("materia");
@@ -13,7 +13,7 @@ export async function carregarMaterias() {
         const option = document.createElement("option");
         option.value = materia.id_materia;
         option.textContent = materia.nome_materia;
-        select.appendChild(option);
+        select.appendChild(option)
     });
 }
 if(document.getElementById("materia")){
@@ -43,5 +43,5 @@ export async function carregarConteudos() {
         option.value = conteudo.id_conteudo;
         option.textContent = conteudo.nome_conteudo;
         select.appendChild(option);
-    });
+    })
 }
