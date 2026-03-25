@@ -10,14 +10,14 @@ function irParaConteudos(nome_materia){
 export async function carregarConteudo() {
     if (!nome_materia) {
         alert("Matéria não especificada");
-        return;
+        return
     }
 
     const { data: materia } = await supabaseClient
         .from("materia")
         .select("id_materia")
         .ilike("nome_materia", nome_materia)
-        .single();
+        .single()
 
     if (!materia) {
         document.getElementById("conteudos").innerHTML = "<p>Matéria não encontrada</p>";
@@ -45,7 +45,7 @@ export async function carregarConteudo() {
         const div = document.createElement("div");
         div.innerHTML = `<h3>${conteudo.nome_conteudo}</h3>`;
         container.appendChild(div);
-    });
+    })
 }
 
 carregarConteudo();
