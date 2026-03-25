@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/conteudoProf.css">
+    <link rel="stylesheet" href="src/styles/button.css">
     <link rel="icon" href="img/pontuaAi-icon.png">
 </head>
 
@@ -48,12 +49,33 @@
 
         <form id="formPergunta">
             <input type="text" id="pergunta" placeholder="Digite a pergunta">
-            <input type="radio" name="alternativa" value="1" id="alt1"><input type="text" placeholder="Alternativa 1">
-            <input type="radio" name="alternativa" value="2" id="alt2"><input type="text" placeholder="Alternativa 2">
-            <input type="radio" name="alternativa" value="3" id="alt3"><input type="text" placeholder="Alternativa 3">
-            <input type="radio" name="alternativa" value="4" id="alt4"><input type="text" placeholder="Alternativa 4">
-            <input type="radio" name="alternativa" value="5" id="alt5"><input type="text" placeholder="Alternativa 5">
-            <button type="submit">Cadastrar pergunta</button>
+
+            <div class="boxInputs">
+                <input type="radio" name="alternativa" value="1" id="alt1">
+                <input type="text" class="textAlternativa" placeholder="Alternativa 1">
+            </div>
+
+            <div class="boxInputs">
+                <input type="radio" name="alternativa" value="2" id="alt2">
+                <input type="text" class="textAlternativa" placeholder="Alternativa 2">
+            </div>
+
+            <div class="boxInputs">
+                <input type="radio" name="alternativa" value="3" id="alt3">
+                <input type="text" class="textAlternativa" placeholder="Alternativa 3">
+            </div> 
+
+            <div class="boxInputs">
+                <input type="radio" name="alternativa" value="4" id="alt4">
+                <input type="text" class="textAlternativa" placeholder="Alternativa 4">
+            </div>
+
+            <div class="boxInputs">
+                <input type="radio" name="alternativa" value="5" id="alt5">
+                <input type="text" class="textAlternativa" placeholder="Alternativa 5">
+            </div>
+
+            <button class="subjects-button" type="submit">Cadastrar pergunta</button>
         </form>
     </main>
 
