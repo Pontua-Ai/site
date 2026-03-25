@@ -8,6 +8,9 @@ function irParaConteudos(nome_materia) {
 }
 
 export async function carregarConteudo() {
+    const titleElement = document.getElementById("titleMateria");
+    if (!titleElement) return;
+
     if (!nome_materia) {
         alert("Matéria não especificada");
         return
@@ -45,7 +48,7 @@ export async function carregarConteudo() {
 
     data.forEach(conteudo => {
         const div = document.createElement("div");
-        div.innerHTML = `<button class="subjects-button">${conteudo.nome_conteudo}</button>`;
+        div.innerHTML = `<button class="subjects-button" onclick="window.location.href='perguntas.html?conteudo=${conteudo.id_conteudo}'">${conteudo.nome_conteudo}</button>`;
         container.appendChild(div);
     })
 }

@@ -2,6 +2,7 @@ import { signup, loginUsuario } from "./auth.js";
 import supabaseClient from "./supabase.js";
 import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
+import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -61,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.subjects-button').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!materiaMap[btn.id]) return;
             const nomeMateria = materiaMap[btn.id] || btn.id;
             window.location.href = `conteudo.html?nome_conteudo=${encodeURIComponent(nomeMateria)}`;
         });
@@ -98,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                const { data: perguntaCriada } = await supabaseClient
+                const { data: perguntaCriada, error: erroPergunta } = await supabaseClient
                     .from("perguntas")
                     .insert([
                         {
@@ -109,15 +111,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     ])
                     .select();
 
+                console.log("perguntaCriada:", perguntaCriada, "erro:", erroPergunta);
+
                 if (!perguntaCriada || perguntaCriada.length === 0) {
-                    alert("Erro ao criar pergunta" + (result?.error || "Erro desconhecido"));
+                    alert("Erro ao criar pergunta" + (erroPergunta?.message || "Erro desconhecido"));
                     return;
                 }
 
-                const idPergunta = perguntaCriada[0].id;
+                const idPergunta = perguntaCriada[0].id_pergunta || perguntaCriada[0].id;
+                console.log("ID da pergunta criada:", idPergunta);
 
                 for (let i = 0; i < alternativasValores.length; i++) {
-                    await supabaseClient
+                    const { data, error } = await supabaseClient
                         .from("alternativa")
                         .insert([
                             {
@@ -126,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 correta: (i + 1).toString() === correta
                             }
                         ]);
+                    console.log("Alternativa inserida:", alternativasValores[i], "Erro:", error);
                 }
 
                 alert("Pergunta cadastrada");
