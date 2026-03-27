@@ -11,16 +11,82 @@ main{
     top: 50%;
     left: 50%;
     transform: translate(-50%);
-    background-color: var(--gray);
+    background-color: var(--background);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 50px;
     padding: 40px;
-    max-height: 1200px;
 }
 .collum1, .collum2 {
     gap: 50px;
     width: 80%;
+}
+
+.acoes{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titleAcoes, .titleObjetivos{
+    font-size: 40px;
+    text-align: center;
+}
+
+.buttonAcoes{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}
+
+.acoes .subjects-button{
+    height: 70px;
+    width: 400px;
+    font-size: 25px;
+}
+
+.textObjetivos{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.objetivosImg{
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+}
+
+.boxObjetivos{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+}
+
+.imgObjetivos{
+    width: 30%;
+}
+
+.footer{
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.contatoTexto{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
