@@ -12,7 +12,6 @@ const conteudoSelecionado = urlParams.get('conteudo'); //ve a materia e o coteud
 const materiaSelect = document.getElementById("materia");
 
 if (materiaSelect) {
-    carregarMaterias();//segue a function carregarMaterias
     materiaSelect.addEventListener("change", carregarConteudos);
 }
 
