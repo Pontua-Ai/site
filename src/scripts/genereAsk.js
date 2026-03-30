@@ -19,9 +19,6 @@ export async function carregarMaterias() {
 
 if(document.getElementById("materia")){
     carregarMaterias();
-};
-
-if(document.getElementById("materia")){
     document.getElementById("materia").addEventListener("change", carregarConteudos);
 };
 
