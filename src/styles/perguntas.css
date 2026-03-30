@@ -1,0 +1,36 @@
+.folha {
+    max-width: 800px;
+    border-radius: 20px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f1f1f1;
+}
+#perguntaTexto {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+.alternativa {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.alternativa:hover {
+    border-color: var(--primary-color); 
+}
+
+.alternativa input {
+    display: none; 
+}
+
+.alternativa input:checked + label {
+    color: var(--primary-color); 
+    font-weight: bold; 
+}

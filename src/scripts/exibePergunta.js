@@ -56,6 +56,11 @@ function criarAlternativa(alt) {
     radio.dataset.correta = alt.correta;
     const label = document.createElement("label");
     label.innerText = " " + alt.nome_alternativa;
+    div.classList.add("alternativa");   
+
+    div.onclick = () => {          // Permite clicar em qualquer parte da alternativa para selecioná-la
+        radio.checked = true;  
+    };
     div.append(radio, label);
     return div;
 }
@@ -92,6 +97,7 @@ export async function exibirPergunta() {
     });
     const btnResponder = document.createElement("button");
     btnResponder.textContent = "Responder";
+    btnResponder.classList.add("subjects-button-medium");
     btnResponder.onclick = verificarResposta;
     container.appendChild(btnResponder);
 }
