@@ -11,6 +11,7 @@ window.corrigir = async function () {
   
   const botao = document.querySelector('button[onclick="corrigir()"]');
   const texto = document.getElementById("texto").value;
+  const titulo = document.getElementById("title").value;
 
   if (!texto.trim()) {
     alert("Por favor, escreva uma redação primeiro!");
@@ -21,6 +22,7 @@ window.corrigir = async function () {
   botao.disabled = true;
   botao.textContent = "Carregando...";
   console.log("[DEBUG] Iniciando correção da redação...");
+  console.log("[DEBUG] Titulo capturado:", titulo);
   console.log("[DEBUG] Texto capturado, tamanho:", texto.length, "caracteres");
 
   const prompt = `
@@ -35,6 +37,8 @@ Retorne em JSON no formato:
   "C5": { "nota": number, "motivo": string },
   "nota_final": number,
 }
+Titulo:
+${titulo}
 
 Texto:
 ${texto}
@@ -42,18 +46,33 @@ ${texto}
 
   console.log("[DEBUG] Enviando requisição para a API Gemini...");
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json"
+  async function fazerRequisicao(retentativas = 3) {
+    for (let i = 0; i < retentativas; i++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json"
+          }
+        });
+        return response;
+      } catch (error) {
+        if (i < retentativas - 1) {
+          const tempo = Math.pow(2, i) * 1000;
+          await new Promise(r => setTimeout(r, tempo));
+        } else {
+          throw error;
+        }
       }
-    });
+    }
+  }
+
+  try {
+    const response = await fazerRequisicao();
     console.log("[DEBUG] Resposta recebida da API!");
 
     const data = JSON.parse(response.text);
-    console.log("[DEBUG] Dados processados:", data);
 
     console.log("[DEBUG] Exibindo resultado na tela...");
     document.getElementById("resultado").textContent =
@@ -80,7 +99,6 @@ Motivo: ${data.C5.motivo}
 
 Nota Final: ${data.nota_final}`;
   } catch (error) {
-    console.error("[DEBUG] Erro na API:", error.message);
     document.getElementById("resultado").textContent = "Erro ao corrigir redação. Tente novamente mais tarde.";
   }
 
