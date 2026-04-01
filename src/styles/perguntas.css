@@ -1,15 +1,16 @@
-.folha {
-    max-width: 80%;
+.folha { 
+    width: 75%;
     border-radius: 20px;
     margin: 0 auto;
     padding: 20px;
     background-color: #f1f1f1;
+    word-spacing: 5px;
 }
 #perguntaTexto {
     font-size: 22px;
-    font-weight: bold;
     margin-bottom: 20px;
     line-height: 1.4;
+    margin-bottom: 50px;
 }
 .alternativa {
     display: block;
@@ -20,6 +21,7 @@
     background-color: #f9f9f9;
     cursor: pointer;
     transition: 0.2s;
+    font-size: 18px;
 }
 
 .alternativa:hover {
