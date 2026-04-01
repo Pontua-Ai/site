@@ -1,5 +1,5 @@
 .folha {
-    max-width: 800px;
+    max-width: 80%;
     border-radius: 20px;
     margin: 0 auto;
     padding: 20px;
@@ -32,5 +32,5 @@
 
 .alternativa input:checked + label {
     color: var(--primary-color); 
-    font-weight: bold; 
+    
 }
