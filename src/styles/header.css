@@ -8,7 +8,7 @@ body{
 }
 
 header{
-    width: 60%;
+    width: 80%;
     background-color: var(--header);
     margin: 30px;
     border-radius: 20px;
