@@ -3,20 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width='device-width', initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redação</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/redacao.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <link rel="icon" href="img/cabeça.png">
+    <link rel="icon" href="img/cabeca.png">
 </head>
 
 <body>
     <header>
         <nav>
             <ul>
-                <li> <img class="imagemHeader" src="img/cabeça.png" alt="Imagem do icon da logo do site"></li>
+                <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="materias.html">Materias</a></li>
                 <li><a href="conteudo.html">Conteudos</a></li>
                 <li><a href="redacao.html" style="color: var(--primary-color); font-weight: bold;">Redação</a></li>
@@ -40,15 +40,19 @@
         <div class="redacao">
             <div class="titulo">
                 <h4>Titulo</h4>
-                <input type="text" class="tituloInput" placeholder="Escreva seu titulo">
+                <input id="title" type="text" class="tituloInput" placeholder="Escreva seu titulo">
             </div>
             <div class="texto">
-                <textarea type="text" class="textoInput" placeholder="Escreva sua redação aqui"></textarea>
+                <textarea id="texto" type="text" class="textoInput" placeholder="Escreva sua redação aqui"></textarea>
             </div>
         </div>
 
-        <button class="subjects-button" style="margin-left: auto; display: block; margin-bottom: 30px;">Avaliar</button>
+        <button onclick="corrigir()" class="subjects-button" style="margin-left: auto; display: block; margin-bottom: 30px;">Avaliar</button>
+
+        <pre id="resultado"></pre>
     </main>
+
+    <script type="module" src="src/scripts/redacao.js"></script>
 </body>
 
 </html>

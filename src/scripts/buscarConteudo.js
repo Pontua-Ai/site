@@ -13,14 +13,14 @@ export async function carregarConteudo() {
 
     if (!nome_materia) {
         alert("Matéria não especificada");
-        return
+        return;
     }
 
     const { data: materia } = await supabaseClient
         .from("materia")
         .select("id_materia")
         .ilike("nome_materia", nome_materia)
-        .single()
+        .single();
 
     if (!materia) {
         document.getElementById("titleMateria").innerHTML = "Matéria não encontrada";
@@ -32,7 +32,7 @@ export async function carregarConteudo() {
     const { data, error } = await supabaseClient
         .from("conteudo")
         .select("*")
-        .eq("id_materia", materia.id_materia)
+        .eq("id_materia", materia.id_materia);
 
     if (error) {
         alert("Erro ao buscar: " + error.message);
@@ -50,7 +50,7 @@ export async function carregarConteudo() {
         const div = document.createElement("div");
         div.innerHTML = `<button class="subjects-button" onclick="window.location.href='perguntas.html?conteudo=${conteudo.id_conteudo}'">${conteudo.nome_conteudo}</button>`;
         container.appendChild(div);
-    })
+    });
 }
 
 carregarConteudo();

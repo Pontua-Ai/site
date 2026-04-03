@@ -7,12 +7,11 @@ let pontos = 0;
 
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
-const conteudoSelecionado = urlParams.get('conteudo');//ve a materia e o coteudo pela url
+const conteudoSelecionado = urlParams.get('conteudo'); //ve a materia e o coteudo pela url
 
 const materiaSelect = document.getElementById("materia");
 
 if (materiaSelect) {
-    carregarMaterias();//segue a function carregarMaterias
     materiaSelect.addEventListener("change", carregarConteudos);
 }
 
@@ -28,7 +27,7 @@ export async function carregarPerguntas() {
         .from("perguntas")
         .select("*");
     if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
-    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);//como se fosse SELECT * FROM perguntas WHERE id_materia = 1
+    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado); //como se fosse SELECT * FROM perguntas WHERE id_materia = 1
     const { data, error } = await query;
     if (error) {
         console.error("Erro:", error);
@@ -41,7 +40,7 @@ export async function carregarPerguntas() {
         const container = document.getElementById("perguntaTexto");
         if (container) container.innerText = "Nenhuma pergunta encontrada para esta matéria/conteúdo";
         return;
-    }
+    };
     
     exibirPergunta();
 }
@@ -56,6 +55,11 @@ function criarAlternativa(alt) {
     radio.dataset.correta = alt.correta;
     const label = document.createElement("label");
     label.innerText = " " + alt.nome_alternativa;
+    div.classList.add("alternativa");   
+
+    div.onclick = () => {          // Permite clicar em qualquer parte da alternativa para selecioná-la
+        radio.checked = true;  
+    };
     div.append(radio, label);
     return div;
 }
@@ -92,6 +96,7 @@ export async function exibirPergunta() {
     });
     const btnResponder = document.createElement("button");
     btnResponder.textContent = "Responder";
+    btnResponder.classList.add("subjects-button-medium");
     btnResponder.onclick = verificarResposta;
     container.appendChild(btnResponder);
 }
