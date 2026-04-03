@@ -5,7 +5,7 @@ export async function carregarMaterias() {
         .from("materia")
         .select("id_materia, nome_materia");
     if (error) {
-        console.error("Erro:", error)
+        console.error("Erro:", error);
         return;
     }
     const select = document.getElementById("materia");
@@ -13,16 +13,14 @@ export async function carregarMaterias() {
         const option = document.createElement("option");
         option.value = materia.id_materia;
         option.textContent = materia.nome_materia;
-        select.appendChild(option)
+        select.appendChild(option);
     });
-}
-if(document.getElementById("materia")){
-    carregarMaterias();
-}
+};
 
 if(document.getElementById("materia")){
-    document.getElementById("materia").addEventListener("change", carregarConteudos)
-}
+    carregarMaterias();
+    document.getElementById("materia").addEventListener("change", carregarConteudos);
+};
 
 export async function carregarConteudos() {
     const idMateria = document.getElementById("materia").value;
@@ -31,7 +29,7 @@ export async function carregarConteudos() {
     const { data, error } = await supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria)
+        .eq("id_materia", idMateria);
     if (error) {
         console.error("Erro:", error);
         return;
