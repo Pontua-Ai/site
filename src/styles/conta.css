@@ -43,7 +43,7 @@ main{
 
 .headerConta .tipo{
     background-color: var(--header);
-    color: var(--text-secundary);
+    color: var(--primary-color);
     border-radius: 20px;
     font-size: 14px;
     padding: 4px 12px;
