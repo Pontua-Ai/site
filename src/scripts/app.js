@@ -18,6 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await signup(name, email, password);
 
             if (result && result.success) {
+                const { data: novoUsuario } = await supabaseClient
+                    .from("users")
+                    .select("*")
+                    .eq("email", email)
+                    .single();
+                if (novoUsuario) {
+                    localStorage.setItem("userLogado", JSON.stringify(novoUsuario));
+                }
                 alert("Cadastro realizado com sucesso!");
                 window.location.href = "inicio.html";
             } else {
@@ -38,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await loginUsuario(loginInput.value, passwordInput.value);
 
             if (result && result.success) {
+                localStorage.setItem("userLogado", JSON.stringify(result.user));
                 window.location.href = "sobre.html";
             } else {
                 alert("Erro ao realizar login: " + (result?.error || "Erro desconhecido"));
