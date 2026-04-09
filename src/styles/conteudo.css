@@ -4,37 +4,20 @@
 
 .subjects-container{
     width: 80%;
-    margin-top: 40px;
-}
-
-.card{
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-}
-
-.card h1{
-    color: var(--primary-color);
-    margin-bottom: 60px;
-}
-
-
-.conteudos{
-    display: flex;
-    width:100%;
-    height: auto;
+    margin: 40px auto;
 }
 
 #conteudos{
     display: flex;
-    gap: 30px;
+    gap: 15px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .subjects-button{
-    width: 200px;
+    flex: 0 1 calc(25% - 12px);
     height: 60px;
     background-color: var(--primary-color);
     color: var(--text-secundary);
