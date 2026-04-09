@@ -11,10 +11,7 @@ export async function carregarConteudo() {
     const titleElement = document.getElementById("titleMateria");
     if (!titleElement) return;
 
-    if (!nome_materia) {
-        alert("Matéria não especificada");
-        return;
-    }
+    
 
     const { data: materia } = await supabaseClient
         .from("materia")
@@ -22,17 +19,40 @@ export async function carregarConteudo() {
         .ilike("nome_materia", nome_materia)
         .single();
 
-    if (!materia) {
-        document.getElementById("titleMateria").innerHTML = "Matéria não encontrada";
-        return;
+    let data, error;
+
+    if (!nome_materia || !materia) {
+        document.getElementById("titleMateria").innerText = "Todos os Conteúdos";
+        
+        const { data: todasMaterias } = await supabaseClient
+            .from("materia")
+            .select("id_materia");
+        
+        const idsMaterias = todasMaterias.map(m => m.id_materia);
+        
+        if (idsMaterias.length === 0) {
+            container.innerHTML = "<p>Nenhum conteúdo encontrado</p>";
+            return;
+        }
+
+        const result = await supabaseClient
+            .from("conteudo")
+            .select("*")
+            .in("id_materia", idsMaterias);
+        
+        data = result.data;
+        error = result.error;
     } else {
         document.getElementById("titleMateria").innerText = nome_materia;
+        
+        const result = await supabaseClient
+            .from("conteudo")
+            .select("*")
+            .eq("id_materia", materia.id_materia);
+        
+        data = result.data;
+        error = result.error;
     }
-
-    const { data, error } = await supabaseClient
-        .from("conteudo")
-        .select("*")
-        .eq("id_materia", materia.id_materia);
 
     if (error) {
         alert("Erro ao buscar: " + error.message);

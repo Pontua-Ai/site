@@ -27,14 +27,14 @@
 
 #conteudos{
     display: flex;
-    gap: 136.5px;
+    gap: 30px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .subjects-button{
-    width: 280px;
+    width: 200px;
     height: 60px;
     background-color: var(--primary-color);
     color: var(--text-secundary);
