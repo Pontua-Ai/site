@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result && result.success) {
                 localStorage.setItem("userLogado", JSON.stringify(result.user));
-                window.location.href = "sobre.html";
+                window.location.href = "materias.html";
             } else {
                 alert("Erro ao realizar login: " + (result?.error || "Erro desconhecido"));
             }
