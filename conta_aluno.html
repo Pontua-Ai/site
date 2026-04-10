@@ -28,9 +28,13 @@
     </header>
 
     <main>
+        <input type="file" id="inputFotoPerfil" accept="image/*" style="display: none;">
         <div class="headerConta">
-            <div class="img">
-                <img src="./img/IMG_20230906_203143_904.jpg" alt="Imagem da conta do usuário">
+            <div class="img" onclick="document.getElementById('inputFotoPerfil').click()">
+                <img id="imgPerfil" src="img/avatar-padrao.png" alt="Imagem da conta do usuário">
+                <div class="overlayEdit">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
             </div>
             <div class="info">
                 <p class="nameUser">Nome do Usuário <span class="tipo">Tipo de conta (aluno/professor)</span><span
@@ -112,6 +116,65 @@
         </div>
 
     </main>
+    <script type="module">
+        import supabaseClient from "./src/scripts/supabase.js";
+
+        const inputFoto = document.getElementById("inputFotoPerfil");
+        const imgPerfil = document.getElementById("imgPerfil");
+
+        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+        if (userLogado && userLogado.foto_url) {
+            imgPerfil.src = userLogado.foto_url;
+        }
+
+        async function uploadFoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+            if (!userLogado) {
+                alert("Usuário não está logado");
+                return;
+            }
+
+            const extensao = file.name.split('.').pop();
+            const nomeArquivo = `perfil_${userLogado.id_usuario}_${Date.now()}.${extensao}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from("fotos-perfil")
+                .upload(nomeArquivo, file);
+
+            if (error) {
+                console.error("Erro ao fazer upload:", error);
+                alert("Erro ao fazer upload da imagem");
+                return;
+            }
+
+            const { data: urlData } = supabaseClient.storage
+                .from("fotos-perfil")
+                .getPublicUrl(nomeArquivo);
+
+            const fotoUrl = urlData.publicUrl;
+
+            const { error: errorUpdate } = await supabaseClient
+                .from("users")
+                .update({ foto_url: fotoUrl })
+                .eq("id_usuario", userLogado.id_usuario);
+
+            if (errorUpdate) {
+                console.error("Erro ao salvar URL:", errorUpdate);
+                alert("Erro ao salvar foto");
+                return;
+            }
+
+            imgPerfil.src = fotoUrl;
+            userLogado.foto_url = fotoUrl;
+            localStorage.setItem("userLogado", JSON.stringify(userLogado));
+            alert("Foto atualizada com sucesso!");
+        }
+
+        inputFoto.addEventListener("change", uploadFoto);
+    </script>
 </body>
 
 </html>
