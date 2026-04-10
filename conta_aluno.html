@@ -118,6 +118,7 @@
     </main>
     <script type="module">
         import supabaseClient from "./src/scripts/supabase.js";
+        import { toast } from "./src/scripts/utils.js";
 
         const inputFoto = document.getElementById("inputFotoPerfil");
         const imgPerfil = document.getElementById("imgPerfil");
@@ -133,7 +134,7 @@
 
             const userLogado = JSON.parse(localStorage.getItem("userLogado"));
             if (!userLogado) {
-                alert("Usuário não está logado");
+                toast("Usuário não está logado", "error");
                 return;
             }
 
@@ -146,7 +147,7 @@
 
             if (error) {
                 console.error("Erro ao fazer upload:", error);
-                alert("Erro ao fazer upload da imagem");
+                toast("Erro ao fazer upload da imagem", "error");
                 return;
             }
 
@@ -163,14 +164,14 @@
 
             if (errorUpdate) {
                 console.error("Erro ao salvar URL:", errorUpdate);
-                alert("Erro ao salvar foto");
+                toast("Erro ao salvar foto", "error");
                 return;
             }
 
             imgPerfil.src = fotoUrl;
             userLogado.foto_url = fotoUrl;
             localStorage.setItem("userLogado", JSON.stringify(userLogado));
-            alert("Foto atualizada com sucesso!");
+            toast("Foto atualizada com sucesso!", "success");
         }
 
         inputFoto.addEventListener("change", uploadFoto);

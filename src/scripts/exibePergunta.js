@@ -1,5 +1,6 @@
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import supabaseClient from "./supabase.js";
+import { toast } from "./utils.js";
 
 let perguntasCache = [];
 let indicePergunta = 0;
@@ -104,11 +105,11 @@ export async function exibirPergunta() {
 export function verificarResposta() {
     const selecionada = document.querySelector('input[name="alternativa"]:checked');
     if (!selecionada) {
-        alert("Selecione uma alternativa!");
+        toast("Selecione uma alternativa!", "error");
         return;
     }
     if (selecionada.dataset.correta == "true" || selecionada.dataset.correta === true) {
-        alert("Correto!");
+        toast("Correto!", "success");
         pontos++;
     }
     indicePergunta++;

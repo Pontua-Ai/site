@@ -1,4 +1,5 @@
 import supabaseClient from "./supabase.js";
+import { toast } from "./utils.js";
 
 let todosUsuarios = [];
 
@@ -9,7 +10,7 @@ async function carregarUsuarios() {
         .order("username", { ascending: true });
 
     if (error) {
-        alert("Erro ao carregar usuários: " + error.message);
+        toast("Erro ao carregar usuários: " + error.message, "error");
         return;
     }
 
@@ -85,11 +86,11 @@ async function alterarTipo(idUsuario, novoTipo) {
         .eq("id_usuario", idUsuario);
 
     if (error) {
-        alert("Erro ao atualizar tipo: " + error.message);
+        toast("Erro ao atualizar tipo: " + error.message, "error");
         return;
     }
 
-    alert("Tipo atualizado com sucesso!");
+    toast("Tipo atualizado com sucesso!", "success");
     carregarUsuarios();
 }
 

@@ -1,4 +1,5 @@
 import supabaseClient from "./supabase.js";
+import { toast } from "./utils.js";
 
 const params = new URLSearchParams(window.location.search);
 const nome_materia = decodeURIComponent(params.get("nome_conteudo"));
@@ -55,7 +56,7 @@ export async function carregarConteudo() {
     }
 
     if (error) {
-        alert("Erro ao buscar: " + error.message);
+        toast("Erro ao buscar: " + error.message, "error");
         return;
     }
 
