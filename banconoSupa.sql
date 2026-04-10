@@ -23,7 +23,7 @@ CREATE TABLE public.materia (
 );
 CREATE TABLE public.perguntas (
   id_pergunta integer NOT NULL DEFAULT nextval('perguntas_id_pergunta_seq'::regclass),
-  pergunta_texto character varying NOT NULL,
+  pergunta_texto text NOT NULL,
   id_conteudo integer,
   id_materia integer,
   CONSTRAINT perguntas_pkey PRIMARY KEY (id_pergunta),
@@ -51,6 +51,8 @@ CREATE TABLE public.users (
   username character varying NOT NULL UNIQUE,
   email character varying NOT NULL UNIQUE,
   senha character varying NOT NULL,
-  confirmPassword character varying,
+  tipo_conta character varying DEFAULT 'professor'::character varying,
+  foto_url text,
+  data_criacao timestamp without time zone DEFAULT now(),
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
 );
