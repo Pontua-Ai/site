@@ -3,6 +3,7 @@ import supabaseClient from "./supabase.js";
 import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
+import { toast } from "./utils.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,10 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (novoUsuario) {
                     localStorage.setItem("userLogado", JSON.stringify(novoUsuario));
                 }
-                alert("Cadastro realizado com sucesso!");
+                                toast("Cadastro realizado com sucesso!", "success");
                 window.location.href = "inicio.html";
             } else {
-                alert("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"));
+                toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
             }
         });
     }
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("userLogado", JSON.stringify(result.user));
                 window.location.href = "materias.html";
             } else {
-                alert("Erro ao realizar login: " + (result?.error || "Erro desconhecido"));
+                toast("Erro ao realizar login: " + (result?.error || "Erro desconhecido"), "error");
             }
         });
     }
@@ -86,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const pergunta = document.getElementById("pergunta").value;
 
             if (!idConteudo || !pergunta || !idMateria) {
-                alert("SELECIONA A PORRA DO CONTEUDO OU DA PERGUNTA KRL");
+                toast("Selecione o conteúdo e a pergunta!", "error");
                 return;
             }
 
@@ -99,12 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
             
             if (!correta) {
-                alert("Selecione a alternativa correta!");
+                toast("Selecione a alternativa correta!", "error");
                 return;
             }
 
             if (alternativasValores.some(a => a.trim() === "")) {
-                alert("Preencha todas as alternativas!");
+                toast("Preencha todas as alternativas!", "error");
                 return;
             }
 
@@ -123,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log("perguntaCriada:", perguntaCriada, "erro:", erroPergunta);
 
                 if (!perguntaCriada || perguntaCriada.length === 0) {
-                    alert("Erro ao criar pergunta" + (erroPergunta?.message || "Erro desconhecido"));
+                    toast("Erro ao criar pergunta: " + (erroPergunta?.message || "Erro desconhecido"), "error");
                     return;
                 }
 
@@ -143,10 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.log("Alternativa inserida:", alternativasValores[i], "Erro:", error);
                 }
 
-                alert("Pergunta cadastrada");
+                toast("Pergunta cadastrada com sucesso!", "success");
             } catch (erro) {
                 console.error(erro);
-                alert("Erro ao cadastrar pergunta");
+                toast("Erro ao cadastrar pergunta", "error");
             }
             document.getElementById("pergunta").value = "";
             document.getElementById("alt1").value = "";

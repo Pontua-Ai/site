@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "https://esm.run/@google/genai";
+import { toast } from "./utils.js";
 
 const ai = new GoogleGenAI({
   apiKey: "AIzaSyDYNrj-aPPtQFoCe6t2fKD0Q1wYJw3jpDw"
@@ -14,7 +15,7 @@ window.corrigir = async function () {
   const titulo = document.getElementById("title").value;
 
   if (!texto.trim()) {
-    alert("Por favor, escreva uma redação primeiro!");
+    toast("Por favor, escreva uma redação primeiro!", "error");
     return;
   }
 
