@@ -357,13 +357,14 @@ body.dark .sobre-pont .text p {
 footer {
     width: 100%;
     background: var(--secondary-color);
-    color: var(--text-secundary);
+    color: #ffffff;
     padding: 80px 0 30px;
     margin: 0;
 }
 
 body.dark footer {
     background: linear-gradient(135deg, #1e3a3a 0%, #2d5a5a 100%);
+    color: #ffffff;
 }
 
 .footer-content {
@@ -392,7 +393,7 @@ body.dark footer {
 .footer-section h4 {
     font-size: 18px;
     margin-bottom: 20px;
-    color: var(--text-secundary);
+    color: #ffffff;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -400,7 +401,7 @@ body.dark footer {
 .footer-section p,
 .footer-section a {
     font-size: 15px;
-    color: var(--text-secundary);
+    color: #ffffff;
     opacity: 0.85;
     text-decoration: none;
     display: block;
@@ -412,6 +413,12 @@ body.dark footer {
 .footer-section a:hover {
     color: #fff;
     transform: translateX(5px);
+}
+
+body.dark .footer-section h4,
+body.dark .footer-section p,
+body.dark .footer-section a {
+    color: #ffffff;
 }
 
 .redes-sociais {
