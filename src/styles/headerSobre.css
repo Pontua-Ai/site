@@ -420,11 +420,28 @@ footer {
     gap: 15px;
 }
 
+.redes-sociais a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
 .redes-sociais a img {
-    width: 36px;
-    height: 36px;
-    transition: transform 0.3s;
-    filter: brightness(0) invert(1);
+    width: 24px;
+    height: 24px;
+}
+
+.redes-sociais a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.redes-sociais a:hover img {
+    transform: scale(1.1);
 }
 
 .redes-sociais a:hover img {
