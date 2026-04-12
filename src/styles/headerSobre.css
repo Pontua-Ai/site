@@ -18,7 +18,7 @@ main {
 .header-nav {
     width: 100%;
     padding: 20px 0;
-    background: #0b93959a;
+    background: rgba(11, 147, 149, 0.95);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -120,12 +120,6 @@ main {
     max-width: 350px;
     border-radius: 30px;
     box-shadow: 0 20px 50px rgba(11, 147, 149, 0.25);
-    animation: float 4s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
 }
 
 .sobre-pont {
