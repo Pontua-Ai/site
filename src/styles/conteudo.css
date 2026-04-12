@@ -4,19 +4,31 @@
 
 .subjects-container{
     width: 80%;
-    margin: 40px auto;
+    max-width: 80%;
+    margin: 30px 0;
     background-color: var(--gray);
     padding: 20px;
-    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background-color: var(--gray);
+    padding: 15px;
+    border-radius: 15px;
 }
 
 #conteudos{
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
     width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .subjects-button{
@@ -25,6 +37,7 @@
     color: var(--text-secundary);
     text-align: center;
     border-radius: 20px;
+    width: 100%;
 }
 
 #titleMateria {
