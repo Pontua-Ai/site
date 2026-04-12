@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta Prof</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/header.css">
+    <link rel="stylesheet" href="src/styles/button.css">
+    <link rel="stylesheet" href="src/styles/conta.css">
+    <link rel="icon" href="img/cabeca.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
+                <li><a href="doc_prof.html">Doc</a></li>
+                <li><a href="conteudo_prof.html">Conteudos</a>
+                </li>
+                <li><a href="historico_prof.html">Histórico</a></li>
+                <li><a href="conta_prof.html" style="color: var(--primary-color); font-weight: bold;">Conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="headerConta">
+            <div class="img">
+                <img src="./img/IMG_20230906_203143_904.jpg" alt="Imagem da conta do usuário">
+            </div>
+            <div class="info">
+                <p class="nameUser">Nome do Usuário <span class="tipo">Tipo de conta (aluno/professor)</span><span
+                        class="editar"><i class="fa-solid fa-pen"></i> Editar Perfil</span></p>
+                <p class="data">Membro desde mês/ano</p>
+            </div>
+        </div>
+
+        <div class="mainConta">
+            <div class="cardInfos">
+                <div class="ativFeitas">
+                    <p class="valor">00</p>
+                    <p>Perguntas criadas</p>
+                </div>
+            </div>
+
+            <div class="cardInfos">
+                <div class="redaFeitas">
+                    <p class="valor">00</p>
+                    <p>Respostas dadas</p>
+                </div>
+            </div>
+
+            <div class="cardInfos">
+                <div class="mediaRedacao">
+                    <p class="valor">00</p>
+                    <p>Taxa de atividade</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footerConta">
+            <div class="historicoAtividadesRecentes">
+                <p class="title">Atividades Recentes</p>
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+
+                <div class="cardAtividades">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Nome da matéria - nome do conteúdo</p>
+                </div>
+            </div>
+
+            <div class="configuracoes">
+                <p class="title">Configurações</p>
+
+                <div class="cardConfi">
+                    <i class="fa-solid fa-lock"></i>
+                    <p>Alterar senha</p>
+                </div>
+
+                <div class="cardConfi">
+                    <i class="fa-regular fa-envelope"></i>
+                    <p>Alterar email</p>
+                </div>
+
+                <div class="cardConfi">
+                    <i class="fa-solid fa-moon"></i>
+                    <p>Modo escuro</p>
+                </div>
+
+                <div class="cardConfi">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <p>Excluir conta</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="src/scripts/contaProf.js"></script>
+</body>
+
+</html>

@@ -1,51 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre</title>
     <link rel="stylesheet" href="src/styles/global.css">
-    <link rel="stylesheet" href="src/styles/header.css">
-    <link rel="stylesheet" href="src/styles/sobre.css">
-    <link rel="icon" href="img/pontuaAi-icon.png">
+    <link rel="stylesheet" href="src/styles/headerSobre.css">
+    <link rel="stylesheet" href="src/styles/button.css">
+    <link rel="icon" href="img/cabeca.png">
 </head>
+
 <body>
-    <header>
+    <header class="header-nav">
         <nav>
             <ul>
-                <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
-                <li><a href="sobre.html" style="color: var(--primary-color); font-weight: bold;">Sobre</a></li>
-                <li><a href="materias.html">Materias</a></li>
-                <li><a href="conteudo.html">Conteudos</a></li>
-                <li><a href="redacao.html">Redação</a></li>
-                <li><a href="historico.html">Histórico</a></li>
-                <li><a href="conta.html">Conta</a></li>
+                <li><a href="inicio.html">Entrar</a></li>
+                <li><a href="cadastro.html">Cadastrar</a></li>
+                <li><a href="sobre.html" style="color: var(--primary-color);">Sobre</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        
-
-        <div class="collum1">
+        <section class="hero-section">
             <div class="text">
                 <h1>Sobre o PontuaAI</h1>
-                <p>A Pontua Ai vem como um site que vai ser sua companheira na hora dos estudos, avaliando sua evolução a cada dia, com métricas verdadeiras que te indicam o que precisa melhorar e como melhorar. A Pontua Ai tem um agente de IA em prontidão a todo momento para te ajudar na revisão de redações, com dicas de como melhorar e notas que seguem as normas e competencias do enem. Nós batizamos nosso agente de IA como PONT, ele vai ser seu amigo nessa longa jornada e te oferecer toda a assistencia necessária para você alcançar quaisquer que sejam seus sonhos, desde entrar em um vetsibular, até alcançar um emprego em algum orgão público</p>
+                <p>O PontuaAi é seu companheiro de estudos, avaliando sua evolução com métricas que indicam o que precisa melhorar e como melhorar. Nossa IA está sempre pronta para ajudar na revisão de redações, com dicas e notas seguindo as normas do ENEM.</p>
+                <p style="margin-top: 15px;">Chamamos nosso agente de IA de <strong>PONT</strong> — seu amigo nessa jornada para alcançar seus sonhos, seja passar no vestibular ou conseguir um emprego público.</p>
             </div>
             <div class="img">
-                <img class="imagemMain" src="img/logo-vertical.png" alt="Logo completa png para tema claro">
+                <img src="img/logo-vertical.png" alt="Logo PontuaAI">
             </div>
-        </div>
+        </section>
 
-        <div class="collum2">
+        <section class="sobre-pont">
             <div class="img">
-                <img src="" alt="">
+                <img src="img/pontuAi-icon-dark.png" alt="PONT - Agente IA">
             </div>
-            <div class="text linha2">
-                <h1>Sobre o PONT nosso agente IA</h1>
-                <p>O PONT é nosso agente de IA que avalia suas redações conforme o que você escreve, temos diversas maneiras de avaliação dentre ela</p>
+            <div class="text">
+                <h1>Sobre o PONT</h1>
+                <p>O PONT é nosso agente de IA que avalia suas redações conforme o que você escreve, seguindo as 5 competências do ENEM para dar feedback detalhado e sugestões de melhoria.</p>
             </div>
-        </div>
+        </section>
+
+        <section class="objetivos">
+            <h1 class="titleObjetivos">Nossos Objetivos</h1>
+            <div class="objetivosImg">
+                <div class="boxObjetivos">
+                    <img class="imgObjetivos" src="img/objetivos.webp" alt="Educação">
+                    <h3>Ampliar o acesso ao ensino de qualidade</h3>
+                </div>
+                <div class="boxObjetivos">
+                    <img class="imgObjetivos" src="img/objetivos.webp" alt="Suporte">
+                    <h3>Ajudar estudantes em sua jornada acadêmica</h3>
+                </div>
+                <div class="boxObjetivos">
+                    <img class="imgObjetivos" src="img/objetivos.webp" alt="Padronização">
+                    <h3>Uniformizar a qualidade do ensino</h3>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="img/logo-horizontal.png" alt="PontuaAI" class="logo-footer">
+                    <p>Sua jornada vai muito além do que você imagina.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <a href="inicio.html">Entrar</a>
+                    <a href="cadastro.html">Cadastrar</a>
+                    <a href="sobre.html">Sobre</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>contato@pontuaai.com.br</p>
+                    <p>São Paulo, SP</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Redes Sociais</h4>
+                    <div class="redes-sociais">
+                        <a href="#"><img src="img/facebook.webp" alt="Facebook"></a>
+                        <a href="https://www.instagram.com/pontua.ai"><img src="img/instagram.webp" alt="Instagram"></a>
+                        <a href="https://github.com/Pontua-Ai/site"><img src="img/github.png" alt="GitHub"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PontuaAI. Todos os direitos reservados.</p>
+            </div>
+        </footer>
     </main>
 </body>
+
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,66 +8,90 @@
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/button.css">
     <link rel="stylesheet" href="src/styles/materias.css">
-    <link rel="icon" href="img/pontuaAi-icon.png">
+    <link rel="icon" href="img/cabeca.png">
 </head>
 <body>
     <header>
         <nav>
             <ul>
-                <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
-                <li><a href="sobre.html">Sobre</a></li>
+                <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="materias.html" style="color: var(--primary-color); font-weight: bold;">Materias</a></li>
                 <li><a href="conteudo.html">Conteudos</a></li>
                 <li><a href="redacao.html">Redação</a></li>
                 <li><a href="historico.html">Histórico</a></li>
-                <li><a href="conta.html">Conta</a></li>
+                <li><a href="conta_aluno.html">Conta</a></li>
             </ul>
         </nav>
     </header>
     
     <div class="subjects-container">
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Português</button>
+            <img src="img/matematica.png" alt="Coala Albert Einstein matemático" title="Coala Albert Einstein matemático">
+            <button class="subjects-button" id="matematica">Matemática</button>
         </div>
         
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Matemática</button>
+            <img src="img/portugues.png" alt="Coala Luís de Camões português" title="Coala Luís de Camões português">
+            <button class="subjects-button" id="portugues">Português</button>
         </div>
 
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Física</button>
+            <img src="img/fisica.png" alt="Coala Isaac Newton físico" title="Coala Isaac Newton físico">
+            <button class="subjects-button" id="fisica">Física</button>
         </div>
 
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Química</button>
+            <img src="img/quimica.png" alt="Coala Marie Curie química" title="Coala Marie Curie química">
+            <button class="subjects-button" id="quimica">Química</button>
         </div>
     </div>
 
     <div class="subjects-container">
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Filosofia</button>
+            <img src="img/biologia.png" alt="Coala Charles Darwin biologo" title="Coala Charles Darwin biologo">
+            <button class="subjects-button" id="biologia">Biologia</button>
         </div>
         
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Sociologia</button>
+            <img src="img/historia.png" alt="Coala Franscico Adolfo de Varnhagen historiador" title="Coala Franscico Adolfo de Varnhagen historiador">
+            <button class="subjects-button" id="historia">História</button>
         </div>
 
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Inglês</button>
+            <img src="img/geografia.png" alt="Coala Alexander von Humboldt geografo" title="Coala Alexander von Humboldt geografo">
+            <button class="subjects-button" id="geografia">Geografia</button>
         </div>
 
         <div class="card">
-            <img src="img/WhatsApp_Image_2026-03-03_at_16.57.28__1_-removebg-preview.png" alt="">
-            <button class="subjects-button">Biologia</button>
+            <img src="img/ingles.png" alt="Coala Geoffrey Chaucer inglês" title="Coala Geoffrey Chaucer inglês">
+            <button class="subjects-button" id="ingles">Inglês</button>
+        </div>  
+    </div>
+
+    <div class="subjects-container">
+        <div class="card">
+            <img src="img/artes.png" alt="Coala Tarcila do Amaral artista" title="Coala Tarcila do Amaral artista">
+            <button class="subjects-button" id="artes">Artes</button>
+        </div>
+
+        <div class="card">
+            <img src="img/espanhol.png" alt="Coala Elio Antonio de nebrija espanhol" title="Coala Elio Antonio de nebrija espanhol">
+            <button class="subjects-button" id="espanhol">Espanhol</button>
+        </div>
+
+        <div class="card">
+            <img src="img/filosofia.png" alt="Coala Socrates filosofo" title="Coala Socrates filosofo">
+            <button class="subjects-button" id="filosofia">Filosofia</button>
+        </div>
+
+        <div class="card">
+            <img src="img/sociologia.png" alt="Coala Auguste Comte sociologo" title="Coala Auguste Comte sociologo">
+            <button class="subjects-button" id="sociologia">Sociologia</button>
         </div>
     </div>
+
+    <script type="module" src="src/scripts/buscarConteudo.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
 
 </body>
 </html>
