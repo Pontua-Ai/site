@@ -38,13 +38,6 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-body.dark .card,
-body.dark main > div,
-body.dark .subjects-container .card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-}
-
 .toast {
     position: fixed;
     bottom: 20px;
