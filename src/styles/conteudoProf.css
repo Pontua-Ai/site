@@ -1,5 +1,8 @@
 main {
     width: 80%;
+    background-color: var(--background);
+    padding: 20px;
+    border-radius: 20px;
 }
 
 /* div{
@@ -21,13 +24,36 @@ main {
 
 .selecionarMateria select,
 .selecionarConteudo select {
-    background-color: var(--header);
-    color: var(--primary-color);
-    border: none;
+    background-color: var(--input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     padding: 5px;
     width: 100%;
     font-size: 16px;
     border-radius: 10px;
+}
+
+#pergunta {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    font-size: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input);
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    transition: border-color 0.7s;
+}
+
+.textAlternativa {
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-primary);
+    transition: border-color 0.7s;
 }
 
 .title {

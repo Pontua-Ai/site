@@ -5,6 +5,9 @@ body{
     justify-content: center;
     flex-direction: column;
     font-family:'jenkins', sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 header{
@@ -46,4 +49,28 @@ header a{
 header a:hover{
     border-bottom: 1px solid var(--primary-color);
     color: var(--primary-color);
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--text-gray);
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--primary-color);
+    background-color: var(--gray);
+}
+
+body.dark .theme-toggle {
+    color: var(--text-primary);
+}
+
+body.dark .theme-toggle:hover {
+    background-color: #444;
 }

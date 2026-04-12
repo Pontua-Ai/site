@@ -5,6 +5,9 @@
 .subjects-container{
     width: 80%;
     margin: 40px auto;
+    background-color: var(--gray);
+    padding: 20px;
+    border-radius: 20px;
 }
 
 #conteudos{
@@ -17,10 +20,13 @@
 }
 
 .subjects-button{
-    flex: 0 1 calc(25% - 12px);
     height: 60px;
     background-color: var(--primary-color);
     color: var(--text-secundary);
     text-align: center;
     border-radius: 20px;
+}
+
+#titleMateria {
+    color: var(--text-primary);
 }

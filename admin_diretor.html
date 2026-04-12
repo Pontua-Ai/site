@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/admin.css">
     <link rel="icon" href="img/cabeca.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 <body>
     <header>
@@ -15,6 +16,7 @@
             <ul>
                 <li><img class="imagemHeader" src="img/cabeca-header.png" alt="Logo"></li>
                 <li><a href="admin_diretor.html" style="color: var(--primary-color); font-weight: bold;">Gerenciar Usuários</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema"><i class="fa-solid fa-moon"></i></button></li>
                 <li><a href="inicio.html">Sair</a></li>
             </ul>
         </nav>
@@ -49,5 +51,6 @@
     </main>
 
     <script type="module" src="src/scripts/adminDiretor.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
 </body>
 </html>

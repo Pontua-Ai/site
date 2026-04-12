@@ -4,9 +4,12 @@ import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
 import { toast } from "./utils.js";
+import { initTheme, toggleTheme } from "./theme.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    window.toggleTheme = toggleTheme;
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
         signupForm.addEventListener("submit", async (event) => {
