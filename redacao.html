@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width='device-width', initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redação</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/redacao.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <link rel="icon" href="img/pontuaAi-icon.png">
+    <link rel="icon" href="img/cabeca.png">
 </head>
 
 <body>
     <header>
         <nav>
             <ul>
-                <li> <img class="imagemHeader" src="img/pontuaAi-icon.png" alt="Imagem do icon da logo do site"></li>
-                <li><a href="sobre.html">Sobre</a></li>
+                <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="materias.html">Materias</a></li>
                 <li><a href="conteudo.html">Conteudos</a></li>
                 <li><a href="redacao.html" style="color: var(--primary-color); font-weight: bold;">Redação</a></li>
                 <li><a href="historico.html">Histórico</a></li>
-                <li><a href="conta.html">Conta</a></li>
+                <li><a href="conta_aluno.html">Conta</a></li>
             </ul>
         </nav>
     </header>
@@ -41,15 +40,24 @@
         <div class="redacao">
             <div class="titulo">
                 <h4>Titulo</h4>
-                <input type="text" class="tituloInput" placeholder="Escreva seu titulo">
+                <input id="title" type="text" class="tituloInput" placeholder="Escreva seu titulo">
             </div>
             <div class="texto">
-                <textarea type="text" class="textoInput" placeholder="Escreva sua redação aqui"></textarea>
+                <textarea id="texto" type="text" class="textoInput" placeholder="Escreva sua redação aqui"></textarea>
             </div>
         </div>
 
-        <button class="subjects-button" style="margin-left: auto; display: block; margin-bottom: 30px;">Avaliar</button>
+        <button onclick="corrigir()" class="subjects-button" style="margin-left: auto; display: block; margin-bottom: 30px;">Avaliar</button>
+
+        <div class="resultado-box">
+    <div class="resultado-header">
+        <span>Resultado da Correção</span>
+    </div>
+    <div id="resultado" class="resultado-conteudo"></div>
+</div>
     </main>
+
+    <script type="module" src="src/scripts/redacao.js"></script>
 </body>
 
 </html>

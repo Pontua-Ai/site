@@ -8,7 +8,7 @@ body{
 }
 
 header{
-    width: 60%;
+    width: 80%;
     background-color: var(--header);
     margin: 30px;
     border-radius: 20px;
@@ -22,18 +22,19 @@ header .imagemHeader{
     width: 70px;
 }
 
+
 header ul{
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
-    font-size: 20px;
+    font-size: 23px;
 }
 
 header nav{
-    width: 80%;
+    width: 100%;
 }
 
 header a{

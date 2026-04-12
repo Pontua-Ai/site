@@ -1,5 +1,5 @@
 main{
-    width: 60%;
+    width: 80%;
 }
 
 h1{
@@ -19,6 +19,7 @@ h1{
     border-radius: 5px;
     margin-bottom: 10px;
     padding: 5px;
+    font-size: 20px;
 }
 
 .textoInput{
@@ -29,5 +30,44 @@ h1{
     border-radius: 10px;
     padding: 5px;
     font-family:'jenkins', sans-serif;
+    font-size: 15px;
+    text-indent: 70px;
+}
+.resultado-box {
+    max-width: 1000px;
+    margin: 20px auto;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #eee;
 }
 
+.resultado-header {
+    padding: 12px 16px;
+    background: #f7f7f7;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.resultado-conteudo {
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-size: 14px;
+}
+#resultado {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.titulo-competencia {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 12px;
+    display: block;
+}

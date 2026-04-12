@@ -32,11 +32,11 @@ form{
     gap: 20px;
     padding: 40px;
     width: 500px;
-    height: 800px;
 }
 
 img{
     width: 350px;
+    margin-right: 50px;
     display: flex;
     align-items: center;
     justify-content: center;

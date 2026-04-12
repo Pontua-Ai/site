@@ -1,12 +1,12 @@
-main{
-    width: 60%;
+main {
+    width: 80%;
 }
 
 /* div{
     border: 1px solid blue;
 } */
 
-.escolher{
+.escolher {
     display: flex;
     align-items: center;
     gap: 40px;
@@ -14,11 +14,13 @@ main{
     margin-bottom: 20px;
 }
 
-.selecionarConteudo, .selecionarMateria{
+.selecionarConteudo,
+.selecionarMateria {
     width: 15%;
 }
 
-.selecionarMateria select, .selecionarConteudo select{
+.selecionarMateria select,
+.selecionarConteudo select {
     background-color: var(--header);
     color: var(--primary-color);
     border: none;
@@ -28,26 +30,52 @@ main{
     border-radius: 10px;
 }
 
-.title{
+.title {
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 20px;
     color: var(--primary-color);
 }
 
-#pergunta{
+#pergunta {
     width: 100%;
     height: 150px;
     padding: 10px;
     font-size: 12px;
     border-radius: 10px;
-    border: none;
-    background-color: var(--gray);
-    color: var(--primary-color);
+    border: 0.3px solid transparent;
+    background-color: var(--input);
     margin-bottom: 20px;
+    transition: border-color 0.7s;
 }
 
-.perguntas{
+#pergunta:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0.3px solid var(--primary-color);
+}
+
+#formPergunta {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+
+input:not(:placeholder-shown) {
+    background-color: var(--input);
+}
+
+.textAlternativa {
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-bottom: 1px solid var(--text-gray);
+    transition: border-color 0.7s;
+}
+
+.textAlternativa:focus {
+    background-color: transparent;
+    outline: none;
+    box-shadow: none;
+    border-bottom: 1px solid var(--primary-color);
 }
