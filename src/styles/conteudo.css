@@ -14,12 +14,16 @@
 .card{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 20px;
     background-color: var(--gray);
     padding: 15px;
     border-radius: 15px;
+}
+
+#titleMateria{
+    text-align: center;
 }
 
 #conteudos{
@@ -29,6 +33,11 @@
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+}
+
+.subjects-container {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .subjects-button{

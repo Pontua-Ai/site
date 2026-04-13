@@ -1,11 +1,11 @@
 .subjects-container{
-    width: 80%;
+    width: 83%;
     display: flex;
     justify-content: space-between;
-    margin: 30px;
+    margin: 30px 0;
     background-color: var(--background);
     padding: 20px;
-    border-radius: 20px;
+    box-sizing: border-box;
 }
 
 img{
