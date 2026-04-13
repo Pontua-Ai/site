@@ -21,7 +21,7 @@ const materiaIds = Object.keys(materiaMap);
 document.querySelectorAll('.subjects-button.checkbox').forEach(btn => {
     btn.addEventListener('click', async () => {
         if (btn.id === 'provaGeral') {
-            toast("Prova Geral em breve!", "error");
+            window.location.href = `perguntas.html?provaGeral=true`;
             return;
         }
 
