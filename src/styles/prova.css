@@ -1,0 +1,36 @@
+div{
+    border: 1px solid white;
+}
+
+main{
+    width: 80%;
+}
+
+.subjects-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.subjects-button{
+    width: 300px;
+    height: 70px;
+}
+
+.prova-geral-container{
+    display: flex;
+    justify-content: center;
+}
+
+.prova-geral{
+    width: 400px;
+}
+
+body.dark .subjects-button.checkbox{
+    color: #000;
+}
+
+body.dark .subjects-button.checkbox.selected{
+    color: #000;
+}
