@@ -1,3 +1,31 @@
+.search-container{
+    width: 83%;
+    margin: 30px auto 0;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input{
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: 2px solid var(--primary-color);
+    border-radius: 30px;
+    background-color: var(--background);
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus{
+    box-shadow: 0 0 8px var(--primary-color);
+}
+
+.search-input::placeholder{
+    color: var(--text-secundary);
+}
+
 .subjects-container{
     width: 83%;
     display: flex;
@@ -36,4 +64,61 @@ img{
 .subjects-container button a{
     color: var(--text-secundary);
     text-decoration: none;
+}
+
+.subjects-button.checkbox{
+    position: relative;
+}
+
+.subjects-button.checkbox.selected{
+    background-color: var(--primary-color);
+}
+
+.subjects-button.checkbox.selected::after{
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.prova-container{
+    width: 83%;
+    margin: 30px auto;
+    display: flex;
+    justify-content: center;
+}
+
+.card-prova{
+    background-color: var(--gray);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.config-prova{
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.config-prova label{
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.config-prova input{
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+#gerarProva{
+    margin-top: 20px;
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
 }
