@@ -6,10 +6,10 @@ import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePer
 import { toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 
+initTheme();
+window.toggleTheme = toggleTheme;
 
 document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    window.toggleTheme = toggleTheme;
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
         signupForm.addEventListener("submit", async (event) => {
