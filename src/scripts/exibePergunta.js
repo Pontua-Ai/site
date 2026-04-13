@@ -47,7 +47,7 @@ export async function carregarPerguntas() {
             console.error("Erro:", error);
             return;
         }
-        perguntas = shuffleArray(data ?? []).slice(0, 90);
+        perguntas = shuffleArray(data ?? []).slice(0, 12);
     } else if (materiaSelecionada && !conteudoSelecionado) {
         query = query.eq("id_materia", materiaSelecionada);
         const { data, error } = await query;
@@ -55,7 +55,7 @@ export async function carregarPerguntas() {
             console.error("Erro:", error);
             return;
         }
-        perguntas = shuffleArray(data ?? []).slice(0, 20);
+        perguntas = shuffleArray(data ?? []).slice(0, 10);
     } else {
         if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
         if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);
