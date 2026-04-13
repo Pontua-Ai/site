@@ -4,7 +4,6 @@
     margin: 0 auto;
     padding: 20px;
     background-color: var(--gray);
-    word-spacing: 3px;
     color: var(--text-primary);
 }
 #perguntaTexto {
@@ -36,5 +35,58 @@
 
 .alternativa input:checked + label {
     color: var(--primary-color); 
-    
+     
+}
+
+.resultado-final {
+    text-align: center;
+    padding: 20px;
+}
+
+.resultado-final h2 {
+    color: var(--primary-color);
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.pontos-finais {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.percentual {
+    font-size: 32px;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.erradas-detalhes {
+    text-align: left;
+    margin-top: 30px;
+}
+
+.erradas-detalhes h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.questao-errada {
+    background-color: var(--background);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--error-color);
+}
+
+.enunciado {
+    font-size: 16px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.resposta-errada {
+    font-size: 14px;
+    color: var(--error-color);
 }

@@ -5,6 +5,8 @@ import { toast } from "./utils.js";
 let perguntasCache = [];
 let indicePergunta = 0;
 let pontos = 0;
+let totalRespostas = 0;
+let respostasErradas = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
@@ -82,9 +84,7 @@ function criarAlternativa(alt) {
 
 export async function exibirPergunta() {
     if (indicePergunta >= perguntasCache.length) {
-        document.getElementById("perguntaTexto").innerText = "Fim do questionário!";
-        document.getElementById("alternativas").innerHTML = "";
-        document.getElementById("pontos").innerText = "Pontos: " + pontos;
+        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}`;
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
@@ -123,10 +123,24 @@ export function verificarResposta() {
         toast("Selecione uma alternativa!", "error");
         return;
     }
-    if (selecionada.dataset.correta == "true" || selecionada.dataset.correta === true) {
-        toast("Correto!", "success");
+    
+    const perguntaAtual = perguntasCache[indicePergunta];
+    const isCorreta = selecionada.dataset.correta == "true" || selecionada.dataset.correta === true;
+    
+    totalRespostas++;
+    
+    if (isCorreta) {
         pontos++;
+    } else {
+        const label = selecionada.nextElementSibling;
+        const respostaTexto = label ? label.innerText.trim() : "Resposta selecionada";
+        
+        respostasErradas.push({
+            pergunta: perguntaAtual.pergunta_texto,
+            respostaSelecionada: respostaTexto
+        });
     }
+    
     indicePergunta++;
     exibirPergunta();
 }

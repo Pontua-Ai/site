@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perguntas</title>
+    <title>Resultado da Prova</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <link  rel="stylesheet" href="src/styles/perguntas.css">
+    <link rel="stylesheet" href="src/styles/perguntas.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
-
 <body>
     <header>
         <nav>
             <ul>
                 <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="materias.html">Materias</a></li>
-                <li><a href="conteudo.html" style="color: var(--primary-color); font-weight: bold;">Conteudos</a></li>
+                <li><a href="conteudo.html">Conteudos</a></li>
                 <li><a href="prova.html">Prova</a></li>
                 <li><a href="redacao.html">Redação</a></li>
                 <li><a href="historico.html">Histórico</a></li>
@@ -30,14 +28,11 @@
 
     <main>
         <div class="folha">
-            <p id="perguntaTexto"></p>
-            <div id="alternativas"></div>
-            <div id="pontos"></div>
+            <div id="resultadoContainer"></div>
         </div>
-
-        <script type="module" src="src/scripts/app.js"></script>
-        <script type="module" src="src/scripts/exibePergunta.js"></script>
     </main>
-</body>
 
+    <script type="module" src="src/scripts/app.js"></script>
+    <script type="module" src="src/scripts/resultadoProva.js"></script>
+</body>
 </html>
