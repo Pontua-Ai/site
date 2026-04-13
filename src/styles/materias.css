@@ -86,6 +86,15 @@ img{
     justify-content: center;
 }
 
+.prova-geral-container{
+    justify-content: center;
+}
+
+.prova-geral{
+    width: 500px;
+    max-width: 100%;
+}
+
 .card-prova{
     background-color: var(--gray);
     padding: 30px;
