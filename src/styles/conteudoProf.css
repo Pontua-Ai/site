@@ -5,10 +5,6 @@ main {
     border-radius: 20px;
 }
 
-/* div{
-    border: 1px solid blue;
-} */
-
 .escolher {
     display: flex;
     align-items: center;

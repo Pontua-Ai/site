@@ -35,6 +35,7 @@ h1{
     text-indent: 70px;
     color: var(--text-primary);
 }
+
 .resultado-box {
     width: 100%;
     margin: 20px auto;
@@ -62,6 +63,7 @@ h1{
     line-height: 1.5;
     font-size: 14px;
 }
+
 #resultado {
     white-space: pre-wrap;
     line-height: 1.6;
