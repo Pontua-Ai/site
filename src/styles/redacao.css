@@ -20,6 +20,7 @@ h1{
     margin-bottom: 10px;
     padding: 5px;
     font-size: 20px;
+    color: var(--text-primary);
 }
 
 .textoInput{
@@ -32,6 +33,7 @@ h1{
     font-family:'jenkins', sans-serif;
     font-size: 15px;
     text-indent: 70px;
+    color: var(--text-primary);
 }
 .resultado-box {
     width: 100%;
