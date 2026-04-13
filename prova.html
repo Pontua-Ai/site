@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <link rel="stylesheet" href="src/styles/materias.css">
+    <link rel="stylesheet" href="src/styles/prova.css">
+    <link rel="stylesheet" href="src/styles/redacao.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
@@ -26,45 +27,51 @@
         </nav>
     </header>
 
-    <div class="instrucao-prova">
-        <h1>Instruções</h1>
-        <p>Selecione a matéria que você deseja ter a prova, ou selecione prova geral para uma prova com todas as matérias
-        Todas as matérias têm 20 questões de diversos conteúdos e a prova geral tem 90 questões com todas as matérias</p>
-    </div>
+    <main>
+        <div class="instrucoes">
+            <h1>Instruções</h1>
+            <p>Preencha o titulo da redação que pretende trabalhar e depois descreva ela no campo abaixo, assim que
+                terminar, aperte o botão para o Pont corrigir e te dar uma avaliação.</p>
+            <p>O Pont é um agente de IA e ainda está aprendendo alidar com as pessoas, se observar que sua nota não
+                condiz com o que foi escrito por favor avalie como ruim, para que ele entenda onde deve melhorar.</p>
+            <p style="color: var(--text-gray);">A Pont não é 100% precisa, sempre busque professores de português ou
+                gramática</p>
+        </div>
 
-    <div class="subjects-container prova-geral-container">
-        <button class="subjects-button checkbox prova-geral" id="provaGeral">Prova geral</button>
-    </div>
-
-<div class="subjects-container">
-        <button class="subjects-button checkbox" id="matematica">Matemática</button>
-        
-        <button class="subjects-button checkbox" id="portugues">Português</button>
-
-        <button class="subjects-button checkbox" id="fisica">Física</button>
-
-        <button class="subjects-button checkbox" id="quimica">Química</button>
-    </div>
+        <div class="subjects-container prova-geral-container">
+            <button class="subjects-button checkbox prova-geral" id="provaGeral">Prova geral</button>
+        </div>
 
     <div class="subjects-container">
-        <button class="subjects-button checkbox" id="biologia">Biologia</button>
-        
-        <button class="subjects-button checkbox" id="historia">História</button>
+            <button class="subjects-button checkbox" id="matematica">Matemática</button>
+            
+            <button class="subjects-button checkbox" id="portugues">Português</button>
 
-        <button class="subjects-button checkbox" id="geografia">Geografia</button>
+            <button class="subjects-button checkbox" id="fisica">Física</button>
 
-        <button class="subjects-button checkbox" id="ingles">Inglês</button>  
-    </div>
+            <button class="subjects-button checkbox" id="quimica">Química</button>
+        </div>
 
-    <div class="subjects-container">
-        <button class="subjects-button checkbox" id="artes">Artes</button>
+        <div class="subjects-container">
+            <button class="subjects-button checkbox" id="biologia">Biologia</button>
+            
+            <button class="subjects-button checkbox" id="historia">História</button>
 
-        <button class="subjects-button checkbox" id="espanhol">Espanhol</button>
+            <button class="subjects-button checkbox" id="geografia">Geografia</button>
 
-        <button class="subjects-button checkbox" id="filosofia">Filosofia</button>
+            <button class="subjects-button checkbox" id="ingles">Inglês</button>  
+        </div>
 
-        <button class="subjects-button checkbox" id="sociologia">Sociologia</button>
-    </div>
+        <div class="subjects-container">
+            <button class="subjects-button checkbox" id="artes">Artes</button>
+
+            <button class="subjects-button checkbox" id="espanhol">Espanhol</button>
+
+            <button class="subjects-button checkbox" id="filosofia">Filosofia</button>
+
+            <button class="subjects-button checkbox" id="sociologia">Sociologia</button>
+        </div>
+        </main>
 
     <script type="module" src="src/scripts/buscarMaterias.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
