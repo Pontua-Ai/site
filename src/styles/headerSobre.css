@@ -15,10 +15,6 @@ main {
     transition: background-color 0.3s;
 }
 
-body.dark main {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1f1f3a 100%);
-}
-
 .header-nav {
     width: 80%;
     background-color: var(--header);
