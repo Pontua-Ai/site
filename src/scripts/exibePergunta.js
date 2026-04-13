@@ -11,6 +11,7 @@ let respostasErradas = [];
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
 const conteudoSelecionado = urlParams.get('conteudo');
+const provaGeral = urlParams.get('provaGeral');
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -37,18 +38,33 @@ export async function carregarPerguntas() {
     let query = supabaseClient
         .from("perguntas")
         .select("*");
-    if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
-    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);
-    const { data, error } = await query;
-    if (error) {
-        console.error("Erro:", error);
-        return;
-    }
     
-    let perguntas = data ?? [];
+    let perguntas;
     
-    if (materiaSelecionada && !conteudoSelecionado) {
-        perguntas = shuffleArray(perguntas).slice(0, 20);
+    if (provaGeral === 'true') {
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = shuffleArray(data ?? []).slice(0, 90);
+    } else if (materiaSelecionada && !conteudoSelecionado) {
+        query = query.eq("id_materia", materiaSelecionada);
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = shuffleArray(data ?? []).slice(0, 20);
+    } else {
+        if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
+        if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = data ?? [];
     }
     
     perguntasCache = perguntas;
@@ -75,7 +91,7 @@ function criarAlternativa(alt) {
     label.innerText = " " + alt.nome_alternativa;
     div.classList.add("alternativa");   
 
-    div.onclick = () => {          // Permite clicar em qualquer parte da alternativa para selecioná-la
+    div.onclick = () => {
         radio.checked = true;  
     };
     div.append(radio, label);
