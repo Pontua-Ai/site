@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     document.querySelectorAll('.subjects-button').forEach(btn => {
+        if (btn.classList.contains('checkbox')) return;
         btn.addEventListener('click', () => {
             if (!materiaMap[btn.id]) return;
             const nomeMateria = materiaMap[btn.id] || btn.id;

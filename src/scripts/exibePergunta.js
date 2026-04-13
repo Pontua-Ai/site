@@ -8,7 +8,15 @@ let pontos = 0;
 
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
-const conteudoSelecionado = urlParams.get('conteudo'); //ve a materia e o coteudo pela url
+const conteudoSelecionado = urlParams.get('conteudo');
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
 const materiaSelect = document.getElementById("materia");
 
@@ -28,13 +36,20 @@ export async function carregarPerguntas() {
         .from("perguntas")
         .select("*");
     if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
-    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado); //como se fosse SELECT * FROM perguntas WHERE id_materia = 1
+    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);
     const { data, error } = await query;
     if (error) {
         console.error("Erro:", error);
         return;
     }
-    perguntasCache = data ?? [];
+    
+    let perguntas = data ?? [];
+    
+    if (materiaSelecionada && !conteudoSelecionado) {
+        perguntas = shuffleArray(perguntas).slice(0, 20);
+    }
+    
+    perguntasCache = perguntas;
     indicePergunta = 0;
     
     if (perguntasCache.length === 0) {
@@ -116,4 +131,4 @@ export function verificarResposta() {
     exibirPergunta();
 }
 
-carregarPerguntas ();
+carregarPerguntas();
