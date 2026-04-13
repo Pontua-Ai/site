@@ -89,6 +89,7 @@ input:not(:placeholder-shown) {
 
 .textAlternativa {
     align-items: center;
+    width: 97.87%;
     gap: 10px;
     border: none;
     border-bottom: 1px solid var(--text-gray);

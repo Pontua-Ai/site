@@ -153,11 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 toast("Erro ao cadastrar pergunta", "error");
             }
             document.getElementById("pergunta").value = "";
-            document.getElementById("alt1").value = "";
-            document.getElementById("alt2").value = "";
-            document.getElementById("alt3").value = "";
-            document.getElementById("alt4").value = "";
-            document.getElementById("alt5").value = "";
+            document.querySelectorAll('.textAlternativa').forEach(input => input.value = "");
+            document.querySelectorAll('input[name="alternativa"]').forEach(radio => radio.checked = false);
             document.getElementById("conteudo").value = "";
             document.getElementById("materia").value = "";
         });
