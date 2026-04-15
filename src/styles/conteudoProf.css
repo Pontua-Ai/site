@@ -65,6 +65,12 @@ main {
     border: 0.3px solid var(--primary-color);
 }
 
+#editor-container {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
 #editor-container .ql-editor.ql-blank::before {
     color: var(--text-gray);
     font-style: normal;
