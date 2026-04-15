@@ -65,6 +65,11 @@ main {
     border: 0.3px solid var(--primary-color);
 }
 
+#editor-container .ql-editor.ql-blank::before {
+    color: var(--text-gray);
+    font-style: normal;
+}
+
 #formPergunta {
     display: flex;
     flex-direction: column;

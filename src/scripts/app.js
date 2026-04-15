@@ -6,10 +6,28 @@ import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePer
 import { toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
 
+let quillEditor = null;
+
 initTheme();
 window.toggleTheme = toggleTheme;
 
 document.addEventListener("DOMContentLoaded", () => {
+    const editorContainer = document.getElementById("editor-container");
+    if (editorContainer) {
+        quillEditor = new Quill("#editor-container", {
+            theme: "snow",
+            placeholder: "Digite a pergunta...",
+            modules: {
+                toolbar: [
+                    ["bold", "italic", "underline"],
+                    [{ "header": [1, 2, 3, false] }],
+                    [{ "list": "ordered"}, { "list": "bullet" }],
+                    ["image"]
+                ]
+            }
+        });
+    } /* Cria o Quill.js para criar as opções de formatação de texto da pergunta*/
+    
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
         signupForm.addEventListener("submit", async (event) => {
@@ -88,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
             notReaload.preventDefault();
             const idMateria = document.getElementById("materia").value;
             const idConteudo = document.getElementById("conteudo").value;
-            const pergunta = document.getElementById("pergunta").value;
+            const pergunta = quillEditor ? quillEditor.root.innerHTML : document.getElementById("pergunta").value;
 
             if (!idConteudo || !pergunta || !idMateria) {
                 toast("Selecione o conteúdo e a pergunta!", "error");
@@ -153,7 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(erro);
                 toast("Erro ao cadastrar pergunta", "error");
             }
-            document.getElementById("pergunta").value = "";
+            if (quillEditor) {
+                quillEditor.setContents([]);
+            }
             document.querySelectorAll('.textAlternativa').forEach(input => input.value = "");
             document.querySelectorAll('input[name="alternativa"]').forEach(radio => radio.checked = false);
             document.getElementById("conteudo").value = "";
