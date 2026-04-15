@@ -88,11 +88,17 @@ input:not(:placeholder-shown) {
 
 .textAlternativa {
     align-items: center;
-    width: 97.87%;
+    width: 90%;
     gap: 10px;
     border: none;
     border-bottom: 1px solid var(--text-gray);
     transition: border-color 0.7s;
+    font-size: 15px;
+}
+
+.checkmark{
+    width: 18px;
+    height: 18px;
 }
 
 .textAlternativa:focus {
