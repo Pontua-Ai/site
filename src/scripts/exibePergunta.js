@@ -105,7 +105,7 @@ export async function exibirPergunta() {
     }
     const pergunta = perguntasCache[indicePergunta];
     console.log("Pergunta:", pergunta);
-    document.getElementById("perguntaTexto").innerText = pergunta.pergunta_texto;
+    document.getElementById("perguntaTexto").innerHTML = pergunta.pergunta_texto;
     
     const idPergunta = pergunta.id_pergunta || pergunta.id;
     console.log("ID da pergunta usado:", idPergunta);

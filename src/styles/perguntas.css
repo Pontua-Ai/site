@@ -12,6 +12,21 @@
     line-height: 1.4;
     margin-bottom: 50px;
 }
+
+#perguntaTexto img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+#perguntaTexto strong {
+    font-weight: bold;
+}
+
+#perguntaTexto em {
+    font-style: italic;
+}
 .alternativa {
     display: block;
     padding: 12px;

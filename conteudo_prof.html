@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conteudo</title>
+    <title>Perguntas</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/conteudoProf.css">
     <link rel="stylesheet" href="src/styles/button.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 </head>
 
 <body>
@@ -19,7 +20,7 @@
             <ul>
                 <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
                 <li><a href="doc_prof.html">Doc</a></li>
-                <li><a href="conteudo_prof.html" style="color: var(--primary-color); font-weight: bold;">Conteudos</a>
+                <li><a href="conteudo_prof.html" style="color: var(--primary-color); font-weight: bold;">Perguntas</a>
                 </li>
                 <li><a href="historico_prof.html">Histórico</a></li>
                 <li><a href="conta_prof.html">Conta</a></li>
@@ -48,7 +49,8 @@
         </div>
 
         <form id="formPergunta">
-            <input type="text" id="pergunta" placeholder="Digite a pergunta">
+            <div id="editor-container" style="height: auto; min-height: 150px;"></div>
+            <input type="hidden" id="pergunta" name="pergunta">
 
             <div class="boxInputs">
                 <input type="radio" name="alternativa" value="1" id="alt1">
@@ -79,6 +81,7 @@
         </form>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 
