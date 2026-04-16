@@ -17,9 +17,10 @@ main{
 .prova-geral-container{
     display: flex;
     justify-content: center;
+    gap: 300px;
 }
 
-.prova-geral{
+.prova-geral, .prova-simulado{
     width: 400px;
 }
 
