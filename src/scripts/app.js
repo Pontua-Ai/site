@@ -91,11 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
         sociologia: "Sociologia"
     };
 
-    document.querySelectorAll('.subjects-button').forEach(btn => {
-        if (btn.classList.contains('checkbox')) return;
-        btn.addEventListener('click', () => {
-            if (!materiaMap[btn.id]) return;
-            const nomeMateria = materiaMap[btn.id] || btn.id;
+    document.querySelectorAll('.card[data-materia]').forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const materia = card.dataset.materia;
+            if (!materiaMap[materia]) return;
+            const nomeMateria = materiaMap[materia];
             window.location.href = `conteudo.html?nome_conteudo=${encodeURIComponent(nomeMateria)}`;
         });
     });

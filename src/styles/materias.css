@@ -23,14 +23,20 @@ img{
     width: 220px;
     height: 220px;
     object-fit: contain;
+    position: relative;
+    z-index: 1;
 }
 
 .subjects-button{
     width: 220px;
     height: 55px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 .card{
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,7 +47,56 @@ img{
     background-color: var(--gray);
     border-radius: 20px;
     padding: 10px;
+    padding-left: 40px;
     transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.card .divider-line{
+    position: absolute;
+    left: 38px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: rgba(100, 100, 100, 0.192);
+    z-index: 3;
+}
+
+.card::before{
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 48px;
+    width: 16px;
+    height: 16px;
+    background-color: var(--background);
+    border-radius: 50%;
+    box-shadow: 0 70px 0 var(--background), 0 140px 0 var(--background), 0 210px 0 var(--background);
+    z-index: 2;
+}
+
+.card::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        transparent 29px,
+        rgba(100, 100, 100, 0.158) 29px,
+        rgba(100,100,100,0.158) 30px
+    );
+    pointer-events: none;
+    border-radius: 20px;
+}
+
+body.dark .card .subjects-button{
+    color: black;
 }
 
 .subjects-container button a{
