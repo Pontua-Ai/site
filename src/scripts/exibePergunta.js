@@ -12,6 +12,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
 const conteudoSelecionado = urlParams.get('conteudo');
 const provaGeral = urlParams.get('provaGeral');
+const simulado = urlParams.get('simulado');
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -42,12 +43,74 @@ export async function carregarPerguntas() {
     let perguntas;
     
     if (provaGeral === 'true') {
-        const { data, error } = await query;
+        const { data: todasPerguntas, error } = await query;
         if (error) {
             console.error("Erro:", error);
             return;
         }
-        perguntas = shuffleArray(data ?? []).slice(0, 12);
+
+        const { data: materias } = await supabaseClient
+            .from("materia")
+            .select("id_materia");
+
+        let perguntasSelecionadas = [];
+        const perguntasPorMateria = {};
+
+        if (materias) {
+            materias.forEach(m => {
+                perguntasPorMateria[m.id_materia] = todasPerguntas.filter(p => p.id_materia === m.id_materia);
+            });
+
+            Object.values(perguntasPorMateria).forEach((perguntasDaMateria) => {
+                if (perguntasDaMateria.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * perguntasDaMateria.length);
+                    perguntasSelecionadas.push(perguntasDaMateria[randomIndex]);
+                }
+            });
+        }
+
+        const perguntasRestantes = shuffleArray(todasPerguntas.filter(p => !perguntasSelecionadas.includes(p)));
+        const quantosFaltam = 20 - perguntasSelecionadas.length;
+        perguntasSelecionadas = shuffleArray([...perguntasSelecionadas, ...perguntasRestantes.slice(0, quantosFaltam)]);
+        perguntas = perguntasSelecionadas;
+
+    } else if (simulado === 'true') {
+        const { data: todasPerguntas, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+
+        const { data: materias } = await supabaseClient
+            .from("materia")
+            .select("id_materia");
+
+        let perguntasSelecionadas = [];
+        const perguntasPorMateria = {};
+
+        if (materias) {
+            materias.forEach(m => {
+                perguntasPorMateria[m.id_materia] = todasPerguntas.filter(p => p.id_materia === m.id_materia);
+            });
+
+            Object.values(perguntasPorMateria).forEach((perguntasDaMateria) => {
+                if (perguntasDaMateria.length > 0) {
+                    const shuffled = shuffleArray([...perguntasDaMateria]);
+                    const qtd = Math.min(3, perguntasDaMateria.length);
+                    for (let i = 0; i < qtd; i++) {
+                        perguntasSelecionadas.push(shuffled[i]);
+                    }
+                }
+            });
+        }
+
+        const perguntasRestantes = shuffleArray(todasPerguntas.filter(p => !perguntasSelecionadas.includes(p)));
+        const quantosFaltam = 40 - perguntasSelecionadas.length;
+        if (quantosFaltam > 0) {
+            perguntasSelecionadas = shuffleArray([...perguntasSelecionadas, ...perguntasRestantes.slice(0, quantosFaltam)]);
+        }
+        perguntas = perguntasSelecionadas;
+
     } else if (materiaSelecionada && !conteudoSelecionado) {
         query = query.eq("id_materia", materiaSelecionada);
         const { data, error } = await query;

@@ -25,6 +25,11 @@ document.querySelectorAll('.subjects-button.checkbox').forEach(btn => {
             return;
         }
 
+        if (btn.id === 'simulado') {
+            window.location.href = `perguntas.html?simulado=true`;
+            return;
+        }
+
         const nomeMateria = materiaMap[btn.id];
         if (!nomeMateria) return;
 
