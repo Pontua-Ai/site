@@ -5,10 +5,21 @@ import { toast } from "./utils.js";
 let perguntasCache = [];
 let indicePergunta = 0;
 let pontos = 0;
+let totalRespostas = 0;
+let respostasErradas = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
-const conteudoSelecionado = urlParams.get('conteudo'); //ve a materia e o coteudo pela url
+const conteudoSelecionado = urlParams.get('conteudo');
+const provaGeral = urlParams.get('provaGeral');
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
 const materiaSelect = document.getElementById("materia");
 
@@ -27,14 +38,36 @@ export async function carregarPerguntas() {
     let query = supabaseClient
         .from("perguntas")
         .select("*");
-    if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
-    if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado); //como se fosse SELECT * FROM perguntas WHERE id_materia = 1
-    const { data, error } = await query;
-    if (error) {
-        console.error("Erro:", error);
-        return;
+    
+    let perguntas;
+    
+    if (provaGeral === 'true') {
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = shuffleArray(data ?? []).slice(0, 12);
+    } else if (materiaSelecionada && !conteudoSelecionado) {
+        query = query.eq("id_materia", materiaSelecionada);
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = shuffleArray(data ?? []).slice(0, 10);
+    } else {
+        if (materiaSelecionada) query = query.eq("id_materia", materiaSelecionada);
+        if (conteudoSelecionado) query = query.eq("id_conteudo", conteudoSelecionado);
+        const { data, error } = await query;
+        if (error) {
+            console.error("Erro:", error);
+            return;
+        }
+        perguntas = data ?? [];
     }
-    perguntasCache = data ?? [];
+    
+    perguntasCache = perguntas;
     indicePergunta = 0;
     
     if (perguntasCache.length === 0) {
@@ -58,7 +91,7 @@ function criarAlternativa(alt) {
     label.innerText = " " + alt.nome_alternativa;
     div.classList.add("alternativa");   
 
-    div.onclick = () => {          // Permite clicar em qualquer parte da alternativa para selecioná-la
+    div.onclick = () => {
         radio.checked = true;  
     };
     div.append(radio, label);
@@ -67,14 +100,12 @@ function criarAlternativa(alt) {
 
 export async function exibirPergunta() {
     if (indicePergunta >= perguntasCache.length) {
-        document.getElementById("perguntaTexto").innerText = "Fim do questionário!";
-        document.getElementById("alternativas").innerHTML = "";
-        document.getElementById("pontos").innerText = "Pontos: " + pontos;
+        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}`;
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
     console.log("Pergunta:", pergunta);
-    document.getElementById("perguntaTexto").innerText = pergunta.pergunta_texto;
+    document.getElementById("perguntaTexto").innerHTML = pergunta.pergunta_texto;
     
     const idPergunta = pergunta.id_pergunta || pergunta.id;
     console.log("ID da pergunta usado:", idPergunta);
@@ -108,12 +139,26 @@ export function verificarResposta() {
         toast("Selecione uma alternativa!", "error");
         return;
     }
-    if (selecionada.dataset.correta == "true" || selecionada.dataset.correta === true) {
-        toast("Correto!", "success");
+    
+    const perguntaAtual = perguntasCache[indicePergunta];
+    const isCorreta = selecionada.dataset.correta == "true" || selecionada.dataset.correta === true;
+    
+    totalRespostas++;
+    
+    if (isCorreta) {
         pontos++;
+    } else {
+        const label = selecionada.nextElementSibling;
+        const respostaTexto = label ? label.innerText.trim() : "Resposta selecionada";
+        
+        respostasErradas.push({
+            pergunta: perguntaAtual.pergunta_texto,
+            respostaSelecionada: respostaTexto
+        });
     }
+    
     indicePergunta++;
     exibirPergunta();
 }
 
-carregarPerguntas ();
+carregarPerguntas();

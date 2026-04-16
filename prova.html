@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conteudos</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/header.css">
+    <link rel="stylesheet" href="src/styles/button.css">
+    <link rel="stylesheet" href="src/styles/prova.css">
+    <link rel="stylesheet" href="src/styles/redacao.css">
+    <link rel="icon" href="img/cabeca.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li> <img class="imagemHeader" src="img/cabeca-header.png" alt="Imagem do icon da logo do site"></li>
+                <li><a href="materias.html">Materias</a></li>
+                <li><a href="conteudo.html">Conteudos</a></li>
+                <li><a href="prova.html" style="color: var(--primary-color); font-weight: bold;">Prova</a></li>
+                <li><a href="redacao.html">Redação</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="conta_aluno.html">Conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="instrucoes">
+            <h1>Instruções</h1>
+            <p>Selecione a matéria que deseja fazer a prova! Cada matéria possui 20 questões aleatórias de diversos conteúdos.</p>
+            <p>Para quem quer tudo: a prova geral tem 90 questões de TODAS as matérias!</p>
+            <p>Cuidado com o tempo: matérias têm 1 hora e a prova geral tem 5 horas!</p>
+        </div>
+
+        <div class="subjects-container prova-geral-container">
+            <button class="subjects-button checkbox prova-geral" id="provaGeral">Prova geral</button>
+        </div>
+
+    <div class="subjects-container">
+            <button class="subjects-button checkbox" id="matematica">Matemática</button>
+            
+            <button class="subjects-button checkbox" id="portugues">Português</button>
+
+            <button class="subjects-button checkbox" id="fisica">Física</button>
+
+            <button class="subjects-button checkbox" id="quimica">Química</button>
+        </div>
+
+        <div class="subjects-container">
+            <button class="subjects-button checkbox" id="biologia">Biologia</button>
+            
+            <button class="subjects-button checkbox" id="historia">História</button>
+
+            <button class="subjects-button checkbox" id="geografia">Geografia</button>
+
+            <button class="subjects-button checkbox" id="ingles">Inglês</button>  
+        </div>
+
+        <div class="subjects-container">
+            <button class="subjects-button checkbox" id="artes">Artes</button>
+
+            <button class="subjects-button checkbox" id="espanhol">Espanhol</button>
+
+            <button class="subjects-button checkbox" id="filosofia">Filosofia</button>
+
+            <button class="subjects-button checkbox" id="sociologia">Sociologia</button>
+        </div>
+        </main>
+
+    <script type="module" src="src/scripts/buscarMaterias.js"></script>
+    <script type="module" src="src/scripts/gerarProva.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
+</body>
+</html>

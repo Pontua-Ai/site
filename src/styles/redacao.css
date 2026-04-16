@@ -20,6 +20,7 @@ h1{
     margin-bottom: 10px;
     padding: 5px;
     font-size: 20px;
+    color: var(--text-primary);
 }
 
 .textoInput{
@@ -32,23 +33,26 @@ h1{
     font-family:'jenkins', sans-serif;
     font-size: 15px;
     text-indent: 70px;
+    color: var(--text-primary);
 }
+
 .resultado-box {
-    max-width: 1000px;
+    width: 100%;
     margin: 20px auto;
     border-radius: 16px;
-    background: #ffffff;
+    background: var(--background);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     overflow: hidden;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
 }
 
 .resultado-header {
     padding: 12px 16px;
-    background: #f7f7f7;
+    background: var(--gray);
     font-weight: bold;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     font-size: 14px;
+    color: var(--text-primary);
 }
 
 .resultado-conteudo {
@@ -59,6 +63,7 @@ h1{
     line-height: 1.5;
     font-size: 14px;
 }
+
 #resultado {
     white-space: pre-wrap;
     line-height: 1.6;

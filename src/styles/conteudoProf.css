@@ -1,10 +1,9 @@
 main {
     width: 80%;
+    background-color: var(--background);
+    padding: 20px;
+    border-radius: 20px;
 }
-
-/* div{
-    border: 1px solid blue;
-} */
 
 .escolher {
     display: flex;
@@ -21,13 +20,23 @@ main {
 
 .selecionarMateria select,
 .selecionarConteudo select {
-    background-color: var(--header);
-    color: var(--primary-color);
-    border: none;
+    background-color: var(--input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     padding: 5px;
     width: 100%;
     font-size: 16px;
     border-radius: 10px;
+}
+
+.textAlternativa {
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-primary);
+    transition: border-color 0.7s;
 }
 
 .title {
@@ -41,10 +50,11 @@ main {
     width: 100%;
     height: 150px;
     padding: 10px;
-    font-size: 12px;
+    font-size: 17px;
     border-radius: 10px;
     border: 0.3px solid transparent;
     background-color: var(--input);
+    color: var(--text-primary);
     margin-bottom: 20px;
     transition: border-color 0.7s;
 }
@@ -53,6 +63,17 @@ main {
     outline: none;
     box-shadow: none;
     border: 0.3px solid var(--primary-color);
+}
+
+#editor-container {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+#editor-container .ql-editor.ql-blank::before {
+    color: var(--text-gray);
+    font-style: normal;
 }
 
 #formPergunta {
@@ -67,10 +88,17 @@ input:not(:placeholder-shown) {
 
 .textAlternativa {
     align-items: center;
+    width: 90%;
     gap: 10px;
     border: none;
     border-bottom: 1px solid var(--text-gray);
     transition: border-color 0.7s;
+    font-size: 15px;
+}
+
+.checkmark{
+    width: 18px;
+    height: 18px;
 }
 
 .textAlternativa:focus {
