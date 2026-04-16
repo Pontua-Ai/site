@@ -48,8 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (novoUsuario) {
                     localStorage.setItem("userLogado", JSON.stringify(novoUsuario));
                 }
-                                toast("Cadastro realizado com sucesso!", "success");
-                window.location.href = "inicio.html";
+                toast("Cadastro realizado com sucesso!", "success");
+                
+                const tipoConta = result.tipo_conta || novoUsuario?.tipo_conta;
+                if (tipoConta === 'professor') {
+                    window.location.href = "doc_prof.html";
+                } else {
+                    window.location.href = "materias.html";
+                }
             } else {
                 toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
             }
@@ -69,7 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result && result.success) {
                 localStorage.setItem("userLogado", JSON.stringify(result.user));
-                window.location.href = "materias.html";
+                
+                const tipoConta = result.user.tipo_conta;
+                if (tipoConta === 'professor') {
+                    window.location.href = "doc_prof.html";
+                } else {
+                    window.location.href = "materias.html";
+                }
             } else {
                 toast("Erro ao realizar login: " + (result?.error || "Erro desconhecido"), "error");
             }
