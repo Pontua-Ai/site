@@ -12,8 +12,6 @@ export async function carregarConteudo() {
     const titleElement = document.getElementById("titleMateria");
     if (!titleElement) return;
 
-    
-
     const { data: materia } = await supabaseClient
         .from("materia")
         .select("id_materia")
