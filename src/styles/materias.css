@@ -61,7 +61,7 @@ img{
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: rgba(100,100,100,0.3);
+    background-color: rgba(100, 100, 100, 0.192);
     z-index: 3;
 }
 
@@ -88,8 +88,8 @@ img{
     background: repeating-linear-gradient(
         transparent 0px,
         transparent 29px,
-        rgba(100,100,100,0.3) 29px,
-        rgba(100,100,100,0.3) 30px
+        rgba(100, 100, 100, 0.158) 29px,
+        rgba(100,100,100,0.158) 30px
     );
     pointer-events: none;
     border-radius: 20px;
