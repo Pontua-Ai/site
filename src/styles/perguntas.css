@@ -3,8 +3,8 @@
     border-radius: 20px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f1f1f1;
-    word-spacing: 3px;
+    background-color: var(--gray);
+    color: var(--text-primary);
 }
 #perguntaTexto {
     font-size: 22px;
@@ -12,16 +12,32 @@
     line-height: 1.4;
     margin-bottom: 50px;
 }
+
+#perguntaTexto img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+#perguntaTexto strong {
+    font-weight: bold;
+}
+
+#perguntaTexto em {
+    font-style: italic;
+}
 .alternativa {
     display: block;
     padding: 12px;
     margin: 8px 0;
     border-radius: 10px;
     border: 2px solid transparent;
-    background-color: #f9f9f9;
+    background-color: var(--background);
     cursor: pointer;
     transition: 0.2s;
     font-size: 18px;
+    color: var(--text-primary);
 }
 
 .alternativa:hover {
@@ -34,5 +50,58 @@
 
 .alternativa input:checked + label {
     color: var(--primary-color); 
-    
+     
+}
+
+.resultado-final {
+    text-align: center;
+    padding: 20px;
+}
+
+.resultado-final h2 {
+    color: var(--primary-color);
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.pontos-finais {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.percentual {
+    font-size: 32px;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.erradas-detalhes {
+    text-align: left;
+    margin-top: 30px;
+}
+
+.erradas-detalhes h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.questao-errada {
+    background-color: var(--background);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--error-color);
+}
+
+.enunciado {
+    font-size: 16px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.resposta-errada {
+    font-size: 14px;
+    color: var(--error-color);
 }

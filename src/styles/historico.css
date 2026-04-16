@@ -9,17 +9,15 @@ main{
 .inputTema, .categoria{
     border-radius: 10px;
     padding: 10px;
-    border: none;
+    border: 1px solid var(--border-color);
     background-color: var(--input);
+    color: var(--text-primary);
     width: 40%;
-}
-
-.categoria{
-    cursor: pointer;
 }
 
 .inputTema::placeholder{
     font-size: 16px;
+    color: var(--text-gray);
 }
 
 h1{
