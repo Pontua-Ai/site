@@ -28,6 +28,7 @@ img{
 .subjects-button{
     width: 220px;
     height: 55px;
+    cursor: pointer;
 }
 
 .card{
@@ -42,6 +43,13 @@ img{
     border-radius: 20px;
     padding: 10px;
     transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+body.dark .card .subjects-button{
+    color: black;
 }
 
 .subjects-container button a{
