@@ -4,10 +4,15 @@ import { toast } from "./utils.js";
 export function initDadosConta() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     
-    if (!userLogado) {
+    const path = window.location.pathname;
+    const isPaginaLogin = path.includes("inicio.html") || path.includes("inicio") || path.endsWith("/") || path.endsWith("\\");
+    
+    if (!userLogado && !isPaginaLogin) {
         window.location.href = "inicio.html";
         return;
     }
+    
+    if (isPaginaLogin) return;
     
     const nomeUsuario = document.getElementById("nomeUsuario");
     const tipoConta = document.getElementById("tipoConta");
