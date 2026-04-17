@@ -5,6 +5,7 @@ export function initDadosConta() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     
     if (!userLogado) {
+        window.location.href = "inicio.html";
         return;
     }
     
@@ -13,6 +14,7 @@ export function initDadosConta() {
     const dataCriacao = document.getElementById("dataCriacao");
     const imgPerfil = document.getElementById("imgPerfil");
     const inputFoto = document.getElementById("inputFotoPerfil");
+    const btnEditar = document.querySelector(".editar");
     
     if (nomeUsuario) {
         nomeUsuario.textContent = userLogado.username;
@@ -31,6 +33,53 @@ export function initDadosConta() {
     
     if (imgPerfil && userLogado.foto_url) {
         imgPerfil.src = userLogado.foto_url;
+    }
+    
+    if (btnEditar) {
+        btnEditar.addEventListener("click", () => {
+            if (nomeUsuario.innerHTML.includes("<input")) return;
+            
+            const nomeAtual = nomeUsuario.textContent;
+            nomeUsuario.innerHTML = `<input type="text" id="inputNome" value="${nomeAtual}" style="border: 1px solid var(--primary-color); padding: 4px; border-radius: 4px; background: var(--bg-color); color: var(--text-color);">`;
+            
+            const inputNome = document.getElementById("inputNome");
+            inputNome.focus();
+            
+            inputNome.addEventListener("blur", async () => {
+                const novoNome = inputNome.value.trim();
+                if (!novoNome) {
+                    nomeUsuario.textContent = nomeAtual;
+                    return;
+                }
+                
+                if (novoNome === nomeAtual) {
+                    nomeUsuario.textContent = nomeAtual;
+                    return;
+                }
+                
+                const { error } = await supabaseClient
+                    .from("users")
+                    .update({ username: novoNome })
+                    .eq("id_usuario", userLogado.id_usuario);
+                
+                if (error) {
+                    toast("Erro ao atualizar nome", "error");
+                    nomeUsuario.textContent = nomeAtual;
+                    return;
+                }
+                
+                userLogado.username = novoNome;
+                localStorage.setItem("userLogado", JSON.stringify(userLogado));
+                nomeUsuario.textContent = novoNome;
+                toast("Nome atualizado com sucesso!", "success");
+            });
+            
+            inputNome.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    inputNome.blur();
+                }
+            });
+        });
     }
     
     if (inputFoto) {
