@@ -19,17 +19,24 @@ export async function signup(username, email, senha) {
         return { success: false, error: "Email já cadastrado" };
     }
 
+    const dominio = email.split('@')[1];
+    if (dominio !== 'cps.sp.gov.br' && dominio !== 'aluno.cps.sp.gov.br') {
+        return { success: false, error: "Apenas emails institucionais (@cps.sp.gov.br ou @aluno.cps.sp.gov.br) são permitidos." };
+    }
+
+    const tipoConta = dominio === 'aluno.cps.sp.gov.br' ? 'aluno' : 'professor';
+
     const senhaHash = await hashSenha(senha);
 
     const { data, error } = await supabaseClient
         .from("users")
-        .insert([{ email: email, senha: senhaHash, username: username }]);
+        .insert([{ email: email, senha: senhaHash, username: username, tipo_conta: tipoConta }]);
 
     if (error) {
         return { success: false, error: error.message };
     }
 
-    return { success: true };
+    return { success: true, tipo_conta: tipoConta };
 }
 
 
