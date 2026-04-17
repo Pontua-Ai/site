@@ -23,6 +23,27 @@ h1{
     color: var(--text-primary);
 }
 
+.estilo-vestibular {
+    margin-bottom: 15px;
+}
+
+.estilo-vestibular label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.estilo-vestibular select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
 .textoInput{
     width: 100%;
     height: 600px;
