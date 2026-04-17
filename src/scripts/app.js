@@ -5,10 +5,12 @@ import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
 import { toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
+import { initDadosConta } from "./conta.js";
 
 let quillEditor = null;
 
 initTheme();
+initDadosConta();
 window.toggleTheme = toggleTheme;
 
 window.logout = function() {
