@@ -1,6 +1,32 @@
 import supabaseClient from "./supabase.js";
 import { toast } from "./utils.js";
 
+export async function carregarEstatisticasAluno(idUsuario) {
+    const { data: redacoes, error: erroRedacoes } = await supabaseClient
+        .from("redacao")
+        .select("pontos_redacao")
+        .eq("id_usuario", idUsuario);
+
+    const redacoesFeitas = redacoes ? redacoes.length : 0;
+    let mediaRedacao = 0;
+    if (redacoes && redacoes.length > 0) {
+        const soma = redacoes.reduce((acc, r) => acc + r.pontos_redacao, 0);
+        mediaRedacao = Math.round(soma / redacoes.length);
+    }
+
+    const { count: atividadesFeitas, error: erroAtividades } = await supabaseClient
+        .from("pontuacao_atividade")
+        .select("*", { count: "estimated", head: true });
+
+    const valorAtividades = document.querySelector(".ativFeitas .valor");
+    const valorRedacoes = document.querySelector(".redaFeitas .valor");
+    const valorMedia = document.querySelector(".mediaRedacao .valor");
+
+    if (valorAtividades) valorAtividades.textContent = atividadesFeitas || 0;
+    if (valorRedacoes) valorRedacoes.textContent = redacoesFeitas;
+    if (valorMedia) valorMedia.textContent = mediaRedacao;
+}
+
 export function initDadosConta() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     
@@ -13,6 +39,10 @@ export function initDadosConta() {
     }
     
     if (isPaginaLogin) return;
+    
+    if (userLogado.tipo_conta === 'aluno') {
+        carregarEstatisticasAluno(userLogado.id_usuario);
+    }
     
     const nomeUsuario = document.getElementById("nomeUsuario");
     const tipoConta = document.getElementById("tipoConta");
