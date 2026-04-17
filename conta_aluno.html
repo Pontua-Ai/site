@@ -104,9 +104,14 @@
                     <p>Alterar email</p>
                 </div>
 
-                <div class="cardConfi" onclick="toggleTheme()" style="cursor: pointer;">
+                <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
                     <i class="fa-solid fa-moon"></i>
                     <p>Modo escuro</p>
+                </div>
+
+                <div class="cardConfi" id="btn-logout" style="cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <p>Sair da conta</p>
                 </div>
 
                 <div class="cardConfi">
@@ -117,14 +122,20 @@
         </div>
 
     </main>
+    <script type="module" src="src/scripts/app.js"></script>
     <script type="module">
+        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+        if (!userLogado) {
+            window.location.href = "inicio.html";
+        }
+        
         import supabaseClient from "./src/scripts/supabase.js";
         import { toast } from "./src/scripts/utils.js";
 
         const inputFoto = document.getElementById("inputFotoPerfil");
         const imgPerfil = document.getElementById("imgPerfil");
 
-        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+        console.log("userLogado:", userLogado);
         if (userLogado && userLogado.foto_url) {
             imgPerfil.src = userLogado.foto_url;
         }
@@ -134,6 +145,7 @@
             if (!file) return;
 
             const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+            console.log("Upload para id_usuario:", userLogado.id_usuario);
             if (!userLogado) {
                 toast("Usuário não está logado", "error");
                 return;
@@ -163,6 +175,8 @@
                 .update({ foto_url: fotoUrl })
                 .eq("id_usuario", userLogado.id_usuario);
 
+            console.log("Update foto_url para id:", userLogado.id_usuario, "URL:", fotoUrl, "Erro:", errorUpdate);
+
             if (errorUpdate) {
                 console.error("Erro ao salvar URL:", errorUpdate);
                 toast("Erro ao salvar foto", "error");
@@ -177,7 +191,6 @@
 
         inputFoto.addEventListener("change", uploadFoto);
     </script>
-    <script type="module" src="src/scripts/app.js"></script>
 </body>
 
 </html>

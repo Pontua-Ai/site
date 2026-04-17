@@ -53,5 +53,6 @@ export async function loginUsuario(login, senha) {
     if (data.senha !== hashInput) {
         return { success: false, error: "Senha incorreta" };
     }
+    console.log("Usuario logado:", data);
     return { success: true, user: data };
 }
