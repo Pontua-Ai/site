@@ -9,7 +9,7 @@ let estaCorrigindo = false;
 
 window.corrigir = async function () {
   if (estaCorrigindo) return;
-  
+
   const botao = document.querySelector('button[onclick="corrigir()"]');
   const texto = document.getElementById("texto").value;
   const titulo = document.getElementById("title").value;
@@ -88,13 +88,176 @@ ${titulo}
 Texto:
 ${texto}
     `,
-vunesp: `
+    vunesp: `
 Corrija a redação no padrão VUNESP.
 Critérios de avaliação:
-A) Tema: atende ao tema proposto? Fuga ao tema = nota 0.
-B) Estrutura: avaliação do gênero dissertativo-argumentativo, coerência, argumentação e organização (introdução, desenvolvimento, conclusão). Deve haver defesa clara de um ponto de vista.
-C) Língua: adequação à norma-padrão, aspectos gramaticais (concordância, regência, ortografia, pontuação) e escolha lexical.
-D) Coesão: emprego de recursos coesivos (anáforas, catáforas, conectivos).
+A) Tema: avalia-se, neste critério, se o texto do candidato
+atende ao tema proposto. A fuga completa ao tema
+proposto é motivo suficiente para que a redação não
+seja corrigida em qualquer outro de seus aspectos,
+recebendo nota 0 (zero) tota
+B) Estrutura (gênero/tipo de texto e coerência):
+consideram-se aqui, conjuntamente, os aspectos
+referentes ao gênero/tipo de texto proposto e à
+coerência das ideias. A fuga completa ao gênero/tipo
+de texto é motivo suficiente para que a redação não
+seja corrigida em qualquer outro de seus aspectos,
+recebendo nota 0 (zero) total. Na avaliação do gênero/
+tipo de texto, observa-se como o candidato sustenta
+a sua tese, em termos argumentativos, e como essa
+argumentação está organizada, considerando-se
+a macroestrutura do texto dissertativo (introdução,
+desenvolvimento e conclusão). Sabe-se que é comum,
+em textos dissertativos, a exposição de fatos e opiniões,
+mas é imprescindível que haja um posicionamento por
+parte do autor da redação, a partir da defesa (clara)
+de um ponto de vista. No gênero/tipo de texto, avaliase também o tipo de interlocução construída: por
+se tratar de uma dissertação-argumentativa, devese prezar pela objetividade. Sendo assim, o uso de
+primeira pessoa do singular e de segunda pessoa
+(singular e plural) poderá ser penalizado. Além disso,
+também poderá ser penalizada a referência direta
+à situação imediata de produção textual (ex.: como
+afirma o autor do primeiro texto/da coletânea/do texto
+I; como solicitado nesta prova/proposta de redação),
+porque é importante que o texto escrito pelo candidato
+tenha autonomia, isto é, não dependa da consulta
+(por parte do leitor) da proposta de redação (textos
+de apoio e frase temática) para ser amplamente
+compreendido. Na coerência, serão observados o nível
+de compreensão (por parte do candidato) dos textos
+de apoio da proposta, o conhecimento de mundo
+(repertório) do candidato, a pertinência dos argumentos
+mobilizados para a defesa do ponto de vista adotado e
+a capacidade do candidato para desenvolver, relacionar
+e encadear satisfatoriamente as informações e ideias
+abordadas no texto. Assim, na avaliação deste critério,
+serão consideradas aspectos negativos: a falta de
+partes da macroestrutura dissertativa, a falta de um
+posicionamento (por parte do autor da redação) na
+defesa de um determinado ponto de vista, a falta de
+autonomia do texto, a presença de contradição entre
+as ideias, a falta de desenvolvimento dos argumentos
+e a presença de conclusões não decorrentes do que foi previamente exposto.
+C) Língua (modalidade e registro): avalia-se, neste
+critério, a adequação do texto à modalidade escrita
+e ao registro formal da língua portuguesa. Serão
+examinados, neste item, aspectos gramaticais e de
+convenção da escrita, tais como concordância (verbal e
+nominal), regência, ortografia, acentuação, pontuação
+etc., bem como a escolha lexical (precisão vocabular)
+e o grau de formalidade/informalidade expresso em
+palavras e expressões
+D)Coesão: avalia-se, neste item, o emprego dos recursos
+coesivos da língua (anáforas, catáforas, substituições,
+conjunções etc.), responsáveis por tornar mais clara
+e precisa a relação entre palavras, orações, períodos
+e parágrafos do texto. Serão considerados aspectos
+negativos o emprego inadequado ou ausência de
+conectivos, a falta de divisão do texto em parágrafos
+(redações em forma de monobloco), as quebras
+indevidas entre frases ou parágrafos, a repetição
+excessiva de um mesmo recurso coesivo e a
+predominância de parágrafos muito curtos ou muito
+longos, constituídos de apenas um período.
+Será atribuída nota zero à redação que:
+a) fugir ao tema e/ou gênero propostos;
+b) apresentar nome, rubrica, assinatura, sinal, iniciais
+ou marcas que permitam a identificação do candidato;
+c) estiver em branco;
+d) apresentar textos sob forma não articulada
+verbalmente (apenas com desenhos, números e/ou
+palavras soltas);
+e) for escrita em outra língua que não a portuguesa;
+f) estiver predominantemente ilegível e/ou com letra
+incompreensível;
+g) apresentar o texto definitivo fora do espaço
+reservado para tal;
+h) apresentar 7 (sete) linhas ou menos (sem contar o
+título);
+i) apresentar menos de 8 (oito) linhas AUTORAIS (não
+copiadas da prova, dos textos de apoio, de modelos
+prontos de redação ou de outras fontes) contínuas e/
+ou for composta PREDOMINANTEMENTE por cópia de
+trechos da coletânea ou de quaisquer outras partes
+da prova e/ou por reproduções (plágio) de textos
+divulgados em mídias digitais (sobretudo internet) ou
+impressas;
+j) for idêntica ou muito semelhante a outra(s)
+redação(ões) deste processo seletivo ou de outro(s);
+k) apresentar formas propositais de anulação, como
+impropérios, trechos jocosos ou a recusa explícita em
+cumprir o tema proposto.
+Observações importantes:
+Cada redação é avaliada por dois examinadores
+independentes e, quando há discrepância na atribuição
+das notas, o texto é reavaliado por um terceiro
+examinador independente. Quando a discrepância
+permanece, a prova é avaliada pelos coordenadores
+da banca.
+O espaço para rascunho no caderno de questões é de preenchimento facultativo. Em hipótese alguma, o
+rascunho elaborado pelo candidato será considerado
+na correção da prova de redação pela Banca
+Examinadora.
+Em hipótese alguma o título da redação será
+considerado na avaliação do texto. Ainda que o título
+contenha elementos relacionados à abordagem
+temática, a nota do critério que avalia o tema só será
+atribuída a partir do que estiver escrito no corpo do
+texto. Sempre será considerada título a reprodução da
+frase temática fora do corpo do texto (inclusive quando
+não houver o espaço de uma linha pulada ou qualquer
+marca que indique a separação entre a reprodução
+da frase temática e o que se considera, efetivamente,
+corpo do texto – esteja essa reprodução nas linhas
+iniciais ou finais da redação).
+Redações com 20 (vinte) linhas ou menos não poderão
+alcançar a nota máxima nos critérios C e D. Além disso,
+textos muito curtos, com 15 (quinze) linhas ou menos,
+perderão um ponto nos critérios C e D.
+Será reduzida a nota, no critério C, de redações
+que contenham palavras escritas com letra
+incompreensível. A redação será anulada (nota 0), se
+estiver predominantemente ilegível.
+Não é necessário elaborar conclusões com proposta
+de intervenção, nas redações dos processos seletivos
+promovidos pela Fundação Vunesp.
+A banca examinadora da Fundação Vunesp leva
+em consideração, na avaliação do critério B, o
+conhecimento de mundo dos candidatos. Contudo,
+é muito importante que o repertório mobilizado no
+texto estabeleça uma relação consistente com o tema
+abordado e contribua, efetivamente, para a defesa da
+tese adotada pelo candidato. Assim, a mera referência
+a pensadores, obras ou teorias não garante uma nota
+alta nos processos seletivos da Fundação Vunesp –
+ao contrário, a redação será penalizada, quando esse
+repertório não estiver devidamente concatenado com
+o tema abordado e com a tese defendida.
+As propostas de redação da Fundação Vunesp
+apresentam uma coletânea de textos motivadores
+que servem como ponto de partida para a reflexão
+sobre o tema que deverá ser abordado. Redações
+compostas, predominantemente, por cópia desses
+textos motivadores receberão nota zero e redações em
+que sejam identificados trechos de cópia da coletânea
+(sem predominância) ou predominância de paráfrase
+desses textos motivadores (em relação a trechos
+autorais) terão a nota final diminuída drasticamente,
+com atribuição de pontuação mínima aos critérios B,
+C e D.
+Serão anuladas as redações em que seja identificada
+predominância de reprodução de modelos prontos
+de redação disponibilizados na internet ou em outras
+fontes. A predominância de reprodução de modelos
+será identificada por comparação entre modelos
+disponíveis para consulta em fontes de acesso público,
+bem como pela comparação entre as redações apresentadas pelos candidatos, quando evidenciada a
+utilização de um mesmo modelo. Ademais, também
+serão penalizadas, com atribuição de nota mínima aos
+critérios B, C e D, redações que, embora não sejam
+predominantemente copiadas, apresentem trechos
+reproduzidos (copiados ou parafraseados) de modelos
+prontos.
 Atribua nota de 0 a 7 para cada critério A, B, C, D (total máximo 28 pontos).
 E de uma justificativa para cada nota.
 Retorne em JSON no formato:
@@ -111,7 +274,7 @@ ${titulo}
 Texto:
 ${texto}
     `,
-fuvest: `
+    fuvest: `
 Corrija a redação no padrão FUVEST.
 Critérios de avaliação:
 A) Tema e autoria: desenvolvimento do tema com repertório, uso da coletânea, demonstração de autoria.
@@ -157,7 +320,7 @@ ${titulo}
 Texto:
 ${texto}
     `,
-ita: `
+    ita: `
 Corrija a redação no padrão ITA/IME.
 Critérios de avaliação:
 A) Tema: atendimento ao tema proposto. Fuga total = desclassificação.
@@ -321,6 +484,6 @@ Motivo: ${data.E.motivo}
   botao.disabled = false;
   botao.textContent = "Avaliar";
   document.querySelector(".resultado-box").scrollIntoView({
-  behavior: "smooth"
-});
+    behavior: "smooth"
+  });
 };
