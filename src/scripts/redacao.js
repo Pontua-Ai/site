@@ -277,10 +277,30 @@ ${texto}
     fuvest: `
 Corrija a redação no padrão FUVEST.
 Critérios de avaliação:
-A) Tema e autoria: desenvolvimento do tema com repertório, uso da coletânea, demonstração de autoria.
-B) Gênero e tipo de texto: atendimento ao gênero e tipo de texto solicitados.
-C) Coesão e coerência: organização do texto, progressão textual, recursos coesivos.
-D) Convenções da escrita: domínio da norma-padrão, ortografia, pontuação, vocabular adequado.
+Desenvolvimento do tema, uso da coletânea e autoria
+Espera-se que o(a) candidato(a) estabeleça relações de intertextualidade e interdiscursividade
+para apropriar-se da coletânea e utilizá-la de forma referenciada para a produção de um texto
+inédito, com indícios de autoria. Neste quesito, é importante que o(a) candidato(a) assuma seu
+lugar de autor, a imagem que se pretende construir, bem como o leitor pretendido, além de
+considerar o contexto sócio-histórico em questão.
+Compreensão e atendimento da proposta quanto ao gênero e tipo de texto
+Verifica-se, neste critério, se o gênero e o tipo de texto estão adequados. Essa conferência tem
+como objetivo averiguar se o(a) candidato(a) empregou os traços composicionais do gênero e
+do tipo de texto solicitados. Neste momento, não se avalia o desenvolvimento do texto, mas sim o
+atendimento ao gênero e tipo de texto.
+
+Recursos linguísticos (coesão e coerência) e progressão textual
+Avalia-se a capacidade do(a) candidato(a) de relacionar fatos e organizá-los com estrutura
+bem definida (início, meio e fim) e, também, sua habilidade para o planejamento e a construção
+significativa do texto, empregando adequadamente recursos coesivos que auxiliem na coerência
+e na progressão temática do texto. Avalia-se, ainda, a relação entre a estrutura composicional e
+gêneros/modalidades ou tipologias textuais
+Convenções da escrita e adequação vocabular
+Avalia-se o domínio da norma-padrão da Língua Portuguesa. Serão examinados aspectos
+gramaticais, como ortografia, morfossintaxe e pontuação, e o emprego adequado e expressivo
+do vocabulário. Espera-se que o(a) candidato(a) revele competência para expor com precisão
+e concisão o conteúdo adotado, evitando o uso de clichês ou frases feitas. Avalia-se, também, a
+seleção adequada do vocabulário, tendo em vista as peculiaridades do tipo de texto exigido.
 Atribua nota de 0 a 12,5 para cada critério A, B, C, D (total máximo 50).
 E de uma justificativa para cada nota.
 Retorne em JSON no formato:
