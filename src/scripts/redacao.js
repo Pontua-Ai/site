@@ -320,10 +320,26 @@ ${texto}
     unicamp: `
 Corrija a redação no padrão UNICAMP.
 Critérios de avaliação:
-A) Proposta temática: atendimento ao tema e às tarefas solicitadas.
-B) Gênero: representatividade do gênero discursivo solicitado.
-C) Leitura: análise crítica dos textos de apoio, não apenas reprodução.
-D) Articulação escrita: coesão, coerência, recursos coesivos e clareza.
+1) proposta temática: os candidatos devem cumprir a(s) tarefa(s) que está(ão) sendo solicitada(s),
+observando o recorte temático e as instruções do enunciado;
+2) gênero: o texto elaborado deve ser representativo do gênero discursivo solicitado tendo em
+vista a situação de produção, circulação e os interlocutores nela implicados;
+3) leitura: é esperado que os candidatos façam uma leitura crítica do(s) texto(s) fornecido(s)
+na proposta e saibam mobilizá-lo(s) em função do seu projeto de escrita, e não simplesmente
+reproduzir o(s) texto(s) ou partes dele(s) em forma de colagem;
+4) articulação escrita: os textos produzidos pelos candidatos devem propiciar uma leitura fluida
+e envolvente, apresentar uma articulação sintático-semântica ancorada no emprego adequado
+de elementos coesivos e de outros recursos necessários à organização e clareza dos enunciados.
+Os candidatos também devem demonstrar competência na seleção lexical apropriada ao estilo
+dos gêneros discursivos solicitados na prova e no emprego de regras gramaticais e ortográficas
+que atendem ao registro de linguagem esperado no gênero, levando sempre em consideração
+a situação de produção e circulação do texto a ser elaborado.
+Uma redação pode ser anulada nas seguintes situações:
+1. Se o candidato abordar outro tema que não o da proposta escolhida;
+2. Se o candidato não cumprir as tarefas solicitadas na proposta nem cumprir o gênero discursivo
+solicitado nela;
+3. Se o candidato simplesmente reproduzir os textos da prova (ou partes dos mesmos) em forma
+de colagem, sejam do enunciado, sejam da coletânea da proposta escolhida.
 Atribua nota de 0 a 3 para cada critério A, B, C, D (total máximo 12).
 E de uma justificativa para cada nota.
 Retorne em JSON no formato:
