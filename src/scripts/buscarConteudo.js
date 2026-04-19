@@ -67,9 +67,26 @@ export async function carregarConteudo() {
 
     data.forEach(conteudo => {
         const div = document.createElement("div");
+        div.className = "conteudo-item";
+        div.dataset.nome = conteudo.nome_conteudo.toLowerCase();
         div.innerHTML = `<button class="subjects-button" onclick="window.location.href='perguntas.html?conteudo=${conteudo.id_conteudo}'">${conteudo.nome_conteudo}</button>`;
         container.appendChild(div);
     });
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const termo = e.target.value.toLowerCase();
+            const items = document.querySelectorAll(".conteudo-item");
+            items.forEach(item => {
+                if (item.dataset.nome.includes(termo)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    }
 }
 
 carregarConteudo();
