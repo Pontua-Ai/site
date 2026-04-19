@@ -55,6 +55,10 @@ img{
     overflow: hidden;
 }
 
+.card:hover{
+    filter: brightness(1.15);
+}
+
 .card .divider-line{
     position: absolute;
     left: 38px;
