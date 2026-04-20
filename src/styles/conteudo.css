@@ -1,7 +1,6 @@
 .subjects-container{
     width: 80%;
     margin: 30px auto;
-    background-color: var(--gray);
     padding: 20px;
     box-sizing: border-box;
     border-radius: 20px;
@@ -12,16 +11,39 @@
     margin: 10px;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
 .search-input{
     width: 100%;
-    padding: 12px 20px;
+    padding: 12px 40px;
     font-size: 16px;
     border: 2px solid var(--primary-color);
     border-radius: 25px;
     background-color: var(--background);
     color: var(--text-primary);
+}
+
+.search-icon{
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-primary);
+}
+
+.search-clear{
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: none;
+}
+
+.search-clear.visible{
+    display: block;
 }
 
 .search-input:focus{
@@ -35,7 +57,6 @@
     align-items: stretch;
     justify-content: center;
     gap: 20px;
-    background-color: var(--gray);
     padding: 15px;
     border-radius: 15px;
 }
@@ -46,8 +67,8 @@ h1, #titleMateria{
 
 #conteudos{
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -58,13 +79,45 @@ h1, #titleMateria{
     margin-right: 0;
 }
 
+.conteudo-item{
+    background-color: var(--background);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1px solid var(--gray);
+}
+
+.conteudo-item:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-color);
+}
+
+.conteudo-item h3{
+    color: var(--primary-color);
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
 .subjects-button{
-    height: 60px;
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
     background-color: var(--primary-color);
     color: var(--text-secundary);
     text-align: center;
-    border-radius: 20px;
-    width: 100%;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    border: none;
+}
+
+.subjects-button:hover{
+    background-color: var(--secondary-color);
 }
 
 #titleMateria {
