@@ -203,13 +203,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
+                const userLogado = JSON.parse(localStorage.getItem('userLogado'));
                 const { data: perguntaCriada, error: erroPergunta } = await supabaseClient
                     .from("perguntas")
                     .insert([
                         {
                             pergunta_texto: pergunta,
                             id_conteudo: idConteudo,
-                            id_materia: idMateria
+                            id_materia: idMateria,
+                            id_usuario: userLogado.id_usuario
                         }
                     ])
                     .select();

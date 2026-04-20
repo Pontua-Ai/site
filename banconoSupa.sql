@@ -26,9 +26,11 @@ CREATE TABLE public.perguntas (
   pergunta_texto text NOT NULL,
   id_conteudo integer,
   id_materia integer,
+  id_usuario integer,
   CONSTRAINT perguntas_pkey PRIMARY KEY (id_pergunta),
   CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo),
-  CONSTRAINT perguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia)
+  CONSTRAINT perguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
+  CONSTRAINT perguntas_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
 );
 CREATE TABLE public.pontuacao_atividade (
   id_pontuacao_atividade integer NOT NULL DEFAULT nextval('pontuacao_atividade_id_pontuacao_atividade_seq'::regclass),
