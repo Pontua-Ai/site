@@ -98,11 +98,6 @@
                     <p>Alterar senha</p>
                 </div>
 
-                <div class="cardConfi">
-                    <i class="fa-regular fa-envelope"></i>
-                    <p>Alterar email</p>
-                </div>
-
                 <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
                     <i class="fa-solid fa-moon"></i>
                     <p>Modo escuro</p>
@@ -121,6 +116,19 @@
         </div>
 
     </main>
+
+    <div id="modalExcluir" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p id="modalTexto">Tem certeza de que deseja excluir sua conta?</p>
+            <div id="confirmarSenha" style="display: none;">
+                <input type="password" id="senhaExcluir" placeholder="Digite sua senha para confirmar" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid var(--primary-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);">
+            </div>
+            <div class="modal-botoes">
+                <button id="btnNao" class="btn-modal">Não</button>
+                <button id="btnSim" class="btn-modal">Sim</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="src/scripts/app.js"></script>
 </body>

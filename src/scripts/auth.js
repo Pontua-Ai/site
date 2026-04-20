@@ -56,3 +56,35 @@ export async function loginUsuario(login, senha) {
     console.log("Usuario logado:", data);
     return { success: true, user: data };
 }
+
+export async function verificarSenha(email, senha) {
+    const hashInput = await hashSenha(senha);
+    const { data, error } = await supabaseClient
+        .from("users")
+        .select("senha")
+        .eq("email", email)
+        .single();
+
+    if (error || !data) {
+        return { success: false, error: "Usuário não encontrado" };
+    }
+
+    if (data.senha !== hashInput) {
+        return { success: false, error: "Senha incorreta" };
+    }
+
+    return { success: true };
+}
+
+export async function excluirConta(idUsuario) {
+    const { error } = await supabaseClient
+        .from("users")
+        .delete()
+        .eq("id_usuario", idUsuario);
+
+    if (error) {
+        return { success: false, error: error.message };
+    }
+
+    return { success: true };
+}
