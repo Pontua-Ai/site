@@ -38,9 +38,9 @@
                 </div>
             </div>
             <div class="info">
-                <p class="nameUser">Nome do Usuário <span class="tipo">Tipo de conta (aluno/professor)</span><span
+                <p class="nameUser"><span id="nomeUsuario">Nome do Usuário</span> <span class="tipo" id="tipoConta">Tipo de conta</span><span
                         class="editar"><i class="fa-solid fa-pen"></i> Editar Perfil</span></p>
-                <p class="data">Membro desde mês/ano</p>
+                <p class="data" id="dataCriacao">Membro desde mês/ano</p>
             </div>
         </div>
 
@@ -104,9 +104,14 @@
                     <p>Alterar email</p>
                 </div>
 
-                <div class="cardConfi" onclick="toggleTheme()" style="cursor: pointer;">
+                <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
                     <i class="fa-solid fa-moon"></i>
                     <p>Modo escuro</p>
+                </div>
+
+                <div class="cardConfi" id="btn-logout" style="cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <p>Sair da conta</p>
                 </div>
 
                 <div class="cardConfi">
@@ -117,66 +122,6 @@
         </div>
 
     </main>
-    <script type="module">
-        import supabaseClient from "./src/scripts/supabase.js";
-        import { toast } from "./src/scripts/utils.js";
-
-        const inputFoto = document.getElementById("inputFotoPerfil");
-        const imgPerfil = document.getElementById("imgPerfil");
-
-        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
-        if (userLogado && userLogado.foto_url) {
-            imgPerfil.src = userLogado.foto_url;
-        }
-
-        async function uploadFoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const userLogado = JSON.parse(localStorage.getItem("userLogado"));
-            if (!userLogado) {
-                toast("Usuário não está logado", "error");
-                return;
-            }
-
-            const extensao = file.name.split('.').pop();
-            const nomeArquivo = `perfil_${userLogado.id_usuario}_${Date.now()}.${extensao}`;
-
-            const { data, error } = await supabaseClient.storage
-                .from("fotos-perfil")
-                .upload(nomeArquivo, file);
-
-            if (error) {
-                console.error("Erro ao fazer upload:", error);
-                toast("Erro ao fazer upload da imagem", "error");
-                return;
-            }
-
-            const { data: urlData } = supabaseClient.storage
-                .from("fotos-perfil")
-                .getPublicUrl(nomeArquivo);
-
-            const fotoUrl = urlData.publicUrl;
-
-            const { error: errorUpdate } = await supabaseClient
-                .from("users")
-                .update({ foto_url: fotoUrl })
-                .eq("id_usuario", userLogado.id_usuario);
-
-            if (errorUpdate) {
-                console.error("Erro ao salvar URL:", errorUpdate);
-                toast("Erro ao salvar foto", "error");
-                return;
-            }
-
-            imgPerfil.src = fotoUrl;
-            userLogado.foto_url = fotoUrl;
-            localStorage.setItem("userLogado", JSON.stringify(userLogado));
-            toast("Foto atualizada com sucesso!", "success");
-        }
-
-        inputFoto.addEventListener("change", uploadFoto);
-    </script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 

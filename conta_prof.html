@@ -28,14 +28,18 @@
     </header>
 
     <main>
+        <input type="file" id="inputFotoPerfil" accept="image/*" style="display: none;">
         <div class="headerConta">
-            <div class="img">
-                <img src="./img/IMG_20230906_203143_904.jpg" alt="Imagem da conta do usuário">
+            <div class="img" onclick="document.getElementById('inputFotoPerfil').click()">
+                <img id="imgPerfil" src="img/avatar-padrao.png" alt="Imagem da conta do usuário">
+                <div class="overlayEdit">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
             </div>
             <div class="info">
-                <p class="nameUser">Nome do Usuário <span class="tipo">Tipo de conta (aluno/professor)</span><span
+                <p class="nameUser"><span id="nomeUsuario">Nome do Usuário</span> <span class="tipo" id="tipoConta">Tipo de conta</span><span
                         class="editar"><i class="fa-solid fa-pen"></i> Editar Perfil</span></p>
-                <p class="data">Membro desde mês/ano</p>
+                <p class="data" id="dataCriacao">Membro desde mês/ano</p>
             </div>
         </div>
 
@@ -99,9 +103,14 @@
                     <p>Alterar email</p>
                 </div>
 
-                <div class="cardConfi" onclick="toggleTheme()" style="cursor: pointer;">
+                <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
                     <i class="fa-solid fa-moon"></i>
                     <p>Modo escuro</p>
+                </div>
+
+                <div class="cardConfi" id="btn-logout" style="cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <p>Sair da conta</p>
                 </div>
 
                 <div class="cardConfi">
@@ -113,7 +122,6 @@
 
     </main>
 
-    <script src="src/scripts/contaProf.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 

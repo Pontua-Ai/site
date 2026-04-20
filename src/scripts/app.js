@@ -5,13 +5,26 @@ import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
 import { toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
+import { initDadosConta } from "./conta.js";
 
 let quillEditor = null;
 
 initTheme();
+initDadosConta();
 window.toggleTheme = toggleTheme;
 
+window.logout = function() {
+    localStorage.removeItem("userLogado");
+    window.location.href = "inicio.html";
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+    const btnTheme = document.getElementById("btn-theme");
+    if (btnTheme) btnTheme.onclick = toggleTheme;
+    
+    const btnLogout = document.getElementById("btn-logout");
+    if (btnLogout) btnLogout.onclick = logout;
+    
     const editorContainer = document.getElementById("editor-container");
     if (editorContainer) {
         quillEditor = new Quill("#editor-container", {
@@ -40,22 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await signup(name, email, password);
 
             if (result && result.success) {
-                const { data: novoUsuario } = await supabaseClient
-                    .from("users")
-                    .select("*")
-                    .eq("email", email)
-                    .single();
-                if (novoUsuario) {
-                    localStorage.setItem("userLogado", JSON.stringify(novoUsuario));
-                }
-                toast("Cadastro realizado com sucesso!", "success");
-                
-                const tipoConta = result.tipo_conta || novoUsuario?.tipo_conta;
-                if (tipoConta === 'professor') {
-                    window.location.href = "doc_prof.html";
-                } else {
-                    window.location.href = "materias.html";
-                }
+                toast("Cadastro realizado com sucesso! Faça login para continuar.", "success");
+                window.location.href = "inicio.html";
             } else {
                 toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
             }
