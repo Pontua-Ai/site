@@ -98,6 +98,7 @@ button:hover{
     border-radius: 10px;
     background-color: var(--gray);
     border-bottom: 2px solid transparent;
+    color: #fff;
 }
 
 .password-icon{
@@ -116,6 +117,11 @@ input{
     border-radius: 10px;
     background-color: var(--gray);
     transition: all 0.7s ease;
+    color: #fff;
+}
+
+body:not(.dark) input{
+    color: #222;
 }
 
 input:focus{

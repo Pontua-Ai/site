@@ -64,7 +64,12 @@ header a:hover{
 
 .theme-toggle:hover {
     color: var(--primary-color);
-    background-color: var(--gray);
+    background-color: var(--border-color);
+}
+
+.theme-toggle .material-icons {
+    font-size: 20px;
+    vertical-align: middle;
 }
 
 body.dark .theme-toggle {
