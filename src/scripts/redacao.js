@@ -72,6 +72,9 @@ Competencia 5: Elaborar proposta de intervenção para o problema abordado, resp
   Atribui-se 40 pontos para essa competencia caso: Apresenta proposta de intervenção vaga, precária ou relacionada apenas ao assunto.
   Atribui-se 0 pontos para essa competencia caso: Não apresenta proposta de intervenção ou apresenta proposta não relacionada ao tema ou ao assunto
 
+  Além disso comente como melhorar cada parte, por exemplo caso a introdução tenha ficado ruim diga como melhorar ela reescrevendo da maneira ideial.
+  Caso esteja nota 1000, ao inves de comentar o que melhorar só diga "Parabens sua redação foi ótima"
+
 E de uma justificativa para cada nota.
 Retorne em JSON no formato:
 {

@@ -69,11 +69,16 @@ export async function carregarConteudo() {
         const div = document.createElement("div");
         div.className = "conteudo-item";
         div.dataset.nome = conteudo.nome_conteudo.toLowerCase();
-        div.innerHTML = `<button class="subjects-button" onclick="window.location.href='perguntas.html?conteudo=${conteudo.id_conteudo}'">${conteudo.nome_conteudo}</button>`;
+        div.onclick = () => window.location.href = `perguntas.html?conteudo=${conteudo.id_conteudo}`;
+        div.innerHTML = `
+            <h3>${conteudo.nome_conteudo}</h3>
+            <button class="subjects-button">Acessar</button>
+        `;
         container.appendChild(div);
     });
 
     const searchInput = document.getElementById("searchInput");
+    const searchClear = document.getElementById("searchClear");
     if (searchInput) {
         searchInput.addEventListener("input", (e) => {
             const termo = e.target.value.toLowerCase();
@@ -84,6 +89,21 @@ export async function carregarConteudo() {
                 } else {
                     item.style.display = "none";
                 }
+            });
+            if (e.target.value.length > 0) {
+                searchClear.classList.add("visible");
+            } else {
+                searchClear.classList.remove("visible");
+            }
+        });
+    }
+    if (searchClear) {
+        searchClear.addEventListener("click", () => {
+            searchInput.value = "";
+            searchClear.classList.remove("visible");
+            const items = document.querySelectorAll(".conteudo-item");
+            items.forEach(item => {
+                item.style.display = "block";
             });
         });
     }
