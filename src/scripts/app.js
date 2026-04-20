@@ -1,4 +1,4 @@
-import { signup, loginUsuario } from "./auth.js";
+import { signup, loginUsuario, verificarSenha, excluirConta } from "./auth.js";
 import supabaseClient from "./supabase.js";
 import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
@@ -12,6 +12,65 @@ let quillEditor = null;
 initTheme();
 initDadosConta();
 window.toggleTheme = toggleTheme;
+window.initExcluirConta = initExcluirConta;
+
+function initExcluirConta() {
+    const cardsConfi = document.querySelectorAll('.cardConfi');
+    const cardExcluir = Array.from(cardsConfi).find(card => card.textContent.includes('Excluir conta'));
+    if (!cardExcluir) return;
+
+    const modal = document.getElementById('modalExcluir');
+    const modalTexto = document.getElementById('modalTexto');
+    const confirmarSenha = document.getElementById('confirmarSenha');
+    const btnSim = document.getElementById('btnSim');
+    const btnNao = document.getElementById('btnNao');
+    const inputSenha = document.getElementById('senhaExcluir');
+
+    let etapaConfirmar = false;
+
+    cardExcluir.addEventListener('click', () => {
+        etapaConfirmar = false;
+        modal.style.display = 'flex';
+        modalTexto.textContent = 'Tem certeza de que deseja excluir sua conta?';
+        confirmarSenha.style.display = 'none';
+        btnSim.textContent = 'Sim';
+    });
+
+    btnNao.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    btnSim.addEventListener('click', async () => {
+        if (!etapaConfirmar) {
+            etapaConfirmar = true;
+            modalTexto.textContent = 'Para confirmar, digite sua senha:';
+            confirmarSenha.style.display = 'block';
+            btnSim.textContent = 'Excluir';
+            inputSenha.value = '';
+        } else {
+            const senha = inputSenha.value;
+            if (!senha) {
+                toast('Digite sua senha', 'error');
+                return;
+            }
+
+            const userLogado = JSON.parse(localStorage.getItem('userLogado'));
+            const resultado = await verificarSenha(userLogado.email, senha);
+
+            if (!resultado.success) {
+                toast('Senha incorreta', 'error');
+                return;
+            }
+
+            await excluirConta(userLogado.id_usuario);
+            toast('Conta excluída com sucesso!', 'success');
+            localStorage.removeItem('userLogado');
+            window.location.href = 'inicio.html';
+        }
+    });
+}
+
+initExcluirConta();
 
 window.logout = function() {
     localStorage.removeItem("userLogado");
