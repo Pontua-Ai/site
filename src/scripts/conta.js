@@ -28,6 +28,61 @@ export async function carregarEstatisticasAluno(idUsuario) {
     if (valorMedia) valorMedia.textContent = mediaRedacao;
 }
 
+export async function carregarProvasRecentes(idUsuario) {
+    const container = document.getElementById("provasRecentesContainer");
+    if (!container) return;
+
+    const { data: pontuacoes, error } = await supabaseClient
+        .from("pontuacao_atividade")
+        .select("*")
+        .eq("id_usuario", idUsuario)
+        .order("id_pontuacao_atividade", { ascending: false })
+        .limit(5);
+
+    if (error || !pontuacoes || pontuacoes.length === 0) {
+        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma prova encontrada</p></div>';
+        return;
+    }
+
+    container.innerHTML = '';
+
+    for (const pontuacao of pontuacoes) {
+        let nomeMateria = "Matéria";
+        let nomeConteudo = "Conteúdo";
+
+        if (pontuacao.id_materia) {
+            const { data: materia } = await supabaseClient
+                .from("materia")
+                .select("nome_materia")
+                .eq("id_materia", pontuacao.id_materia)
+                .single();
+            nomeMateria = materia?.nome_materia || "Matéria";
+        }
+
+        if (pontuacao.id_conteudo) {
+            const { data: conteudo } = await supabaseClient
+                .from("conteudo")
+                .select("nome_conteudo")
+                .eq("id_conteudo", pontuacao.id_conteudo)
+                .single();
+            nomeConteudo = conteudo?.nome_conteudo || "Conteúdo";
+        }
+
+        const pontos = pontuacao.pontos_atividade || 0;
+
+        const div = document.createElement("div");
+        div.className = "cardAtividades";
+        div.innerHTML = `
+            <i class="fa-solid fa-book-open"></i>
+            <div class="info-prova">
+                <p class="materia-conteudo">${nomeMateria} - ${nomeConteudo}</p>
+                <p class="pontos">${pontos} pontos</p>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+}
+
 export function initDadosConta() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     
@@ -43,6 +98,7 @@ export function initDadosConta() {
     
     if (userLogado.tipo_conta === 'aluno') {
         carregarEstatisticasAluno(userLogado.id_usuario);
+        carregarProvasRecentes(userLogado.id_usuario);
     }
     
     const nomeUsuario = document.getElementById("nomeUsuario");

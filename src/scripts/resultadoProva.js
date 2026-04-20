@@ -6,6 +6,8 @@ const pontos = urlParams.get('pontos');
 const total = urlParams.get('total');
 const erradasJson = urlParams.get('erradas');
 const idAlternativa = urlParams.get('alternativa');
+const idMateria = urlParams.get('idmateria');
+const idConteudo = urlParams.get('idconteudo');
 
 let respostasErradas = [];
 try {
@@ -67,13 +69,24 @@ async function salvarPontuacao() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     if (!userLogado) return;
 
+    const dados = {
+        id_usuario: userLogado.id_usuario,
+        pontos_atividade: parseInt(pontos),
+    };
+
+    if (idAlternativa) {
+        dados.id_alternativa = parseInt(idAlternativa);
+    }
+    if (idMateria) {
+        dados.id_materia = parseInt(idMateria);
+    }
+    if (idConteudo) {
+        dados.id_conteudo = parseInt(idConteudo);
+    }
+
     const { error } = await supabaseClient
         .from("pontuacao_atividade")
-        .insert([{
-            id_usuario: userLogado.id_usuario,
-            pontos_atividade: parseInt(pontos),
-            id_alternativa: idAlternativa ? parseInt(idAlternativa) : null
-        }]);
+        .insert([dados]);
 
     if (error) {
         console.error("Erro ao salvar pontuação:", error);

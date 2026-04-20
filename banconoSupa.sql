@@ -35,9 +35,13 @@ CREATE TABLE public.pontuacao_atividade (
   id_alternativa integer,
   pontos_atividade integer NOT NULL DEFAULT 0,
   id_usuario integer,
+  id_materia integer,
+  id_conteudo integer,
   CONSTRAINT pontuacao_atividade_pkey PRIMARY KEY (id_pontuacao_atividade),
   CONSTRAINT pontuacao_atividade_id_alternativa_fkey FOREIGN KEY (id_alternativa) REFERENCES public.alternativa(id_alternativa),
-  CONSTRAINT pontuacao_atividade_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+  CONSTRAINT pontuacao_atividade_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
+  CONSTRAINT pontuacao_atividade_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
+  CONSTRAINT pontuacao_atividade_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo)
 );
 CREATE TABLE public.redacao (
   id_redacao integer NOT NULL DEFAULT nextval('redacao_id_redacao_seq'::regclass),
