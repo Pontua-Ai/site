@@ -164,6 +164,24 @@ main{
     margin-top: 10px;
 }
 
+.info-prova {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.materia-conteudo {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.pontos {
+    margin: 0;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
 .modal {
     position: fixed;
     top: 0;
