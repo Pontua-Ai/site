@@ -7,6 +7,8 @@ let indicePergunta = 0;
 let pontos = 0;
 let totalRespostas = 0;
 let respostasErradas = [];
+let idMateriaAtual = null;
+let idConteudoAtual = null;
 
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
@@ -176,11 +178,11 @@ export async function exibirPergunta() {
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
-    console.log("Pergunta:", pergunta);
+    idMateriaAtual = pergunta.id_materia;
+    idConteudoAtual = pergunta.id_conteudo;
     document.getElementById("perguntaTexto").innerHTML = pergunta.pergunta_texto;
     
     const idPergunta = pergunta.id_pergunta || pergunta.id;
-    console.log("ID da pergunta usado:", idPergunta);
     
     const { data: alternativas, error } = await supabaseClient
         .from("alternativa")
@@ -205,7 +207,7 @@ export async function exibirPergunta() {
     container.appendChild(btnResponder);
 }
 
-export function verificarResposta() {
+export async function verificarResposta() {
     const selecionada = document.querySelector('input[name="alternativa"]:checked');
     if (!selecionada) {
         toast("Selecione uma alternativa!", "error");
@@ -214,6 +216,19 @@ export function verificarResposta() {
     
     const perguntaAtual = perguntasCache[indicePergunta];
     const isCorreta = selecionada.dataset.correta == "true" || selecionada.dataset.correta === true;
+    
+    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    if (userLogado) {
+        await supabaseClient
+            .from("pontuacao_atividade")
+            .insert([{
+                id_usuario: userLogado.id_usuario,
+                id_alternativa: parseInt(selecionada.value),
+                pontos_atividade: isCorreta ? 1 : 0,
+                id_materia: idMateriaAtual,
+                id_conteudo: idConteudoAtual
+            }]);
+    }
     
     totalRespostas++;
     
