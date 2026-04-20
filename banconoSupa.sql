@@ -1,3 +1,6 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
 CREATE TABLE public.alternativa (
   id_alternativa integer NOT NULL DEFAULT nextval('alternativa_id_alternativa_seq'::regclass),
   nome_alternativa character varying NOT NULL,
@@ -31,8 +34,14 @@ CREATE TABLE public.pontuacao_atividade (
   id_pontuacao_atividade integer NOT NULL DEFAULT nextval('pontuacao_atividade_id_pontuacao_atividade_seq'::regclass),
   id_alternativa integer,
   pontos_atividade integer NOT NULL DEFAULT 0,
+  id_usuario integer,
+  id_materia integer,
+  id_conteudo integer,
   CONSTRAINT pontuacao_atividade_pkey PRIMARY KEY (id_pontuacao_atividade),
-  CONSTRAINT pontuacao_atividade_id_alternativa_fkey FOREIGN KEY (id_alternativa) REFERENCES public.alternativa(id_alternativa)
+  CONSTRAINT pontuacao_atividade_id_alternativa_fkey FOREIGN KEY (id_alternativa) REFERENCES public.alternativa(id_alternativa),
+  CONSTRAINT pontuacao_atividade_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
+  CONSTRAINT pontuacao_atividade_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
+  CONSTRAINT pontuacao_atividade_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo)
 );
 CREATE TABLE public.redacao (
   id_redacao integer NOT NULL DEFAULT nextval('redacao_id_redacao_seq'::regclass),
@@ -53,29 +62,3 @@ CREATE TABLE public.users (
   data_criacao timestamp without time zone DEFAULT now(),
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
 );
-
--- Função para validar email institucional e definir tipo de conta
-CREATE OR REPLACE FUNCTION validar_email_institucional()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Verifica se é email institucional
-  IF NEW.email NOT LIKE '%@cps.sp.gov.br' AND NEW.email NOT LIKE '%@aluno.cps.sp.gov.br' THEN
-    RAISE EXCEPTION 'Apenas emails institucionais (@cps.sp.gov.br ou @aluno.cps.sp.gov.br) são permitidos.';
-  END IF;
-
-  -- Define o tipo de conta baseado no domínio
-  IF NEW.email LIKE '%@aluno.cps.sp.gov.br' THEN
-    NEW.tipo_conta := 'aluno';
-  ELSE
-    NEW.tipo_conta := 'professor';
-  END IF;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger para executar antes de inserir/atualizar usuário
-CREATE TRIGGER trigger_validar_email
-BEFORE INSERT OR UPDATE ON public.users
-FOR EACH ROW
-EXECUTE FUNCTION validar_email_institucional();
