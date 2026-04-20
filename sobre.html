@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="src/styles/button.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -19,7 +20,12 @@
                 <li><a href="inicio.html">Entrar</a></li>
                 <li><a href="cadastro.html">Cadastrar</a></li>
                 <li><a href="sobre.html" class="active">Sobre</a></li>
-                <li><button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema"><i class="fa-solid fa-moon"></i></button></li>
+                <li>
+                <label class="theme-switch">
+                    <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
+                    <span class="slider"></span>
+                </label>
+            </li>
             </ul>
         </nav>
     </header>
