@@ -163,7 +163,8 @@ function criarAlternativa(alt) {
 
 export async function exibirPergunta() {
     if (indicePergunta >= perguntasCache.length) {
-        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}`;
+        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}&idusuario=${userLogado ? userLogado.id_usuario : ''}`;
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
