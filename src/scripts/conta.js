@@ -28,7 +28,7 @@ export async function carregarEstatisticasAluno(idUsuario) {
     if (valorMedia) valorMedia.textContent = mediaRedacao;
 }
 
-export async function carregarProvasRecentes(idUsuario) {
+export async function carregarProvasRecentes(idUsuario, mostrarPontos = true) {
     const container = document.getElementById("provasRecentesContainer");
     if (!container) return;
 
@@ -72,13 +72,21 @@ export async function carregarProvasRecentes(idUsuario) {
 
         const div = document.createElement("div");
         div.className = "cardAtividades";
-        div.innerHTML = `
-            <i class="fa-solid fa-book-open"></i>
-            <div class="info-prova">
-                <p class="materia-conteudo">${nomeMateria} - ${nomeConteudo}</p>
-                <p class="pontos">${pontos} pontos</p>
-            </div>
-        `;
+        
+        if (mostrarPontos) {
+            div.innerHTML = `
+                <i class="fa-solid fa-book-open"></i>
+                <div class="info-prova">
+                    <p class="materia-conteudo">${nomeMateria} - ${nomeConteudo}</p>
+                    <p class="pontos">${pontos} pontos</p>
+                </div>
+            `;
+        } else {
+            div.innerHTML = `
+                <i class="fa-solid fa-book-open"></i>
+                <p>${nomeMateria} - ${nomeConteudo}</p>
+            `;
+        }
         container.appendChild(div);
     }
 }
@@ -95,23 +103,29 @@ export async function carregarEstatisticasProfessor(idUsuario) {
         .eq("id_usuario", idUsuario);
 
     let totalRespostas = 0;
+    let totalAcertos = 0;
     if (perguntas && perguntas.length > 0) {
         const idPerguntas = perguntas.map(p => p.id_pergunta);
         
         const { data: alternativas } = await supabaseClient
             .from("alternativa")
-            .select("id_alternativa")
+            .select("id_alternativa, correta")
             .in("id_pergunta", idPerguntas);
 
         if (alternativas && alternativas.length > 0) {
             const idAlternativas = alternativas.map(a => a.id_alternativa);
-            const { count: respostas } = await supabaseClient
+            
+            const { data: respostas, error } = await supabaseClient
                 .from("pontuacao_atividade")
-                .select("*", { count: "estimated", head: true })
+                .select("id_alternativa, pontos_atividade")
                 .in("id_alternativa", idAlternativas);
-            totalRespostas = respostas || 0;
+
+            totalRespostas = respostas ? respostas.length : 0;
+            totalAcertos = respostas ? respostas.filter(r => r.pontos_atividade === 1).length : 0;
         }
     }
+
+    const mediaAcertos = totalRespostas > 0 ? Math.round((totalAcertos / totalRespostas) * 100) : 0;
 
     const valorPerguntas = document.querySelector(".ativFeitas .valor");
     const valorRespostas = document.querySelector(".redaFeitas .valor");
@@ -119,7 +133,89 @@ export async function carregarEstatisticasProfessor(idUsuario) {
 
     if (valorPerguntas) valorPerguntas.textContent = perguntasCriadas || 0;
     if (valorRespostas) valorRespostas.textContent = totalRespostas;
-    if (valorTaxa) valorTaxa.textContent = 0;
+    if (valorTaxa) valorTaxa.textContent = mediaAcertos + "%";
+}
+
+export async function carregarProvasRecentesProfessor(idUsuario) {
+    const container = document.getElementById("provasRecentesContainer");
+    if (!container) return;
+
+    const { data: perguntas } = await supabaseClient
+        .from("perguntas")
+        .select("id_pergunta")
+        .eq("id_usuario", idUsuario);
+
+    if (!perguntas || perguntas.length === 0) {
+        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
+        return;
+    }
+
+    const idPerguntas = perguntas.map(p => p.id_pergunta);
+
+    const { data: alternativas } = await supabaseClient
+        .from("alternativa")
+        .select("id_alternativa, id_pergunta")
+        .in("id_pergunta", idPerguntas);
+
+    if (!alternativas || alternativas.length === 0) {
+        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
+        return;
+    }
+
+    const idAlternativas = alternativas.map(a => a.id_alternativa);
+
+    const { data: pontuacoes } = await supabaseClient
+        .from("pontuacao_atividade")
+        .select("id_materia, id_conteudo")
+        .in("id_alternativa", idAlternativas);
+
+    if (!pontuacoes || pontuacoes.length === 0) {
+        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
+        return;
+    }
+
+    const atividadesUnicas = [];
+    const seen = new Set();
+    for (const p of pontuacoes) {
+        const key = `${p.id_materia}-${p.id_conteudo}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            atividadesUnicas.push(p);
+        }
+    }
+
+    container.innerHTML = '';
+
+    for (const pontuacao of atividadesUnicas.slice(0, 5)) {
+        let nomeMateria = "Matéria";
+        let nomeConteudo = "Conteúdo";
+
+        if (pontuacao.id_materia) {
+            const { data: materia } = await supabaseClient
+                .from("materia")
+                .select("nome_materia")
+                .eq("id_materia", pontuacao.id_materia)
+                .single();
+            nomeMateria = materia?.nome_materia || "Matéria";
+        }
+
+        if (pontuacao.id_conteudo) {
+            const { data: conteudo } = await supabaseClient
+                .from("conteudo")
+                .select("nome_conteudo")
+                .eq("id_conteudo", pontuacao.id_conteudo)
+                .single();
+            nomeConteudo = conteudo?.nome_conteudo || "Conteúdo";
+        }
+
+        const div = document.createElement("div");
+        div.className = "cardAtividades";
+        div.innerHTML = `
+            <i class="fa-solid fa-book-open"></i>
+            <p>${nomeMateria} - ${nomeConteudo}</p>
+        `;
+        container.appendChild(div);
+    }
 }
 
 export function initDadosConta() {
@@ -137,9 +233,10 @@ export function initDadosConta() {
     
     if (userLogado.tipo_conta === 'aluno') {
         carregarEstatisticasAluno(userLogado.id_usuario);
-        carregarProvasRecentes(userLogado.id_usuario);
+        carregarProvasRecentes(userLogado.id_usuario, true);
     } else if (userLogado.tipo_conta === 'professor') {
         carregarEstatisticasProfessor(userLogado.id_usuario);
+        carregarProvasRecentesProfessor(userLogado.id_usuario);
     }
     
     const nomeUsuario = document.getElementById("nomeUsuario");
