@@ -83,6 +83,45 @@ export async function carregarProvasRecentes(idUsuario) {
     }
 }
 
+export async function carregarEstatisticasProfessor(idUsuario) {
+    const { count: perguntasCriadas } = await supabaseClient
+        .from("perguntas")
+        .select("*", { count: "estimated", head: true })
+        .eq("id_usuario", idUsuario);
+
+    const { data: perguntas } = await supabaseClient
+        .from("perguntas")
+        .select("id_pergunta")
+        .eq("id_usuario", idUsuario);
+
+    let totalRespostas = 0;
+    if (perguntas && perguntas.length > 0) {
+        const idPerguntas = perguntas.map(p => p.id_pergunta);
+        
+        const { data: alternativas } = await supabaseClient
+            .from("alternativa")
+            .select("id_alternativa")
+            .in("id_pergunta", idPerguntas);
+
+        if (alternativas && alternativas.length > 0) {
+            const idAlternativas = alternativas.map(a => a.id_alternativa);
+            const { count: respostas } = await supabaseClient
+                .from("pontuacao_atividade")
+                .select("*", { count: "estimated", head: true })
+                .in("id_alternativa", idAlternativas);
+            totalRespostas = respostas || 0;
+        }
+    }
+
+    const valorPerguntas = document.querySelector(".ativFeitas .valor");
+    const valorRespostas = document.querySelector(".redaFeitas .valor");
+    const valorTaxa = document.querySelector(".mediaRedacao .valor");
+
+    if (valorPerguntas) valorPerguntas.textContent = perguntasCriadas || 0;
+    if (valorRespostas) valorRespostas.textContent = totalRespostas;
+    if (valorTaxa) valorTaxa.textContent = 0;
+}
+
 export function initDadosConta() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     
@@ -99,6 +138,8 @@ export function initDadosConta() {
     if (userLogado.tipo_conta === 'aluno') {
         carregarEstatisticasAluno(userLogado.id_usuario);
         carregarProvasRecentes(userLogado.id_usuario);
+    } else if (userLogado.tipo_conta === 'professor') {
+        carregarEstatisticasProfessor(userLogado.id_usuario);
     }
     
     const nomeUsuario = document.getElementById("nomeUsuario");

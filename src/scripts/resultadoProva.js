@@ -64,33 +64,3 @@ function exibirResultado() {
 }
 
 exibirResultado();
-
-async function salvarPontuacao() {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
-    if (!userLogado) return;
-
-    const dados = {
-        id_usuario: userLogado.id_usuario,
-        pontos_atividade: parseInt(pontos),
-    };
-
-    if (idAlternativa) {
-        dados.id_alternativa = parseInt(idAlternativa);
-    }
-    if (idMateria) {
-        dados.id_materia = parseInt(idMateria);
-    }
-    if (idConteudo) {
-        dados.id_conteudo = parseInt(idConteudo);
-    }
-
-    const { error } = await supabaseClient
-        .from("pontuacao_atividade")
-        .insert([dados]);
-
-    if (error) {
-        console.error("Erro ao salvar pontuação:", error);
-    }
-}
-
-salvarPontuacao();
