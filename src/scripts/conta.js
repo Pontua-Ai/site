@@ -16,7 +16,8 @@ export async function carregarEstatisticasAluno(idUsuario) {
 
     const { count: atividadesFeitas, error: erroAtividades } = await supabaseClient
         .from("pontuacao_atividade")
-        .select("*", { count: "estimated", head: true });
+        .select("*", { count: "estimated", head: true })
+        .eq("id_usuario", idUsuario);
 
     const valorAtividades = document.querySelector(".ativFeitas .valor");
     const valorRedacoes = document.querySelector(".redaFeitas .valor");

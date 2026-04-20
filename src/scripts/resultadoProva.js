@@ -1,8 +1,11 @@
+import supabaseClient from "./supabase.js";
+
 const urlParams = new URLSearchParams(window.location.search);
 
 const pontos = urlParams.get('pontos');
 const total = urlParams.get('total');
 const erradasJson = urlParams.get('erradas');
+const idAlternativa = urlParams.get('alternativa');
 
 let respostasErradas = [];
 try {
@@ -59,3 +62,22 @@ function exibirResultado() {
 }
 
 exibirResultado();
+
+async function salvarPontuacao() {
+    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    if (!userLogado) return;
+
+    const { error } = await supabaseClient
+        .from("pontuacao_atividade")
+        .insert([{
+            id_usuario: userLogado.id_usuario,
+            pontos_atividade: parseInt(pontos),
+            id_alternativa: idAlternativa ? parseInt(idAlternativa) : null
+        }]);
+
+    if (error) {
+        console.error("Erro ao salvar pontuação:", error);
+    }
+}
+
+salvarPontuacao();
