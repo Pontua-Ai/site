@@ -48,7 +48,7 @@
             <div class="cardInfos">
                 <div class="ativFeitas">
                     <p class="valor">00</p>
-                    <p>Atividades feitas</p>
+                    <p>Provas feitas</p>
                 </div>
             </div>
 
@@ -69,25 +69,12 @@
 
         <div class="footerConta">
             <div class="historicoAtividadesRecentes">
-                <p class="title">Atividades Recentes</p>
-                <div class="cardAtividades">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Nome da matéria - nome do conteúdo</p>
-                </div>
-
-                <div class="cardAtividades">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Nome da matéria - nome do conteúdo</p>
-                </div>
-
-                <div class="cardAtividades">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Nome da matéria - nome do conteúdo</p>
-                </div>
-
-                <div class="cardAtividades">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Nome da matéria - nome do conteúdo</p>
+                <p class="title">Provas Recentes</p>
+                <div id="provasRecentesContainer">
+                    <div class="cardAtividades">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Carregando...</p>
+                    </div>
                 </div>
             </div>
 
@@ -97,11 +84,6 @@
                 <div class="cardConfi">
                     <i class="fa-solid fa-lock"></i>
                     <p>Alterar senha</p>
-                </div>
-
-                <div class="cardConfi">
-                    <i class="fa-regular fa-envelope"></i>
-                    <p>Alterar email</p>
                 </div>
 
                 <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
@@ -122,6 +104,20 @@
         </div>
 
     </main>
+
+    <div id="modalExcluir" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p id="modalTexto">Tem certeza de que deseja excluir sua conta?</p>
+            <div id="confirmarSenha" style="display: none;">
+                <input type="password" id="senhaExcluir" placeholder="Digite sua senha para confirmar" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid var(--primary-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);">
+            </div>
+            <div class="modal-botoes">
+                <button id="btnNao" class="btn-modal">Não</button>
+                <button id="btnSim" class="btn-modal">Sim</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 

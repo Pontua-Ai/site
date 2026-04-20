@@ -163,7 +163,16 @@ function criarAlternativa(alt) {
 
 export async function exibirPergunta() {
     if (indicePergunta >= perguntasCache.length) {
-        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}`;
+        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+        const params = new URLSearchParams(window.location.search);
+        let idMateria = params.get('materia');
+        const idConteudo = params.get('conteudo');
+        
+        if (!idMateria && perguntasCache.length > 0) {
+            idMateria = perguntasCache[0].id_materia;
+        }
+        
+        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}&idusuario=${userLogado ? userLogado.id_usuario : ''}&idmateria=${idMateria || ''}&idconteudo=${idConteudo || ''}`;
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
