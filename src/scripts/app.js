@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
             modules: {
                 toolbar: [
                     ["bold", "italic", "underline"],
+                    [{ 'color': [] }],
                     [{ "header": [1, 2, 3, false] }],
                     [{ "list": "ordered"}, { "list": "bullet" }],
                     ["image"]
