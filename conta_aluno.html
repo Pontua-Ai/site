@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="src/styles/conta.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -86,9 +87,13 @@
                     <p>Alterar senha</p>
                 </div>
 
-                <div class="cardConfi" id="btn-theme" style="cursor: pointer;">
+                <div class="cardConfi">
                     <i class="fa-solid fa-moon"></i>
-                    <p>Modo escuro</p>
+                    <p>Mudar para modo escuro</p>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
                 </div>
 
                 <div class="cardConfi" id="btn-logout" style="cursor: pointer;">
