@@ -16,7 +16,7 @@ export async function carregarHistorico() {
     if (error || !perguntas || perguntas.length === 0) {
         document.getElementById("historicoContainer").innerHTML = '<div class="cardBox"><p>Nenhuma pergunta encontrada</p></div>';
         return;
-    }
+    } 
 
     const container = document.getElementById("historicoContainer");
     container.innerHTML = '';
@@ -24,7 +24,7 @@ export async function carregarHistorico() {
     for (const pergunta of perguntas) {
         const { data: alternativas } = await supabaseClient
             .from("alternativa")
-            .select("id_alternativa, correta")
+            .select("id_alternativa, correta, nome_alternativa")
             .eq("id_pergunta", pergunta.id_pergunta);
 
         const idAlternativas = alternativas?.map(a => a.id_alternativa) || [];
@@ -44,16 +44,30 @@ export async function carregarHistorico() {
 
         const materiaNome = pergunta.materia?.nome_materia || "Matéria";
         const conteudoNome = pergunta.conteudo?.nome_conteudo || "Conteúdo";
+        
+        const textoPergunta = pergunta.pergunta_texto.replace(/<[^>]*>/g, "");
+        
+        let alternativasHtml = '';
+        if (alternativas && alternativas.length > 0) {
+            alternativas.forEach((alt, index) => {
+                const letra = String.fromCharCode(65 + index);
+                const correta = alt.correta ? ' <span style="color: green; font-weight: bold;">(Correta)</span>' : '';
+                alternativasHtml += `<div>${letra}) ${alt.nome_alternativa}${correta}</div>`;
+            });
+        }
 
         const card = document.createElement("div");
         card.className = "cardBox";
         card.innerHTML = `
             <div class="headerBox">
-                <h4>${pergunta.pergunta_texto.replace(/<[^>]*>/g, "").substring(0, 50)}${pergunta.pergunta_texto.length > 50 ? "..." : ""}</h4>
+                <h4>${textoPergunta}</h4>
                 <div class="botoesAcoes">
                     <button class="olho"><i class="fa-regular fa-eye"></i></button>
                     <button class="mudar"><i class="fa-regular fa-pen-to-square"></i></button>
                 </div>
+            </div>
+            <div class="alternativasBox" style="margin: 10px 0;">
+                ${alternativasHtml}
             </div>
             <div class="mainBox">
                 <p>${materiaNome} - ${conteudoNome}</p>
