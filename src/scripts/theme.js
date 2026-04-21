@@ -14,7 +14,6 @@ export function toggleTheme() {
 }
 
 function updateThemeLabel() {
-    const cardTheme = document.getElementById("btn-theme");
     const checkbox = document.getElementById("theme-checkbox");
     const isDark = document.body.classList.contains("dark");
     
@@ -22,24 +21,19 @@ function updateThemeLabel() {
         checkbox.checked = isDark;
     }
     
-    if (!cardTheme) return;
-    
-    const icon = cardTheme.querySelector("i");
-    const text = cardTheme.querySelector("p");
-    
-    if (text && (text.textContent.includes("Modo escuro") || text.textContent.includes("Modo claro"))) {
-        text.textContent = isDark ? "Mudar para modo claro" : "Mudar para modo escuro";
-    }
-    
-    if (isDark) {
-        if (icon) {
-            icon.className = "material-icons";
-            icon.textContent = "light_mode";
-        }
-    } else {
-        if (icon) {
-            icon.className = "fa-solid fa-moon";
-            icon.textContent = "";
+    const cards = document.querySelectorAll(".cardConfi");
+    for (const card of cards) {
+        const text = card.querySelector("p");
+        const icon = card.querySelector("i");
+        
+        if (text && text.textContent.includes("modo")) {
+            text.textContent = isDark ? "Mudar para modo claro" : "Mudar para modo escuro";
+            
+            if (icon) {
+                icon.className = isDark ? "material-icons" : "fa-solid fa-moon";
+                icon.textContent = isDark ? "light_mode" : "";
+            }
+            break;
         }
     }
 }
