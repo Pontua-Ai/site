@@ -99,12 +99,12 @@ git clone https://github.com/Pontua-Ai/site.git
 ### 2. Acesse a pasta
 
 ```bash
-cd pontua-ai
+cd site
 ```
 
 ### 3. Abra o projeto
 
-Basta abrir o arquivo `index.html` no navegador.
+Basta abrir o arquivo `sobre.html` no navegador.
 
 ---
 
