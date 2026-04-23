@@ -9,9 +9,20 @@
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/conteudoProf.css">
     <link rel="stylesheet" href="src/styles/button.css">
+    <style>
+        #fontFamilySelector {
+            font-family: Arial, sans-serif;
+        }
+        #fontFamilySelector option[value="Arial"] { font-family: Arial, sans-serif; }
+        #fontFamilySelector option[value="'Times New Roman'"] { font-family: 'Times New Roman', serif; }
+        #fontFamilySelector option[value="Verdana"] { font-family: Verdana, sans-serif; }
+        #fontFamilySelector option[value="'Courier New'"] { font-family: 'Courier New', monospace; }
+        #fontFamilySelector option[value="Georgia"] { font-family: Georgia, serif; }
+    </style>
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 </head>
 
 <body>
@@ -51,6 +62,8 @@
 
         <form id="formPergunta">
             <div id="editor-container" style="height: auto; min-height: 150px;"></div>
+            <input type="hidden" id="fontColor" name="fontColor">
+            <input type="hidden" id="fontFamily" name="fontFamily" value="Arial">
             <input type="hidden" id="pergunta" name="pergunta">
 
             <div class="boxInputs">
@@ -82,7 +95,6 @@
         </form>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 
