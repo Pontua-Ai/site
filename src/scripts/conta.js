@@ -223,13 +223,14 @@ export function initDadosConta() {
     
     const path = window.location.pathname;
     const isPaginaLogin = path.includes("inicio.html") || path.includes("inicio") || path.endsWith("/") || path.endsWith("\\");
+    const isPaginaPublica = path.includes("cadastro.html") || path.includes("cadastro") || isPaginaLogin;
     
-    if (!userLogado && !isPaginaLogin) {
+    if (!userLogado && !isPaginaPublica) {
         window.location.href = "inicio.html";
         return;
     }
     
-    if (isPaginaLogin) return;
+    if (isPaginaPublica) return;
     
     if (userLogado.tipo_conta === 'aluno') {
         carregarEstatisticasAluno(userLogado.id_usuario);
