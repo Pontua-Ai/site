@@ -115,8 +115,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await signup(name, email, password);
 
             if (result && result.success) {
-                toast("Cadastro realizado com sucesso! Faça login para continuar.", "success");
-                window.location.href = "inicio.html";
+                if (result.needsEmailConfirmation) {
+                    signupForm.style.display = "none";
+                    document.querySelector(".ajuda")?.style.setProperty("display", "none");
+                    const h2 = document.querySelector(".logo h2");
+                    if (h2) h2.textContent = "Verifique seu e-mail para continuar";
+                    const existingMsg = document.querySelector(".confirmation-msg");
+                    if (!existingMsg) {
+                        const msgDiv = document.createElement("div");
+                        msgDiv.className = "confirmation-msg";
+                        msgDiv.style.cssText = "text-align: center; margin-top: 20px; color: var(--text-color);";
+                        msgDiv.innerHTML = `<p>Enviamos um link de confirmação para <strong>${email}</strong>.</p><p>Clique no link para ativar sua conta.</p>`;
+                        document.querySelector(".login")?.appendChild(msgDiv);
+                    }
+                } else {
+                    toast("Conta criada com sucesso! Faça login para continuar.", "success");
+                    window.location.href = "inicio.html";
+                }
             } else {
                 toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
             }

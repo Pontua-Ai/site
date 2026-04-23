@@ -58,9 +58,11 @@ CREATE TABLE public.users (
   id_usuario integer NOT NULL DEFAULT nextval('users_id_usuario_seq'::regclass),
   username character varying NOT NULL UNIQUE,
   email character varying NOT NULL UNIQUE,
-  senha character varying NOT NULL,
+  senha text,
   tipo_conta character varying DEFAULT 'professor'::character varying,
   foto_url text,
   data_criacao timestamp without time zone DEFAULT now(),
+  token_confirmacao text,
+  confirmado boolean DEFAULT false,
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
 );

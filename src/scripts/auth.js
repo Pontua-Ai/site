@@ -9,6 +9,11 @@ async function hashSenha(senha) {
 }
 
 export async function signup(username, email, senha) {
+    const dominio = email.split('@')[1];
+    if (dominio !== 'cps.sp.gov.br' && dominio !== 'aluno.cps.sp.gov.br') {
+        return { success: false, error: "Apenas emails institucionais (@cps.sp.gov.br ou @aluno.cps.sp.gov.br) são permitidos." };
+    }
+
     const { data: existingUser } = await supabaseClient
         .from("users")
         .select("*")
@@ -19,24 +24,27 @@ export async function signup(username, email, senha) {
         return { success: false, error: "Email já cadastrado" };
     }
 
-    const dominio = email.split('@')[1];
-    if (dominio !== 'cps.sp.gov.br' && dominio !== 'aluno.cps.sp.gov.br') {
-        return { success: false, error: "Apenas emails institucionais (@cps.sp.gov.br ou @aluno.cps.sp.gov.br) são permitidos." };
-    }
-
     const tipoConta = dominio === 'aluno.cps.sp.gov.br' ? 'aluno' : 'professor';
-
     const senhaHash = await hashSenha(senha);
+    const tokenConfirmacao = crypto.randomUUID();
 
-    const { data, error } = await supabaseClient
+    const { error: insertError } = await supabaseClient
         .from("users")
-        .insert([{ email: email, senha: senhaHash, username: username, tipo_conta: tipoConta }]);
+        .insert([{ 
+            email: email, 
+            senha: senhaHash, 
+            username: username, 
+            tipo_conta: tipoConta,
+            token_confirmacao: tokenConfirmacao,
+            confirmado: false
+        }]);
 
-    if (error) {
-        return { success: false, error: error.message };
+    if (insertError) {
+        console.error("Erro ao inserir:", insertError);
+        return { success: false, error: "Erro ao criar conta" };
     }
 
-    return { success: true, tipo_conta: tipoConta };
+    return { success: true, tipo_conta: tipoConta, token: tokenConfirmacao, needsEmailConfirmation: true };
 }
 
 
@@ -53,6 +61,11 @@ export async function loginUsuario(login, senha) {
     if (data.senha !== hashInput) {
         return { success: false, error: "Senha incorreta" };
     }
+
+    if (!data.confirmado) {
+        return { success: false, error: "Email não confirmado. Verifique seu e-mail." };
+    }
+
     console.log("Usuario logado:", data);
     return { success: true, user: data };
 }
