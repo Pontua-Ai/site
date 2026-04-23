@@ -93,7 +93,7 @@ O sistema utiliza o **Supabase** como backend para gerenciar todos os dados:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/pontua-ai.git
+git clone https://github.com/Pontua-Ai/site.git
 ```
 
 ### 2. Acesse a pasta
