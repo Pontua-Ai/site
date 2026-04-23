@@ -176,7 +176,7 @@ main {
 
 .hero-section {
     width: 80%;
-    margin: 80px auto;
+    margin: 20px auto;
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 60px;
