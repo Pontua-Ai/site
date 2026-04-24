@@ -107,7 +107,7 @@ export async function carregarPerguntas() {
         }
 
         const perguntasRestantes = shuffleArray(todasPerguntas.filter(p => !perguntasSelecionadas.includes(p)));
-        const quantosFaltam = 40 - perguntasSelecionadas.length;
+        const quantosFaltam = 60 - perguntasSelecionadas.length;
         if (quantosFaltam > 0) {
             perguntasSelecionadas = shuffleArray([...perguntasSelecionadas, ...perguntasRestantes.slice(0, quantosFaltam)]);
         }

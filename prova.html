@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
+
 <body>
     <header>
         <nav>
@@ -30,9 +32,19 @@
     <main>
         <div class="instrucoes">
             <h1>Instruções</h1>
-            <p>Selecione a matéria que deseja fazer a prova! Cada matéria possui 20 questões aleatórias de diversos conteúdos.</p>
-            <p>Para quem quer tudo: a prova geral tem 90 questões de TODAS as matérias!</p>
-            <p>Cuidado com o tempo: matérias têm 1 hora e a prova geral tem 5 horas!</p>
+
+            <p>Escolha o tipo de prova que deseja realizar:</p>
+
+            <ul>
+                <li><strong>Prova por matéria:</strong> contém <strong>10 questões</strong> com conteúdos variados da
+                    matéria selecionada.</li>
+
+                <li><strong>Prova geral:</strong> contém <strong>20 questões</strong> envolvendo <strong>todas as
+                    matérias</strong>.</li>
+
+                <li><strong>Simulado (estilo ENEM):</strong> contém <strong>60 questões</strong>
+                    de todas as matérias, seguindo o modelo do ENEM, com <strong>duração total de 5 horas</strong>.</li>
+            </ul>
         </div>
 
         <div class="subjects-container prova-geral-container">
@@ -40,9 +52,9 @@
             <button class="subjects-button checkbox prova-simulado" id="simulado">Simulado</button>
         </div>
 
-    <div class="subjects-container">
+        <div class="subjects-container">
             <button class="subjects-button checkbox" id="matematica">Matemática</button>
-            
+
             <button class="subjects-button checkbox" id="portugues">Português</button>
 
             <button class="subjects-button checkbox" id="fisica">Física</button>
@@ -52,12 +64,12 @@
 
         <div class="subjects-container">
             <button class="subjects-button checkbox" id="biologia">Biologia</button>
-            
+
             <button class="subjects-button checkbox" id="historia">História</button>
 
             <button class="subjects-button checkbox" id="geografia">Geografia</button>
 
-            <button class="subjects-button checkbox" id="ingles">Inglês</button>  
+            <button class="subjects-button checkbox" id="ingles">Inglês</button>
         </div>
 
         <div class="subjects-container">
@@ -69,10 +81,11 @@
 
             <button class="subjects-button checkbox" id="sociologia">Sociologia</button>
         </div>
-        </main>
+    </main>
 
     <script type="module" src="src/scripts/buscarMaterias.js"></script>
     <script type="module" src="src/scripts/gerarProva.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
+
 </html>
