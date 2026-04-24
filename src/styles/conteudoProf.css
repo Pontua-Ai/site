@@ -112,3 +112,55 @@ input:not(:placeholder-shown) {
     border-radius: 10px;
     border: 1px solid var(--border-color);
 }
+
+.botoes-container {
+    display: flex;
+    gap: 20px;
+}
+
+.botoes-container button {
+    min-width: 150px;
+    background-color: var(--secondary-color);
+}
+
+.preview-container {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 20px;
+    background-color: var(--gray);
+}
+
+.title-preview {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.folha-preview {
+    padding: 20px;
+    background-color: var(--background);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.folha-preview #perguntaTextoPreview {
+    font-size: 20px;
+    margin-bottom: 30px;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.folha-preview .alternativa {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-color: var(--input);
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 16px;
+    color: var(--text-primary);
+}

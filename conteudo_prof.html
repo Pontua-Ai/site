@@ -9,16 +9,6 @@
     <link rel="stylesheet" href="src/styles/header.css">
     <link rel="stylesheet" href="src/styles/conteudoProf.css">
     <link rel="stylesheet" href="src/styles/button.css">
-    <style>
-        #fontFamilySelector {
-            font-family: Arial, sans-serif;
-        }
-        #fontFamilySelector option[value="Arial"] { font-family: Arial, sans-serif; }
-        #fontFamilySelector option[value="'Times New Roman'"] { font-family: 'Times New Roman', serif; }
-        #fontFamilySelector option[value="Verdana"] { font-family: Verdana, sans-serif; }
-        #fontFamilySelector option[value="'Courier New'"] { font-family: 'Courier New', monospace; }
-        #fontFamilySelector option[value="Georgia"] { font-family: Georgia, serif; }
-    </style>
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
@@ -91,11 +81,28 @@
                 <input type="text" class="textAlternativa" placeholder="Alternativa 5">
             </div>
 
-            <button class="subjects-button" type="submit">Cadastrar pergunta</button>
+            <div class="botoes-container">
+                <button class="subjects-button" type="submit">Cadastrar pergunta</button>
+                <button class="subjects-button" type="button" id="btnPreview">Pré-visualizar</button>
+            </div>
         </form>
+
+        <div id="previewContainer" class="preview-container" style="display: none;">
+            <div class="title-preview">Pré-visualização</div>
+            <div class="folha-preview">
+                <p id="perguntaTextoPreview"></p>
+                <div id="alternativasPreview"></div>
+            </div>
+            <button class="subjects-button" type="button" id="btnFecharPreview">Fechar</button>
+        </div>
     </main>
 
     <script type="module" src="src/scripts/app.js"></script>
+    <script type="module">
+        import { carregarMaterias, carregarConteudos } from "src/scripts/genereAsk.js";
+        carregarMaterias();
+        document.getElementById("materia").addEventListener("change", carregarConteudos);
+    </script>
 </body>
 
 </html>
