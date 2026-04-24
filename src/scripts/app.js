@@ -175,6 +175,53 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const formPergunta = document.getElementById("formPergunta");
+    const btnPreview = document.getElementById("btnPreview");
+    const previewContainer = document.getElementById("previewContainer");
+    const btnFecharPreview = document.getElementById("btnFecharPreview");
+
+    if (btnPreview && previewContainer && btnFecharPreview) {
+        btnPreview.addEventListener("click", function () {
+            const perguntaTexto = quillEditor ? quillEditor.root.innerHTML : document.getElementById("pergunta").value;
+
+            if (!perguntaTexto || perguntaTexto === "<p><br></p>") {
+                toast("Digite a pergunta primeiro!", "error");
+                return;
+            }
+
+            const alternativas = document.querySelectorAll('.textAlternativa');
+            const alternativasValores = Array.from(alternativas).map(input => input.value);
+            const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
+
+            if (alternativasValores.some(a => a.trim() === "")) {
+                toast("Preencha todas as alternativas!", "error");
+                return;
+            }
+
+            document.getElementById("perguntaTextoPreview").innerHTML = perguntaTexto;
+
+            const alternativasContainer = document.getElementById("alternativasPreview");
+            alternativasContainer.innerHTML = "";
+
+            alternativasValores.forEach((alt, index) => {
+                const div = document.createElement("div");
+                div.className = "alternativa";
+                if ((index + 1).toString() === correta) {
+                    div.style.borderColor = "var(--success-color)";
+                    div.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
+                }
+                div.innerHTML = `<strong>${String.fromCharCode(65 + index)}.</strong> ${alt}`;
+                alternativasContainer.appendChild(div);
+            });
+
+            previewContainer.style.display = "block";
+            previewContainer.scrollIntoView({ behavior: "smooth" });
+        });
+
+        btnFecharPreview.addEventListener("click", function () {
+            previewContainer.style.display = "none";
+        });
+    }
+
     if (formPergunta) {
         formPergunta.addEventListener("submit", async function (notReaload) {
             notReaload.preventDefault();
@@ -243,6 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 toast("Pergunta cadastrada com sucesso!", "success");
+                if (previewContainer) {
+                    previewContainer.style.display = "none";
+                }
             } catch (erro) {
                 console.error(erro);
                 toast("Erro ao cadastrar pergunta", "error");
