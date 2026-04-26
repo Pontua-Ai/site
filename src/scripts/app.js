@@ -91,12 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
             placeholder: "Digite a pergunta...",
             modules: {
                 toolbar: [
-                    [{ 'size': ['small', 'normal', 'large', 'huge'] }],
-                    ["bold", "italic", "underline", "strike"],
+                    [{ 'size': ['normal', 'large', 'huge'] }],
+                    ["bold", "italic"],
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'script': 'sub' }, { 'script': 'super' }],
                     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ["code-block", "blockquote"],
+                    ["blockquote"],
                     ["image"]
                 ]
             }
