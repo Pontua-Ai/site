@@ -19,7 +19,15 @@ export async function carregarMaterias() {
 
 if(document.getElementById("materia")){
     carregarMaterias();
-    document.getElementById("materia").addEventListener("change", carregarConteudos);
+    $('#materia').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#conteudo').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#materia').on('change', function() {
+        carregarConteudos();
+    });
 };
 
 export async function carregarConteudos() {
@@ -41,5 +49,8 @@ export async function carregarConteudos() {
         option.value = conteudo.id_conteudo;
         option.textContent = conteudo.nome_conteudo;
         select.appendChild(option);
-    })
+    });
+    $('#conteudo').select2({
+        minimumResultsForSearch: Infinity
+    });
 }
