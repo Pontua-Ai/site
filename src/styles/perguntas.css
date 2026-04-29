@@ -92,7 +92,6 @@
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
-    border-left: 4px solid var(--error-color);
 }
 
 .enunciado {
