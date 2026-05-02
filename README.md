@@ -104,7 +104,7 @@ cd site
 
 ### 3. Abra o projeto
 
-Basta abrir o arquivo `sobre.html` no navegador.
+Basta abrir o arquivo `index.html` no navegador.
 
 ---
 
