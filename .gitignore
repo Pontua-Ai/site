@@ -1,6 +1,5 @@
 # Credenciais - manter privado
 .env
-src/scripts/config.js
 *.log
 
 # IDE
