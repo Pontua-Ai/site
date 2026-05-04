@@ -254,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 const userLogado = JSON.parse(localStorage.getItem('userLogado'));
+                const visibilidade = document.getElementById("visibilidade")?.value || "publico";
                 const { data: perguntaCriada, error: erroPergunta } = await supabaseClient
                     .from("perguntas")
                     .insert([
@@ -261,7 +262,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             pergunta_texto: pergunta,
                             id_conteudo: idConteudo,
                             id_materia: idMateria,
-                            id_usuario: userLogado.id_usuario
+                            id_usuario: userLogado.id_usuario,
+                            visibilidade: visibilidade
                         }
                     ])
                     .select();
