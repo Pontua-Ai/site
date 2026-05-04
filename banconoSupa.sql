@@ -27,6 +27,7 @@ CREATE TABLE public.perguntas (
   id_conteudo integer,
   id_materia integer,
   id_usuario integer,
+  visibilidade character varying DEFAULT 'publico'::character varying,
   CONSTRAINT perguntas_pkey PRIMARY KEY (id_pergunta),
   CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo),
   CONSTRAINT perguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
@@ -58,9 +59,12 @@ CREATE TABLE public.users (
   id_usuario integer NOT NULL DEFAULT nextval('users_id_usuario_seq'::regclass),
   username character varying NOT NULL UNIQUE,
   email character varying NOT NULL UNIQUE,
-  senha character varying NOT NULL,
+  senha text,
   tipo_conta character varying DEFAULT 'professor'::character varying,
   foto_url text,
   data_criacao timestamp without time zone DEFAULT now(),
+  token_confirmacao text,
+  confirmado boolean DEFAULT false,
+  auth_id uuid UNIQUE,
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
 );

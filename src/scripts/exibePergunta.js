@@ -40,7 +40,8 @@ function criarOption(valor, texto) {
 export async function carregarPerguntas() {
     let query = supabaseClient
         .from("perguntas")
-        .select("*");
+        .select("*")
+        .eq("visibilidade", "publico");
     
     let perguntas;
     

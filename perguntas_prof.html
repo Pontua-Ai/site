@@ -51,6 +51,9 @@
                     <option disabled selected hidden value="">Conteúdo</option>
                 </select>
             </div>
+
+            <button type="button" id="btnVisibilidade" class="toggle-visibilidade publico">Público</button>
+            <input type="hidden" id="visibilidade" name="visibilidade" value="publico">
         </div>
 
         <form id="formPergunta">
@@ -101,11 +104,7 @@
     </main>
 
     <script type="module" src="src/scripts/app.js"></script>
-    <script type="module">
-        import { carregarMaterias, carregarConteudos } from "src/scripts/genereAsk.js";
-        carregarMaterias();
-        document.getElementById("materia").addEventListener("change", carregarConteudos);
-    </script>
+    <script type="module" src="src/scripts/perguntasProf.js"></script>
 </body>
 
 </html>
