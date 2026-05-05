@@ -51,14 +51,14 @@ function configurarBotoes() {
 
         const idPergunta = btnMudar.dataset.id;
         const card = btnMudar.closest('.cardBox');
-        const h4 = card.querySelector('.headerBox h4');
+        const p = card.querySelector('.headerBox p');
         const alternativasDivs = card.querySelectorAll('.alternativasBox div');
 
-        if (h4.querySelector('input')) return;
+        if (p.querySelector('input')) return;
 
-        const textoOriginal = h4.textContent;
-        h4.innerHTML = `<input type="text" class="input-pergunta" value="${textoOriginal}" style="width: 100%; border: 1px solid var(--primary-color); padding: 4px; border-radius: 4px; background: var(--bg-color); color: var(--text-color);">`;
-        const inputPergunta = h4.querySelector('.input-pergunta');
+        const textoOriginal = p.textContent;
+        p.innerHTML = `<input type="text" class="input-pergunta" value="${textoOriginal}" style="width: 100%; border: 1px solid var(--primary-color); padding: 4px; border-radius: 4px; background: var(--bg-color); color: var(--text-color);">`;
+        const inputPergunta = p.querySelector('.input-pergunta');
         inputPergunta.focus();
 
         const idsAlternativas = [];
@@ -197,7 +197,7 @@ export async function carregarHistorico() {
         div.className = "cardBox";
         div.innerHTML = `
             <div class="headerBox">
-                <h4>${textoPergunta}</h4>
+                <p>${textoPergunta}</p>
                 <div class="botoesAcoes">
                     <button class="lixo" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-trash-can"></i></button>
                     <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>
