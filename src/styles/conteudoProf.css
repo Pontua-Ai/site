@@ -276,3 +276,26 @@ input:not(:placeholder-shown) {
     font-size: 16px;
     color: var(--text-primary);
 }
+
+.toggle-visibilidade {
+    margin-left: auto;
+    padding: 14px 20px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border-color);
+    background: var(--card-bg);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: var(--text-primary);
+}
+
+.toggle-visibilidade.publico {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.toggle-visibilidade.privado {
+    border-color: #6c757d;
+    color: #6c757d;
+}
