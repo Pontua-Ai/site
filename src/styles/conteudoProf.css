@@ -301,11 +301,6 @@ input:not(:placeholder-shown) {
     font-size: 40px !important;
 }
 
-.folha-preview #perguntaTextoPreview [class*="ql-size-small"],
-.folha-preview #perguntaTextoPreview .ql-size-small {
-    font-size: 12px !important;
-}
-
 .folha-preview .alternativa {
     display: block;
     padding: 12px;
