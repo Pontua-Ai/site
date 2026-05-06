@@ -304,7 +304,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             document.querySelectorAll('.textAlternativa').forEach(input => input.value = "");
             document.querySelectorAll('input[name="alternativa"]').forEach(radio => radio.checked = false);
-            $('#materia').empty().append('<option disabled selected hidden value="">Máteria</option>').trigger('change');
+            $('#materia')[0].selectedIndex = 0;
+            $('#materia').trigger('change');
             $('#conteudo').empty().append('<option disabled selected hidden value="">Conteúdo</option>').trigger('change');
         });
     }
