@@ -112,3 +112,33 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 body.dark * {
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
+
+/* Select2 dark mode fixes */
+body.dark .select2-container--default .select2-results__option--selected {
+    background-color: var(--primary-color) !important;
+    color: #666 !important;
+}
+
+body.dark .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+body.dark .select2-container--default .select2-selection--single {
+    background-color: var(--input) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+body.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--text-primary) !important;
+}
+
+body.dark .select2-dropdown {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.dark .select2-container--default .select2-results__option--selectable {
+    color: #fff !important;
+}
