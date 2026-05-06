@@ -190,10 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const alternativas = document.querySelectorAll('.textAlternativa');
-            const alternativasValores = Array.from(alternativas).map(el => el.textContent);
+            const alternativasValores = Array.from(alternativas).map(el => (el.textContent ?? '').trim());
             const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
 
-            if (alternativasValores.some(a => !a || a.trim() === "")) {
+            if (alternativasValores.some(a => a === "")) {
                 toast("Preencha todas as alternativas!", "error");
                 return;
             }
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             
             const alternativas = document.querySelectorAll('.textAlternativa');
-            const alternativasValores = Array.from(alternativas).map(el => el.textContent);
+            const alternativasValores = Array.from(alternativas).map(el => (el.textContent ?? '').trim());
 
             const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
             
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (alternativasValores.some(a => !a || a.trim() === "")) {
+            if (alternativasValores.some(a => a === "")) {
                 toast("Preencha todas as alternativas!", "error");
                 return;
             }
