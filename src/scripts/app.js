@@ -190,10 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const alternativas = document.querySelectorAll('.textAlternativa');
-            const alternativasValores = Array.from(alternativas).map(input => input.value);
+            const alternativasValores = Array.from(alternativas).map(el => el.textContent);
             const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
 
-            if (alternativasValores.some(a => a.trim() === "")) {
+            if (alternativasValores.some(a => !a || a.trim() === "")) {
                 toast("Preencha todas as alternativas!", "error");
                 return;
             }
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             
             const alternativas = document.querySelectorAll('.textAlternativa');
-            const alternativasValores = Array.from(alternativas).map(input => input.value);
+            const alternativasValores = Array.from(alternativas).map(el => el.textContent);
 
             const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
             
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (alternativasValores.some(a => a.trim() === "")) {
+            if (alternativasValores.some(a => !a || a.trim() === "")) {
                 toast("Preencha todas as alternativas!", "error");
                 return;
             }
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (quillEditor) {
                 quillEditor.setContents([]);
             }
-            document.querySelectorAll('.textAlternativa').forEach(input => input.value = "");
+            document.querySelectorAll('.textAlternativa').forEach(el => el.textContent = "");
             document.querySelectorAll('input[name="alternativa"]').forEach(radio => radio.checked = false);
             $('#materia')[0].selectedIndex = 0;
             $('#materia').trigger('change');
