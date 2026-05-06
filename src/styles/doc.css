@@ -1,13 +1,172 @@
 main {
     width: 80%;
+    margin: 40px auto;
 }
 
-h1 {
+.doc-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+}
+
+.doc-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.doc-header h1 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.doc-header h1 i {
+    font-size: 1.5rem;
+}
+
+.header-coala {
+    width: 40px;
+    height: auto;
+}
+
+.subtitle {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.doc-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.doc-text {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.info-card {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+    background: var(--background);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(11, 147, 149, 0.15);
+    border-color: var(--primary-color);
+}
+
+.card-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--terceary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.card-content h3 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.card-content p {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.card-content p:last-child {
+    margin-bottom: 0;
+}
+
+.card-content strong {
     color: var(--primary-color);
 }
 
-.corpo {
-    display: grid;
-    grid-template-columns: 3fr 3fr;
-    gap: 20px;
+.doc-image {
+    position: sticky;
+    top: 20px;
+}
+
+.image-wrapper {
+    background: var(--background);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+}
+
+.image-decoration {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    font-size: 2.5rem;
+}
+
+.image-decoration i {
+    background: linear-gradient(135deg, var(--primary-color), var(--terceary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: transform 0.3s ease;
+}
+
+.image-decoration i:hover {
+    transform: scale(1.2);
+}
+
+.image-tip {
+    background: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.tip-image {
+    width: 20px;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+body.dark .info-card {
+    background: var(--card-bg);
+}
+
+body.dark .doc-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.imagem-coala-menu-lateral{
+    width: 300px;
 }
