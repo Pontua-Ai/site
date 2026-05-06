@@ -16,3 +16,13 @@ btnVisibilidade.addEventListener("click", () => {
         btnVisibilidade.classList.add("publico");
     }
 });
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+document.querySelectorAll('.textAlternativa').forEach(textarea => {
+    autoResize(textarea);
+    textarea.addEventListener('input', () => autoResize(textarea));
+});
