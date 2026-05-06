@@ -1,8 +1,5 @@
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 
-carregarMaterias();
-document.getElementById("materia").addEventListener("change", carregarConteudos);
-
 const btnVisibilidade = document.getElementById("btnVisibilidade");
 const visibilidadeInput = document.getElementById("visibilidade");
 

@@ -1,6 +1,9 @@
 import supabaseClient from "./supabase.js";
 
 export async function carregarMaterias() {
+    const select = document.getElementById("materia");
+    if (select.dataset.loaded === "true") return;
+    
     const { data, error } = await supabaseClient
         .from("materia")
         .select("id_materia, nome_materia");
@@ -8,8 +11,18 @@ export async function carregarMaterias() {
         console.error("Erro:", error);
         return;
     }
-    const select = document.getElementById("materia");
+    
+    select.dataset.loaded = "true";
+    select.innerHTML = '<option disabled selected hidden value="">Máteria</option>';
+    
+    const materiasUnicas = {};
     data.forEach(materia => {
+        if (!materiasUnicas[materia.nome_materia]) {
+            materiasUnicas[materia.nome_materia] = materia;
+        }
+    });
+    
+    Object.values(materiasUnicas).forEach(materia => {
         const option = document.createElement("option");
         option.value = materia.id_materia;
         option.textContent = materia.nome_materia;
