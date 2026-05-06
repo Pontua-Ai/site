@@ -8,6 +8,7 @@ import { initTheme, toggleTheme } from "./theme.js";
 import { initDadosConta } from "./conta.js";
 
 let quillEditor = null;
+let estaCadastrando = false;
 
 initTheme();
 initDadosConta();
@@ -224,7 +225,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (formPergunta) {
         formPergunta.addEventListener("submit", async function (notReaload) {
+            if (estaCadastrando) return;
             notReaload.preventDefault();
+            const botao = formPergunta.querySelector('button[type="submit"]');
+
             const idMateria = document.getElementById("materia").value;
             const idConteudo = document.getElementById("conteudo").value;
             const pergunta = quillEditor ? quillEditor.root.innerHTML : document.getElementById("pergunta").value;
@@ -251,6 +255,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 toast("Preencha todas as alternativas!", "error");
                 return;
             }
+
+            estaCadastrando = true;
+            botao.disabled = true;
+            botao.textContent = "Cadastrando...";
 
             try {
                 const userLogado = JSON.parse(localStorage.getItem('userLogado'));
@@ -298,14 +306,19 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (erro) {
                 console.error(erro);
                 toast("Erro ao cadastrar pergunta", "error");
+            } finally {
+                estaCadastrando = false;
+                botao.disabled = false;
+                botao.textContent = "Cadastrar pergunta";
             }
             if (quillEditor) {
                 quillEditor.setContents([]);
             }
             document.querySelectorAll('.textAlternativa').forEach(input => input.value = "");
             document.querySelectorAll('input[name="alternativa"]').forEach(radio => radio.checked = false);
-            document.getElementById("conteudo").value = "";
-            document.getElementById("materia").value = "";
+            $('#materia')[0].selectedIndex = 0;
+            $('#materia').trigger('change');
+            $('#conteudo').empty().append('<option disabled selected hidden value="">Conteúdo</option>').trigger('change');
         });
     }
 });

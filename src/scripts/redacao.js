@@ -517,11 +517,11 @@ Motivo: ${data.E.motivo}
     document.getElementById("resultado").innerHTML = resultadoHtml;
   } catch (error) {
     document.getElementById("resultado").textContent = "Erro ao corrigir redação. Tente novamente mais tarde.";
+  } finally {
+    estaCorrigindo = false;
+    botao.disabled = false;
+    botao.textContent = "Avaliar";
   }
-
-  estaCorrigindo = false;
-  botao.disabled = false;
-  botao.textContent = "Avaliar";
   document.querySelector(".resultado-box").scrollIntoView({
     behavior: "smooth"
   });

@@ -1,8 +1,5 @@
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 
-carregarMaterias();
-document.getElementById("materia").addEventListener("change", carregarConteudos);
-
 const btnVisibilidade = document.getElementById("btnVisibilidade");
 const visibilidadeInput = document.getElementById("visibilidade");
 
@@ -18,4 +15,14 @@ btnVisibilidade.addEventListener("click", () => {
         btnVisibilidade.classList.remove("privado");
         btnVisibilidade.classList.add("publico");
     }
+});
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+document.querySelectorAll('.textAlternativa').forEach(textarea => {
+    autoResize(textarea);
+    textarea.addEventListener('input', () => autoResize(textarea));
 });
