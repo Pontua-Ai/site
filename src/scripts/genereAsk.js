@@ -33,10 +33,20 @@ export async function carregarMaterias() {
 if(document.getElementById("materia")){
     carregarMaterias();
     $('#materia').select2({
-        minimumResultsForSearch: Infinity
+        minimumResultsForSearch: 0,
+        language: {
+            noResults: function() {
+                return "Nenhuma matéria encontrada";
+            }
+        }
     });
     $('#conteudo').select2({
-        minimumResultsForSearch: Infinity
+        minimumResultsForSearch: 0,
+        language: {
+            noResults: function() {
+                return "Nenhum conteúdo encontrado";
+            }
+        }
     });
     $('#materia').on('change', function() {
         carregarConteudos();
