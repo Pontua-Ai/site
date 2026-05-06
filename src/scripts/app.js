@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
             placeholder: "Digite a pergunta...",
             modules: {
                 toolbar: [
-                    [{ 'size': ['normal', 'large', 'huge'] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
                     ["bold", "italic"],
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'script': 'sub' }, { 'script': 'super' }],
@@ -198,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            console.log("HTML preview:", perguntaTexto);
             document.getElementById("perguntaTextoPreview").innerHTML = perguntaTexto;
 
             const alternativasContainer = document.getElementById("alternativasPreview");
