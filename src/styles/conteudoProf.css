@@ -285,10 +285,25 @@ input:not(:placeholder-shown) {
 }
 
 .folha-preview #perguntaTextoPreview {
-    font-size: 20px;
+    font-size: 16px;
     margin-bottom: 30px;
     line-height: 1.4;
     color: var(--text-primary);
+}
+
+.folha-preview #perguntaTextoPreview [class*="ql-size-large"],
+.folha-preview #perguntaTextoPreview .ql-size-large {
+    font-size: 24px !important;
+}
+
+.folha-preview #perguntaTextoPreview [class*="ql-size-huge"],
+.folha-preview #perguntaTextoPreview .ql-size-huge {
+    font-size: 40px !important;
+}
+
+.folha-preview #perguntaTextoPreview [class*="ql-size-small"],
+.folha-preview #perguntaTextoPreview .ql-size-small {
+    font-size: 12px !important;
 }
 
 .folha-preview .alternativa {

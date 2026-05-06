@@ -198,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            console.log("HTML preview:", perguntaTexto);
             document.getElementById("perguntaTextoPreview").innerHTML = perguntaTexto;
 
             const alternativasContainer = document.getElementById("alternativasPreview");
