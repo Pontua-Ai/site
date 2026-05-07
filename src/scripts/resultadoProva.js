@@ -1,13 +1,12 @@
-import supabaseClient from "./supabase.js";
+const urlParams = new URLSearchParams(window.location.search);
+const dadosSS = JSON.parse(sessionStorage.getItem("resultadoProva") || "null");
 
-const dados = JSON.parse(sessionStorage.getItem("resultadoProva") || "null");
-
-const pontos = dados?.pontos;
-const total = dados?.total;
-const respostasErradas = dados?.erradas || [];
-const idMateria = dados?.idmateria || '';
-const idConteudo = dados?.idconteudo || '';
-const idUsuario = dados?.idusuario || '';
+const pontos = urlParams.get('pontos');
+const total = urlParams.get('total');
+const todasRespostas = dadosSS?.respostas || [];
+const idMateria = urlParams.get('idmateria') || '';
+const idConteudo = urlParams.get('idconteudo') || '';
+const idUsuario = urlParams.get('idusuario') || '';
 
 sessionStorage.removeItem("resultadoProva");
 
@@ -34,14 +33,22 @@ function exibirResultado() {
     html += `<p class="pontos-finais"><strong>${pontos}</strong> de <strong>${total}</strong> questões acertadas</p>`;
     html += `<p class="percentual">${percentual}% de aproveitamento</p>`;
     
-    if (respostasErradas.length > 0) {
-        html += `<div class="erradas-detalhes">`;
-        html += `<h3>Questões Erradas (${respostasErradas.length}):</h3>`;
+    if (todasRespostas.length > 0) {
+        html += `<div class="todas-questoes">`;
+        html += `<h3>Todas as Questões:</h3>`;
         
-        respostasErradas.forEach((item, index) => {
-            html += `<div class="questao-errada">`;
+        todasRespostas.forEach((item, index) => {
+            const classe = item.acertou ? "questao-certa" : "questao-errada";
+            html += `<div class="${classe}">`;
             html += `<p class="enunciado"><strong>${index + 1}.</strong> ${item.pergunta}</p>`;
-            html += `<p class="resposta-errada">Sua resposta: ${item.respostaSelecionada}</p>`;
+            
+            if (item.acertou) {
+                html += `<p class="resposta-certa">Sua resposta: ${item.suaResposta} ✓</p>`;
+            } else {
+                html += `<p class="resposta-errada">Sua resposta: ${item.suaResposta} ✗</p>`;
+                html += `<p class="resposta-certa">Resposta correta: ${item.respostaCorreta}</p>`;
+            }
+            
             html += `</div>`;
         });
         
