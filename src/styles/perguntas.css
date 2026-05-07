@@ -1,6 +1,7 @@
 .folha { 
-    width: 80%;
-    max-width: 100%;
+    width: 80vw;
+    min-width: 80vw;
+    max-width: 1200px;
     border-radius: 20px;
     margin: 0 auto;
     padding: 20px;
@@ -9,23 +10,13 @@
     box-sizing: border-box;
 }
 
-#perguntaTexto,
-#alternativas {
-    width: 100%;
-    box-sizing: border-box;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-}
-
-.alternativa {
-    width: 100%;
-    box-sizing: border-box;
-}
 #perguntaTexto {
     font-size: 22px;
     margin-bottom: 20px;
     line-height: 1.4;
     margin-bottom: 50px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 #perguntaTexto img {
