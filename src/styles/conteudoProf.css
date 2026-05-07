@@ -157,6 +157,58 @@ body.dark .select2-container--default .select2-results__option:hover {
     background: rgba(78, 205, 196, 0.10);
 }
 
+.alt-format-toolbar {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.alt-format-toolbar.visible {
+    display: flex;
+}
+
+.alt-toolbar-label {
+    font-size: 13px;
+    color: var(--text-gray);
+    margin-right: 6px;
+    font-weight: 500;
+}
+
+.alt-tb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.15s ease;
+    font-family: inherit;
+}
+
+.alt-tb-btn:hover {
+    background: rgba(11, 147, 149, 0.1);
+    border-color: var(--primary-color);
+}
+
+.alt-tb-btn:active {
+    background: rgba(11, 147, 149, 0.2);
+}
+
+.alt-tb-btn b, .alt-tb-btn i {
+    font-size: 15px;
+}
+
 .boxInputs {
     display: flex;
     align-items: flex-end;
