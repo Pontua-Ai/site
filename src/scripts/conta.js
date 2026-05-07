@@ -210,10 +210,14 @@ export async function carregarProvasRecentesProfessor(idUsuario) {
 
         const div = document.createElement("div");
         div.className = "cardAtividades";
+        div.style.cursor = "pointer";
         div.innerHTML = `
             <i class="fa-solid fa-book-open"></i>
             <p>${nomeMateria} - ${nomeConteudo}</p>
         `;
+        div.addEventListener("click", () => {
+            window.location.href = `historico_prof.html?materia=${encodeURIComponent(nomeMateria)}&conteudo=${encodeURIComponent(nomeConteudo)}`;
+        });
         container.appendChild(div);
     }
 }
