@@ -6,7 +6,8 @@ let perguntasCache = [];
 let indicePergunta = 0;
 let pontos = 0;
 let totalRespostas = 0;
-let respostasErradas = [];
+let todasRespostas = [];
+let corretaAtual = "";
 let idMateriaAtual = null;
 let idConteudoAtual = null;
 
@@ -177,15 +178,10 @@ export async function exibirPergunta() {
         }
 
         sessionStorage.setItem("resultadoProva", JSON.stringify({
-            pontos,
-            total: totalRespostas,
-            erradas: respostasErradas,
-            idusuario: userLogado ? userLogado.id_usuario : '',
-            idmateria: idMateria || '',
-            idconteudo: idConteudo || ''
+            respostas: todasRespostas
         }));
         
-        window.location.href = "resultadoProva.html";
+        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&idusuario=${userLogado ? userLogado.id_usuario : ''}&idmateria=${idMateria || ''}&idconteudo=${idConteudo || ''}`;
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
@@ -208,7 +204,9 @@ export async function exibirPergunta() {
         return;
     }
     
+    corretaAtual = "";
     alternativas.forEach(alt => {
+        if (alt.correta) corretaAtual = alt.nome_alternativa;
         container.appendChild(criarAlternativa(alt));
     });
     const btnResponder = document.createElement("button");
@@ -241,19 +239,18 @@ export async function verificarResposta() {
             }]);
     }
     
+    const label = selecionada.nextElementSibling;
+    const respostaTexto = label ? label.innerText.trim() : "Resposta selecionada";
+
     totalRespostas++;
-    
-    if (isCorreta) {
-        pontos++;
-    } else {
-        const label = selecionada.nextElementSibling;
-        const respostaTexto = label ? label.innerText.trim() : "Resposta selecionada";
-        
-        respostasErradas.push({
-            pergunta: perguntaAtual.pergunta_texto,
-            respostaSelecionada: respostaTexto
-        });
-    }
+    if (isCorreta) pontos++;
+
+    todasRespostas.push({
+        pergunta: perguntaAtual.pergunta_texto,
+        suaResposta: respostaTexto,
+        respostaCorreta: corretaAtual,
+        acertou: isCorreta
+    });
     
     indicePergunta++;
     exibirPergunta();

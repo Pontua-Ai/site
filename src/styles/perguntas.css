@@ -110,3 +110,27 @@
     font-size: 14px;
     color: var(--error-color);
 }
+
+.resposta-certa {
+    font-size: 14px;
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+.questao-certa {
+    background-color: var(--background);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.todas-questoes {
+    text-align: left;
+    margin-top: 30px;
+}
+
+.todas-questoes h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 20px;
+}
