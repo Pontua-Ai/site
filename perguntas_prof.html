@@ -62,6 +62,15 @@
             <input type="hidden" id="fontFamily" name="fontFamily" value="Arial">
             <input type="hidden" id="pergunta" name="pergunta">
 
+            <div class="alt-format-toolbar" id="altToolbar">
+                <span class="alt-toolbar-label">Formatar:</span>
+                <button type="button" class="alt-tb-btn" data-cmd="italic" title="Itálico"><i>I</i></button>
+                <button type="button" class="alt-tb-btn" data-cmd="superscript" title="Potência (x²)">x²</button>
+                <button type="button" class="alt-tb-btn" data-cmd="subscript" title="Subscrito (x₂)">x₂</button>
+                <button type="button" class="alt-tb-btn" data-cmd="sqrt" title="Raiz quadrada">√</button>
+                <button type="button" class="alt-tb-btn" data-cmd="frac" title="Fração">a/b</button>
+            </div>
+
             <div class="boxInputs">
                 <input class="checkmark" type="radio" name="alternativa" value="1" id="alt1">
                 <div class="textAlternativa" contenteditable="true" data-placeholder="Alternativa 1"></div>
@@ -86,7 +95,6 @@
                 <input class="checkmark" type="radio" name="alternativa" value="5" id="alt5">
                 <div class="textAlternativa" contenteditable="true" data-placeholder="Alternativa 5"></div>
             </div>
-
             <div class="botoes-container">
                 <button class="subjects-button" type="submit">Cadastrar pergunta</button>
                 <button class="subjects-button" type="button" id="btnPreview">Pré-visualizar</button>

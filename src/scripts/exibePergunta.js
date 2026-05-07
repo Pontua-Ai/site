@@ -166,7 +166,7 @@ function criarAlternativa(alt) {
     radio.value = alt.id_alternativa;
     radio.dataset.correta = alt.correta;
     const label = document.createElement("label");
-    label.innerText = " " + alt.nome_alternativa;
+    label.innerHTML = " " + alt.nome_alternativa;
     div.classList.add("alternativa");   
 
     div.onclick = () => {
