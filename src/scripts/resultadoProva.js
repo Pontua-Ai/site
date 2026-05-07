@@ -1,20 +1,15 @@
 import supabaseClient from "./supabase.js";
 
-const urlParams = new URLSearchParams(window.location.search);
+const dados = JSON.parse(sessionStorage.getItem("resultadoProva") || "null");
 
-const pontos = urlParams.get('pontos');
-const total = urlParams.get('total');
-const erradasJson = urlParams.get('erradas');
-const idAlternativa = urlParams.get('alternativa');
-const idMateria = urlParams.get('idmateria');
-const idConteudo = urlParams.get('idconteudo');
+const pontos = dados?.pontos;
+const total = dados?.total;
+const respostasErradas = dados?.erradas || [];
+const idMateria = dados?.idmateria || '';
+const idConteudo = dados?.idconteudo || '';
+const idUsuario = dados?.idusuario || '';
 
-let respostasErradas = [];
-try {
-    respostasErradas = erradasJson ? JSON.parse(decodeURIComponent(erradasJson)) : [];
-} catch (e) {
-    respostasErradas = [];
-}
+sessionStorage.removeItem("resultadoProva");
 
 function exibirResultado() {
     const container = document.getElementById('resultadoContainer');
