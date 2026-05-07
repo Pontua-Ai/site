@@ -90,6 +90,8 @@ O sistema utiliza o **Supabase** como backend para gerenciar todos os dados:
 
 ## Como rodar o projeto
 
+Acesse: https://pontua-ai.github.io/site
+
 ### 1. Clone o repositório
 
 ```bash
