@@ -38,6 +38,7 @@ function criarOption(valor, texto) {
 }
 
 export async function carregarPerguntas() {
+    if (!document.getElementById("perguntaTexto")) return;
     let query = supabaseClient
         .from("perguntas")
         .select("*")
@@ -174,8 +175,17 @@ export async function exibirPergunta() {
         if (!idMateria && perguntasCache.length > 0) {
             idMateria = perguntasCache[0].id_materia;
         }
+
+        sessionStorage.setItem("resultadoProva", JSON.stringify({
+            pontos,
+            total: totalRespostas,
+            erradas: respostasErradas,
+            idusuario: userLogado ? userLogado.id_usuario : '',
+            idmateria: idMateria || '',
+            idconteudo: idConteudo || ''
+        }));
         
-        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&erradas=${encodeURIComponent(JSON.stringify(respostasErradas))}&idusuario=${userLogado ? userLogado.id_usuario : ''}&idmateria=${idMateria || ''}&idconteudo=${idConteudo || ''}`;
+        window.location.href = "resultadoProva.html";
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
