@@ -11,6 +11,11 @@ let corretaAtual = "";
 let idMateriaAtual = null;
 let idConteudoAtual = null;
 
+let tempoRestante = 18000;
+let cronometroInterval = null;
+let provaFinalizada = false;
+const TEMPO_LIMITE = 18000;
+
 const urlParams = new URLSearchParams(window.location.search);
 const materiaSelecionada = urlParams.get('materia');
 const conteudoSelecionado = urlParams.get('conteudo');
@@ -144,6 +149,11 @@ export async function carregarPerguntas() {
         return;
     };
     
+    if (simulado === 'true') {
+        iniciarCronometro();
+    } else {
+        document.getElementById("cronometro").style.display = "none";
+    }
     exibirPergunta();
 }
 
@@ -166,22 +176,75 @@ function criarAlternativa(alt) {
     return div;
 }
 
-export async function exibirPergunta() {
-    if (indicePergunta >= perguntasCache.length) {
-        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
-        const params = new URLSearchParams(window.location.search);
-        let idMateria = params.get('materia');
-        const idConteudo = params.get('conteudo');
-        
-        if (!idMateria && perguntasCache.length > 0) {
-            idMateria = perguntasCache[0].id_materia;
+function finalizarProva() {
+    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const params = new URLSearchParams(window.location.search);
+    let idMateria = params.get('materia');
+    const idConteudo = params.get('conteudo');
+
+    if (!idMateria && perguntasCache.length > 0) {
+        idMateria = perguntasCache[0].id_materia;
+    }
+
+    sessionStorage.setItem("resultadoProva", JSON.stringify({
+        respostas: todasRespostas
+    }));
+
+    window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&idusuario=${userLogado ? userLogado.id_usuario : ''}&idmateria=${idMateria || ''}&idconteudo=${idConteudo || ''}`;
+}
+
+function iniciarCronometro() {
+    const el = document.getElementById("cronometro");
+    if (!el) return;
+
+    tempoRestante = TEMPO_LIMITE;
+
+    function atualizar() {
+        const hrs = Math.floor(tempoRestante / 3600);
+        const min = Math.floor((tempoRestante % 3600) / 60);
+        const seg = tempoRestante % 60;
+        el.textContent = `${String(hrs).padStart(2, "0")}:${String(min).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
+
+        if (tempoRestante <= 5) {
+            el.classList.add("alerta");
         }
 
-        sessionStorage.setItem("resultadoProva", JSON.stringify({
-            respostas: todasRespostas
-        }));
-        
-        window.location.href = `resultadoProva.html?pontos=${pontos}&total=${totalRespostas}&idusuario=${userLogado ? userLogado.id_usuario : ''}&idmateria=${idMateria || ''}&idconteudo=${idConteudo || ''}`;
+        if (tempoRestante <= 0) {
+            clearInterval(cronometroInterval);
+            mostrarTempoAcabou();
+            return;
+        }
+        tempoRestante--;
+    }
+
+    atualizar();
+    cronometroInterval = setInterval(atualizar, 1000);
+}
+
+function mostrarTempoAcabou() {
+    if (provaFinalizada) return;
+    provaFinalizada = true;
+
+    document.getElementById("perguntaTexto").style.display = "none";
+    document.getElementById("alternativas").style.display = "none";
+    document.getElementById("cronometro").style.display = "none";
+
+    const overlay = document.createElement("div");
+    overlay.className = "tempo-acabou-overlay";
+    overlay.innerHTML = `
+        <div class="mensagem">
+            <i class="fa-regular fa-clock"></i>
+            Tempo acabou!
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(finalizarProva, 2000);
+}
+
+export async function exibirPergunta() {
+    if (indicePergunta >= perguntasCache.length) {
+        if (!provaFinalizada) finalizarProva();
         return;
     }
     const pergunta = perguntasCache[indicePergunta];
@@ -217,6 +280,8 @@ export async function exibirPergunta() {
 }
 
 export async function verificarResposta() {
+    if (provaFinalizada) return;
+
     const selecionada = document.querySelector('input[name="alternativa"]:checked');
     if (!selecionada) {
         toast("Selecione uma alternativa!", "error");

@@ -134,3 +134,54 @@
     margin-bottom: 20px;
     font-size: 20px;
 }
+
+#cronometro {
+    text-align: right;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    padding: 8px 16px;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+#cronometro.alerta {
+    color: var(--error-color);
+}
+
+.tempo-acabou-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.tempo-acabou-overlay .mensagem {
+    background: var(--background);
+    color: var(--text-primary);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+.tempo-acabou-overlay .mensagem i {
+    font-size: 64px;
+    color: var(--error-color);
+    display: block;
+    margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
