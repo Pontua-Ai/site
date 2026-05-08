@@ -140,7 +140,7 @@ export async function carregarHistorico() {
         window.location.href = "inicio.html";
         return;
     }
-
+    //materia
     const container = document.getElementById("historicoContainer");
     if (!container) return;
 
@@ -209,7 +209,10 @@ export async function carregarHistorico() {
         const materiaNome = pergunta.materia?.nome_materia || "Matéria";
         const conteudoNome = pergunta.conteudo?.nome_conteudo || "Conteúdo";
         
-        const textoPergunta = pergunta.pergunta_texto.replace(/<[^>]*>/g, "");
+        let textoPergunta = pergunta.pergunta_texto.replace(/<[^>]*>/g, "");
+        if (textoPergunta.length > 50) {
+            textoPergunta = textoPergunta.substring(0, 50) + "...";
+        }
         
         let alternativasHtml = '';
         if (alternativas && alternativas.length > 0) {
@@ -223,6 +226,9 @@ export async function carregarHistorico() {
         const div = document.createElement("div");
         div.className = "cardBox";
         div.innerHTML = `
+            <div class="mainBox">
+                <strong>${materiaNome} - ${conteudoNome}</strong>
+            </div>
             <div class="headerBox">
                 <p>${textoPergunta}</p>
                 <div class="botoesAcoes">
@@ -234,7 +240,7 @@ export async function carregarHistorico() {
                 ${alternativasHtml}
             </div>
             <div class="mainBox">
-                <p>${materiaNome} - ${conteudoNome}</p>
+
                 <p>${respostas} respostas | ${respostas > 0 ? Math.round((acertos / respostas) * 100) : 0}% de acertos</p>
             </div>
         `;
