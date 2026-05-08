@@ -1,0 +1,295 @@
+main {
+    width: 80%;
+    padding-bottom: 60px;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.escolher {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.selecionarMateria,
+.selecionarConteudo {
+    width: 18%;
+    min-width: 220px;
+}
+
+.select2-container {
+    width: 100% !important;
+    font-family: inherit;
+}
+
+.select2-container .select2-selection--single {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.select2-container--default .select2-selection--single {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    padding: 0 14px;
+    transition: 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.select2-container--default .select2-selection--single:hover {
+    border-color: var(--primary-color);
+}
+
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(11, 147, 149, 0.12);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1 !important;
+    padding-left: 0 !important;
+    padding-right: 30px !important;
+    font-size: 15px;
+    color: var(--text-primary) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: var(--text-gray) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    right: 14px;
+    top: 0;
+}
+
+.select2-dropdown {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+    padding: 6px 0;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 13px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    transition: 0.2s ease;
+}
+
+.select2-container--default .select2-results__option:hover {
+    background: rgba(11, 147, 149, 0.08);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+.perguntas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.perguntas-count {
+    font-size: 16px;
+    color: var(--text-gray);
+}
+
+.select-all-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-primary);
+    user-select: none;
+}
+
+.select-all-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.pergunta-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 16px;
+    transition: all 0.2s ease;
+}
+
+.pergunta-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(11, 147, 149, 0.1);
+}
+
+.pergunta-card.selected {
+    border-color: var(--primary-color);
+    background: rgba(11, 147, 149, 0.04);
+}
+
+.card-checkbox {
+    padding-top: 4px;
+    flex-shrink: 0;
+}
+
+.card-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.materia-badge,
+.conteudo-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.materia-badge {
+    background: var(--primary-color);
+    color: white;
+}
+
+.conteudo-badge {
+    background: var(--terceary-color);
+    color: white;
+}
+
+.card-pergunta {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.card-pergunta img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.card-alternativas {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.alt-item {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--gray);
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.alt-item .correta-badge {
+    color: var(--success-color);
+    font-weight: bold;
+    margin-left: 6px;
+    font-size: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-gray);
+    font-size: 16px;
+}
+
+.criarProvaContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+#btnCriarProva {
+    width: 300px;
+    height: 60px;
+    font-size: 20px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-weight: bold;
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+#btnCriarProva:hover {
+    background-color: var(--secondary-color);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.205);
+}
+
+#btnCriarProva:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+body.dark .pergunta-card {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+body.dark .pergunta-card:hover {
+    border-color: var(--primary-color);
+}
+
+body.dark .pergunta-card.selected {
+    background: rgba(78, 205, 196, 0.08);
+}
+
+body.dark .alt-item {
+    background: var(--gray);
+}
+
+body.dark .select2-container--default .select2-selection--single {
+    background: #232323;
+    border-color: #3a3a3a;
+}
+
+body.dark .select2-dropdown {
+    background: #232323;
+    border-color: #3a3a3a;
+}
+
+body.dark .select2-container--default .select2-results__option:hover {
+    background: rgba(78, 205, 196, 0.10);
+}
