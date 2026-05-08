@@ -166,102 +166,58 @@ function shuffleArray(array) {
     return arr;
 }
 
-function montarHtmlProva(perguntas, titulo) {
-    let html = `
-        <div style="font-family: Arial, 'Helvetica Neue', sans-serif; padding: 30px 40px; width: 750px; background: white; color: #222;">
-            <div style="text-align: center; margin-bottom: 8px;">
-                <span style="font-size: 12px; color: #888;">PontuaAI</span>
-            </div>
-            <h1 style="text-align: center; font-size: 26px; margin: 0 0 4px 0; color: #000; text-transform: uppercase; letter-spacing: 2px;">Prova</h1>
-            <p style="text-align: center; font-size: 13px; color: #666; margin: 0 0 20px 0;">${titulo}</p>
-            <hr style="border: none; border-top: 2px solid #222; margin-bottom: 30px;">
-            <div style="margin-bottom: 20px;">
-                <span style="font-size: 13px; color: #555;">Nome: ________________________________________</span>
-            </div>
-    `;
+function gerarHTMLPrint(versoes) {
+    let html = `<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Prova - PontuaAI</title>
+    <style>
+        *{ margin:0; padding:0; box-sizing:border-box; }
+        body{ font-family:Arial,Helvetica,sans-serif; color:#222; line-height:1.5; padding:40px 30px; background:#fff; }
+        .page-break{ page-break-before:always; }
+        .prova-brand{ text-align:center; font-size:9pt; color:#888; margin-bottom:6pt; }
+        .prova-title{ text-transform:uppercase; font-size:20pt; margin-bottom:2pt; }
+        .prova-subtitle{ font-size:11pt; color:#666; margin-bottom:8pt; }
+        .prova-divider{ border:none; border-top:1.5pt solid #222; margin-bottom:12pt; }
+        .prova-name{ font-size:11pt; color:#555; margin-bottom:16pt; }
+        .prova-question{ margin-bottom:14pt; }
+        .prova-question-text{ font-size:12pt; line-height:1.7; text-align:justify; }
+        .prova-question-text img{ max-width:100%; display:block; margin:8px 0; }
+        .prova-alternatives{ margin-left:24pt; margin-top:6pt; }
+        .prova-alt{ margin:3pt 0; font-size:11pt; line-height:1.5; color:#333; }
+        .prova-footer{ margin-top:24pt; text-align:center; font-size:9pt; color:#999; border-top:0.5pt solid #ddd; padding-top:8pt; }
+        @media print{ @page{ margin:25mm 20mm 25mm 30mm; } body{ padding:0; } }
+    </style>
+</head>
+<body>`;
 
-    perguntas.forEach((p, i) => {
-        html += `
-            <div style="margin-bottom: 28px; page-break-inside: avoid;">
-                <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; color: #000;">
-                    ${i + 1}. ${p.pergunta_texto}
-                </div>
-                <div style="margin-left: 24px;">
-        `;
+    versoes.forEach((v, i) => {
+        if (i > 0) html += '<div class="page-break"></div>';
 
-        p.alternativas.forEach((alt, j) => {
-            const letra = String.fromCharCode(65 + j);
-            html += `<div style="margin: 4px 0; font-size: 14px; line-height: 1.5; color: #333;">${letra}) ${alt.nome_alternativa}</div>`;
+        html += `<div class="prova-brand">PontuaAI</div>`;
+        html += `<div class="prova-title">Prova</div>`;
+        html += `<div class="prova-subtitle">${v.titulo}</div>`;
+        html += `<hr class="prova-divider">`;
+        html += `<div class="prova-name">Nome: ________________________________________</div>`;
+
+        v.perguntas.forEach((p, idx) => {
+            const numero = (idx + 1) + '. ';
+            const textoNumerado = p.pergunta_texto.replace(/^<(\w+)([^>]*)>/, '<$1$2>' + numero);
+
+            html += `<div class="prova-question"><div class="prova-question-text">${textoNumerado}</div><div class="prova-alternatives">`;
+            p.alternativas.forEach((alt, j) => {
+                const letra = String.fromCharCode(65 + j);
+                html += `<div class="prova-alt">${letra}) ${alt.nome_alternativa}</div>`;
+            });
+            html += `</div></div>`;
         });
 
-        html += `</div></div>`;
+        html += `<div class="prova-footer">Gerado por PontuaAI</div>`;
     });
 
-    html += `
-            <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #999;">
-                Gerado por PontuaAI
-            </div>
-        </div>
-    `;
-
+    html += `</body></html>`;
     return html;
-}
-
-async function gerarPDF(perguntas, index) {
-    const btn = document.getElementById("btnCriarProva");
-    btn.textContent = `Gerando PDF ${index}/3...`;
-
-    if (typeof html2canvas === 'undefined') {
-        throw new Error("Biblioteca html2canvas não carregada");
-    }
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-        throw new Error("Biblioteca jsPDF não carregada");
-    }
-
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = montarHtmlProva(perguntas, `Modelo ${index}`);
-    tempDiv.style.cssText = "width: 830px; background: white; margin: 0 auto;";
-    const main = document.querySelector("main");
-    main.parentNode.insertBefore(tempDiv, main.nextSibling);
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    try {
-        const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            useCORS: true,
-            letterRendering: true,
-            backgroundColor: '#ffffff'
-        });
-
-        if (!canvas || canvas.width === 0 || canvas.height === 0) {
-            throw new Error(`Canvas vazio (${canvas?.width}x${canvas?.height})`);
-        }
-
-        toast(`Canvas gerado: ${canvas.width}x${canvas.height}`, "default");
-
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        let position = 0;
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        let heightLeft = pdfHeight - pageHeight;
-
-        while (heightLeft > 0) {
-            position -= pageHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pageHeight;
-        }
-
-        pdf.save(`prova-modelo-${index}.pdf`);
-    } finally {
-        document.body.removeChild(tempDiv);
-    }
 }
 
 async function criarProva() {
@@ -283,21 +239,39 @@ async function criarProva() {
 
     const btn = document.getElementById("btnCriarProva");
     btn.disabled = true;
-    btn.textContent = "Gerando 3 PDFs...";
+    btn.textContent = "Gerando prova...";
 
     try {
         const versao1 = shuffleArray(perguntasSelecionadas);
         const versao2 = shuffleArray(perguntasSelecionadas);
         const versao3 = shuffleArray(perguntasSelecionadas);
 
-        await gerarPDF(versao1, 1);
-        await gerarPDF(versao2, 2);
-        await gerarPDF(versao3, 3);
+        const html = gerarHTMLPrint([
+            { perguntas: versao1, titulo: 'Modelo 1' },
+            { perguntas: versao2, titulo: 'Modelo 2' },
+            { perguntas: versao3, titulo: 'Modelo 3' }
+        ]);
 
-        toast("3 PDFs gerados com sucesso!", "success");
+        const win = window.open('', '_blank');
+        if (!win) {
+            toast("Pop-up bloqueado. Permita pop-ups para gerar a prova.", "error");
+            btn.disabled = false;
+            btn.textContent = "Criar Prova";
+            return;
+        }
+
+        win.document.write(html);
+        win.document.close();
+
+        setTimeout(() => {
+            win.focus();
+            win.print();
+        }, 500);
+
+        toast("Prova gerada! Na janela de impressão, escolha 'Salvar como PDF'.", "success");
     } catch (error) {
-        console.error("Erro ao gerar PDFs:", error);
-        toast("Erro ao gerar PDFs. Verifique o console.", "error");
+        console.error("Erro ao gerar prova:", error);
+        toast("Erro ao gerar prova. Verifique o console.", "error");
     } finally {
         btn.disabled = false;
         btn.textContent = "Criar Prova";
