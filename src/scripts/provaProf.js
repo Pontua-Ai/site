@@ -221,12 +221,11 @@ function mostrarResultadoProvas(versoes) {
     box.id = 'resultadoProvas';
     box.className = 'resultado-provas';
     box.innerHTML = `
-        <h3>Provas geradas!</h3>
-        <p>Clique em cada modelo para abrir e salvar como PDF:</p>
+        <p class="resultado-texto">Provas criadas, clique para visualizar</p>
         <div class="resultado-botoes">
-            <button class="btn-modelo" data-modelo="0">📄 Modelo 1</button>
-            <button class="btn-modelo" data-modelo="1">📄 Modelo 2</button>
-            <button class="btn-modelo" data-modelo="2">📄 Modelo 3</button>
+            <button class="btn-modelo" data-modelo="0">Modelo 1</button>
+            <button class="btn-modelo" data-modelo="1">Modelo 2</button>
+            <button class="btn-modelo" data-modelo="2">Modelo 3</button>
         </div>
     `;
 
@@ -248,7 +247,8 @@ function mostrarResultadoProvas(versoes) {
         });
     });
 
-    document.querySelector('main').appendChild(box);
+    const container = document.querySelector('.criarProvaContainer');
+    container.parentNode.insertBefore(box, container.nextSibling);
     box.scrollIntoView({ behavior: 'smooth' });
 }
 
