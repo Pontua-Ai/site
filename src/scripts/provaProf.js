@@ -25,34 +25,6 @@ async function carregarMaterias() {
     $('#conteudo').select2({ minimumResultsForSearch: Infinity });
 }
 
-async function carregarConteudos(idMateria) {
-    const select = document.getElementById("conteudo");
-    select.innerHTML = '<option value="">Todos os conteúdos</option>';
-
-    if (!idMateria) {
-        $('#conteudo').trigger('change');
-        return;
-    }
-
-    const { data, error } = await supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria);
-    if (error) {
-        console.error("Erro ao carregar conteúdos:", error);
-        return;
-    }
-
-    data.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c.id_conteudo;
-        option.textContent = c.nome_conteudo;
-        select.appendChild(option);
-    });
-
-    $('#conteudo').trigger('change');
-}
-
 async function carregarPerguntas() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     if (!userLogado || userLogado.tipo_conta !== 'professor') {
@@ -98,12 +70,16 @@ function aplicarFiltro() {
     const materia = document.getElementById("materia").value;
     const conteudo = document.getElementById("conteudo").value;
 
+    console.log("Filtrar - materia:", materia, "conteudo:", conteudo);
+    console.log("Total perguntas:", todasPerguntas.length);
+
     const filtradas = todasPerguntas.filter(p => {
-        if (materia && p.id_materia != materia) return false;
-        if (conteudo && p.id_conteudo != conteudo) return false;
+        if (materia && String(p.id_materia) !== materia) return false;
+        if (conteudo && String(p.id_conteudo) !== conteudo) return false;
         return true;
     });
 
+    console.log("Perguntas filtradas:", filtradas.length);
     renderizarPerguntas(filtradas);
 }
 
@@ -317,12 +293,32 @@ async function criarProva() {
 carregarMaterias();
 carregarPerguntas();
 
-document.getElementById("materia").addEventListener("change", async function () {
-    await carregarConteudos(this.value);
+$('#materia').on('select2:select', async function (e) {
+    $('#conteudo').select2('destroy');
+    document.getElementById("conteudo").innerHTML = '<option value="" selected>Todos os conteúdos</option>';
+
+    const idMateria = e.params.data.id;
+    if (idMateria) {
+        const { data, error } = await supabaseClient
+            .from("conteudo")
+            .select("id_conteudo, nome_conteudo")
+            .eq("id_materia", idMateria);
+        if (!error && data) {
+            let html = '<option value="" selected>Todos os conteúdos</option>';
+            data.forEach(c => {
+                html += `<option value="${c.id_conteudo}">${c.nome_conteudo}</option>`;
+            });
+            document.getElementById("conteudo").innerHTML = html;
+        }
+    }
+
+    $('#conteudo').select2({ minimumResultsForSearch: Infinity });
     aplicarFiltro();
 });
 
-document.getElementById("conteudo").addEventListener("change", aplicarFiltro);
+$('#conteudo').on('select2:select', function (e) {
+    aplicarFiltro();
+});
 
 document.getElementById("btnCriarProva").addEventListener("click", criarProva);
 
