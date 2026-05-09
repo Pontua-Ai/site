@@ -216,6 +216,19 @@ function gerarHTMLProva(perguntas, titulo) {
     return html;
 }
 
+function downloadProva(perguntas, titulo) {
+    const html = gerarHTMLProva(perguntas, titulo);
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${titulo.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 function mostrarResultadoProvas(versoes) {
     const existing = document.getElementById('resultadoProvas');
     if (existing) existing.remove();
@@ -224,11 +237,20 @@ function mostrarResultadoProvas(versoes) {
     box.id = 'resultadoProvas';
     box.className = 'resultado-provas';
     box.innerHTML = `
-        <p class="resultado-texto">Provas criadas, clique para visualizar</p>
+        <p class="resultado-texto">Provas criadas!</p>
         <div class="resultado-botoes">
-            <button class="btn-modelo" data-modelo="0">Modelo 1</button>
-            <button class="btn-modelo" data-modelo="1">Modelo 2</button>
-            <button class="btn-modelo" data-modelo="2">Modelo 3</button>
+            <div class="btn-modelo-wrapper">
+                <button class="btn-modelo" data-modelo="0">Modelo 1</button>
+                <button class="btn-download" data-modelo="0">Baixar HTML</button>
+            </div>
+            <div class="btn-modelo-wrapper">
+                <button class="btn-modelo" data-modelo="1">Modelo 2</button>
+                <button class="btn-download" data-modelo="1">Baixar HTML</button>
+            </div>
+            <div class="btn-modelo-wrapper">
+                <button class="btn-modelo" data-modelo="2">Modelo 3</button>
+                <button class="btn-download" data-modelo="2">Baixar HTML</button>
+            </div>
         </div>
     `;
 
@@ -247,6 +269,16 @@ function mostrarResultadoProvas(versoes) {
             win.document.write(html);
             win.document.close();
             setTimeout(() => { win.focus(); win.print(); }, 500);
+        });
+    });
+
+    box.querySelectorAll('.btn-download').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.modelo);
+            const perguntas = ultimasProvasGeradas[i];
+            if (!perguntas) return;
+            downloadProva(perguntas, `Modelo ${i + 1}`);
+            toast("Download iniciado!", "success");
         });
     });
 
