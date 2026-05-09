@@ -60,6 +60,9 @@ async function carregarPerguntas() {
         return;
     }
 
+    document.getElementById("perguntasContainer").innerHTML =
+        '<div class="empty-state" style="display:flex;align-items:center;justify-content:center;gap:10px;"><span class="loading-spinner"></span> Carregando perguntas...</div>';
+
     const { data: perguntas, error } = await supabaseClient
         .from("perguntas")
         .select("*, materia(nome_materia), conteudo(nome_conteudo)")
