@@ -6,9 +6,15 @@
     <title>Prova do Professor</title>
     <link rel="stylesheet" href="src/styles/global.css">
     <link rel="stylesheet" href="src/styles/header.css">
-    <link rel="stylesheet" href="src/styles/doc.css">
+    <link rel="stylesheet" href="src/styles/provaProf.css">
     <link rel="icon" href="img/cabeca.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 </head>
 
 <body>
@@ -26,7 +32,37 @@
     </header>
 
     <main>
+        <div class="title">Criar Prova</div>
+
+        <div class="escolher">
+            <div class="selecionarMateria">
+                <select id="materia">
+                    <option value="">Todas as matérias</option>
+                </select>
+            </div>
+            <div class="selecionarConteudo">
+                <select id="conteudo">
+                    <option value="">Todos os conteúdos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="perguntas-header">
+            <span class="perguntas-count" id="perguntasCount">0 perguntas</span>
+            <label class="select-all-label">
+                <input type="checkbox" id="selectAll">
+                Selecionar todas
+            </label>
+        </div>
+
+        <div id="perguntasContainer"></div>
+
+        <div class="criarProvaContainer">
+            <button id="btnCriarProva" class="subjects-button">Criar Prova</button>
+        </div>
     </main>
+
+    <script type="module" src="src/scripts/provaProf.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 </html>
