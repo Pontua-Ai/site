@@ -1,9 +1,5 @@
-import { GoogleGenAI } from "https://esm.run/@google/genai";
 import { toast } from "./utils.js";
-
-const ai = new GoogleGenAI({
-  apiKey: "AIzaSyDYNrj-aPPtQFoCe6t2fKD0Q1wYJw3jpDw"
-});
+import { config } from "./config.js";
 
 let estaCorrigindo = false;
 
@@ -392,14 +388,27 @@ ${texto}
   async function fazerRequisicao(retentativas = 3) {
     for (let i = 0; i < retentativas; i++) {
       try {
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json"
-          }
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${config.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 8192
+          })
         });
-        return response;
+
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error(`OpenRouter ${response.status}: ${err}`);
+        }
+
+        const json = await response.json();
+        const text = json.choices?.[0]?.message?.content?.trim() || "{}";
+        return { text };
       } catch (error) {
         if (i < retentativas - 1) {
           const tempo = Math.pow(2, i) * 1000;
