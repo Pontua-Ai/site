@@ -254,7 +254,6 @@ main {
     font-weight: 700;
     cursor: pointer;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 14px rgba(11, 147, 149, 0.3);
 }
 
 #btnCriarProva:disabled {
@@ -334,7 +333,6 @@ body.dark .select2-container--default .select2-results__option:hover {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 14px rgba(11, 147, 149, 0.3);
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -342,13 +340,8 @@ body.dark .select2-container--default .select2-results__option:hover {
 }
 
 .btn-modelo::before {
-    content: '📄';
+    content: '📝';
     font-size: 20px;
-}
-
-.btn-modelo:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 28px rgba(11, 147, 149, 0.35);
 }
 
 .btn-modelo:active {
@@ -374,4 +367,33 @@ body.dark .select2-container--default .select2-results__option:hover {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+.btn-modelo-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-download {
+    padding: 10px 28px;
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.btn-download:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-download:active {
+    transform: translateY(0) scale(0.98);
 }
