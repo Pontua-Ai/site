@@ -295,53 +295,64 @@ body.dark .select2-container--default .select2-results__option:hover {
 }
 
 .resultado-provas {
-    margin-top: 40px;
-    padding: 30px;
-    background: var(--card-bg);
-    border: 2px solid var(--primary-color);
-    border-radius: 16px;
+    margin-top: 48px;
     text-align: center;
-    animation: fadeIn 0.4s ease;
+    animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-.resultado-provas h3 {
-    color: var(--primary-color);
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.resultado-provas p {
+.resultado-texto {
     color: var(--text-gray);
-    margin-bottom: 20px;
     font-size: 15px;
+    margin-bottom: 16px;
 }
 
 .resultado-botoes {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .btn-modelo {
-    padding: 14px 32px;
-    background: var(--primary-color);
+    position: relative;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(11, 147, 149, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.3px;
+}
+
+.btn-modelo::before {
+    content: '📄';
+    font-size: 20px;
 }
 
 .btn-modelo:hover {
-    background: var(--secondary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 28px rgba(11, 147, 149, 0.35);
+}
+
+.btn-modelo:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-modelo:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
