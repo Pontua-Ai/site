@@ -2,6 +2,7 @@ import supabaseClient from "./supabase.js";
 import { toast } from "./utils.js";
 
 let todasPerguntas = [];
+let ultimasProvasGeradas = null;
 
 async function carregarMaterias() {
     const select = document.getElementById("materia");
@@ -166,58 +167,89 @@ function shuffleArray(array) {
     return arr;
 }
 
-function gerarHTMLPrint(versoes) {
+function gerarHTMLProva(perguntas, titulo) {
     let html = `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Prova - PontuaAI</title>
+    <title>${titulo} - PontuaAI</title>
     <style>
         *{ margin:0; padding:0; box-sizing:border-box; }
         body{ font-family:Arial,Helvetica,sans-serif; color:#222; line-height:1.5; padding:40px 30px; background:#fff; }
-        .page-break{ page-break-before:always; }
-        .prova-brand{ text-align:center; font-size:9pt; color:#888; margin-bottom:6pt; }
-        .prova-title{ text-transform:uppercase; font-size:20pt; margin-bottom:2pt; }
-        .prova-subtitle{ font-size:11pt; color:#666; margin-bottom:8pt; }
-        .prova-divider{ border:none; border-top:1.5pt solid #222; margin-bottom:12pt; }
-        .prova-name{ font-size:11pt; color:#555; margin-bottom:16pt; }
-        .prova-question{ margin-bottom:14pt; }
-        .prova-question-text{ font-size:12pt; line-height:1.7; text-align:justify; }
-        .prova-question-text img{ max-width:100%; display:block; margin:8px 0; }
-        .prova-alternatives{ margin-left:24pt; margin-top:6pt; }
-        .prova-alt{ margin:3pt 0; font-size:11pt; line-height:1.5; color:#333; }
-        .prova-footer{ margin-top:24pt; text-align:center; font-size:9pt; color:#999; border-top:0.5pt solid #ddd; padding-top:8pt; }
+        .p-brand{ text-align:center; font-size:9pt; color:#888; margin-bottom:6pt; }
+        .p-title{ text-transform:uppercase; font-size:20pt; margin-bottom:2pt; }
+        .p-subtitle{ font-size:11pt; color:#666; margin-bottom:8pt; }
+        .p-divider{ border:none; border-top:1.5pt solid #222; margin-bottom:12pt; }
+        .p-name{ font-size:11pt; color:#555; margin-bottom:16pt; }
+        .p-question{ margin-bottom:14pt; }
+        .p-text{ font-size:12pt; line-height:1.7; text-align:justify; }
+        .p-text img{ max-width:100%; display:block; margin:8px 0; }
+        .p-alts{ margin-left:24pt; margin-top:6pt; }
+        .p-alt{ margin:3pt 0; font-size:11pt; line-height:1.5; color:#333; }
+        .p-footer{ margin-top:24pt; text-align:center; font-size:9pt; color:#999; border-top:0.5pt solid #ddd; padding-top:8pt; }
         @media print{ @page{ margin:25mm 20mm 25mm 30mm; } body{ padding:0; } }
     </style>
 </head>
-<body>`;
+<body>
+    <div class="p-brand">PontuaAI</div>
+    <div class="p-title">Prova</div>
+    <div class="p-subtitle">${titulo}</div>
+    <hr class="p-divider">
+    <div class="p-name">Nome: ________________________________________</div>`;
 
-    versoes.forEach((v, i) => {
-        if (i > 0) html += '<div class="page-break"></div>';
+    perguntas.forEach((p, idx) => {
+        const numero = (idx + 1) + '. ';
+        const textoNumerado = p.pergunta_texto.replace(/^<(\w+)([^>]*)>/, '<$1$2>' + numero);
 
-        html += `<div class="prova-brand">PontuaAI</div>`;
-        html += `<div class="prova-title">Prova</div>`;
-        html += `<div class="prova-subtitle">${v.titulo}</div>`;
-        html += `<hr class="prova-divider">`;
-        html += `<div class="prova-name">Nome: ________________________________________</div>`;
-
-        v.perguntas.forEach((p, idx) => {
-            const numero = (idx + 1) + '. ';
-            const textoNumerado = p.pergunta_texto.replace(/^<(\w+)([^>]*)>/, '<$1$2>' + numero);
-
-            html += `<div class="prova-question"><div class="prova-question-text">${textoNumerado}</div><div class="prova-alternatives">`;
-            p.alternativas.forEach((alt, j) => {
-                const letra = String.fromCharCode(65 + j);
-                html += `<div class="prova-alt">${letra}) ${alt.nome_alternativa}</div>`;
-            });
-            html += `</div></div>`;
+        html += `<div class="p-question"><div class="p-text">${textoNumerado}</div><div class="p-alts">`;
+        p.alternativas.forEach((alt, j) => {
+            const letra = String.fromCharCode(65 + j);
+            html += `<div class="p-alt">${letra}) ${alt.nome_alternativa}</div>`;
         });
-
-        html += `<div class="prova-footer">Gerado por PontuaAI</div>`;
+        html += `</div></div>`;
     });
 
-    html += `</body></html>`;
+    html += `<div class="p-footer">Gerado por PontuaAI</div></body></html>`;
     return html;
+}
+
+function mostrarResultadoProvas(versoes) {
+    const existing = document.getElementById('resultadoProvas');
+    if (existing) existing.remove();
+
+    const box = document.createElement('div');
+    box.id = 'resultadoProvas';
+    box.className = 'resultado-provas';
+    box.innerHTML = `
+        <h3>Provas geradas!</h3>
+        <p>Clique em cada modelo para abrir e salvar como PDF:</p>
+        <div class="resultado-botoes">
+            <button class="btn-modelo" data-modelo="0">📄 Modelo 1</button>
+            <button class="btn-modelo" data-modelo="1">📄 Modelo 2</button>
+            <button class="btn-modelo" data-modelo="2">📄 Modelo 3</button>
+        </div>
+    `;
+
+    box.querySelectorAll('.btn-modelo').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.modelo);
+            const perguntas = ultimasProvasGeradas[i];
+            if (!perguntas) return;
+
+            const html = gerarHTMLProva(perguntas, `Modelo ${i + 1}`);
+            const win = window.open('', '_blank');
+            if (!win) {
+                toast("Pop-up bloqueado. Permita pop-ups.", "error");
+                return;
+            }
+            win.document.write(html);
+            win.document.close();
+            setTimeout(() => { win.focus(); win.print(); }, 500);
+        });
+    });
+
+    document.querySelector('main').appendChild(box);
+    box.scrollIntoView({ behavior: 'smooth' });
 }
 
 async function criarProva() {
@@ -237,45 +269,14 @@ async function criarProva() {
         return;
     }
 
-    const btn = document.getElementById("btnCriarProva");
-    btn.disabled = true;
-    btn.textContent = "Gerando prova...";
+    ultimasProvasGeradas = [
+        shuffleArray(perguntasSelecionadas),
+        shuffleArray(perguntasSelecionadas),
+        shuffleArray(perguntasSelecionadas)
+    ];
 
-    try {
-        const versao1 = shuffleArray(perguntasSelecionadas);
-        const versao2 = shuffleArray(perguntasSelecionadas);
-        const versao3 = shuffleArray(perguntasSelecionadas);
-
-        const html = gerarHTMLPrint([
-            { perguntas: versao1, titulo: 'Modelo 1' },
-            { perguntas: versao2, titulo: 'Modelo 2' },
-            { perguntas: versao3, titulo: 'Modelo 3' }
-        ]);
-
-        const win = window.open('', '_blank');
-        if (!win) {
-            toast("Pop-up bloqueado. Permita pop-ups para gerar a prova.", "error");
-            btn.disabled = false;
-            btn.textContent = "Criar Prova";
-            return;
-        }
-
-        win.document.write(html);
-        win.document.close();
-
-        setTimeout(() => {
-            win.focus();
-            win.print();
-        }, 500);
-
-        toast("Prova gerada! Na janela de impressão, escolha 'Salvar como PDF'.", "success");
-    } catch (error) {
-        console.error("Erro ao gerar prova:", error);
-        toast("Erro ao gerar prova. Verifique o console.", "error");
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "Criar Prova";
-    }
+    mostrarResultadoProvas(ultimasProvasGeradas);
+    toast("3 provas geradas com sucesso!", "success");
 }
 
 carregarMaterias();
