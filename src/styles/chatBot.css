@@ -22,7 +22,6 @@
 }
 
 .chatbot-toggle.open {
-    transform: rotate(45deg);
     background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
 
