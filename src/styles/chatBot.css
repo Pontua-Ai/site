@@ -10,7 +10,6 @@
     border: none;
     cursor: pointer;
     font-size: 28px;
-    box-shadow: 0 4px 20px rgba(11, 147, 149, 0.4);
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -20,7 +19,6 @@
 
 .chatbot-toggle:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(11, 147, 149, 0.5);
 }
 
 .chatbot-toggle.open {
@@ -38,7 +36,6 @@
     background: var(--card-bg);
     border: 1.5px solid var(--border-color);
     border-radius: 18px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
     z-index: 9998;
     display: none;
     flex-direction: column;
