@@ -116,6 +116,9 @@ function showChat() {
     chatToggle.classList.add('open');
     chatToggle.innerHTML = '✕';
     chatInput.focus();
+    if (state.passo === 'done') {
+        setTimeout(() => startConversation(), 300);
+    }
 }
 
 function hideChat() {
