@@ -157,7 +157,7 @@ export async function carregarPerguntas() {
     exibirPergunta();
 }
 
-function criarAlternativa(alt) {
+function criarAlternativa(alt, index) {
     const div = document.createElement("div");
     div.style.margin = "5px 0";
     const radio = document.createElement("input");
@@ -165,8 +165,10 @@ function criarAlternativa(alt) {
     radio.name = "alternativa";
     radio.value = alt.id_alternativa;
     radio.dataset.correta = alt.correta;
+    radio.dataset.texto = alt.nome_alternativa;
     const label = document.createElement("label");
-    label.innerHTML = " " + alt.nome_alternativa;
+    const letra = String.fromCharCode(65 + index);
+    label.innerHTML = ` <strong>${letra}.</strong> ${alt.nome_alternativa}`;
     div.classList.add("alternativa");   
 
     div.onclick = () => {
@@ -257,7 +259,8 @@ export async function exibirPergunta() {
     const { data: alternativas, error } = await supabaseClient
         .from("alternativa")
         .select("*")
-        .eq("id_pergunta", idPergunta);
+        .eq("id_pergunta", idPergunta)
+        .order("id_alternativa", { ascending: true });
     console.log("Alternativas:", alternativas, "Erro:", error);
     const container = document.getElementById("alternativas");
     container.innerHTML = "";
@@ -268,9 +271,9 @@ export async function exibirPergunta() {
     }
     
     corretaAtual = "";
-    alternativas.forEach(alt => {
+    alternativas.forEach((alt, index) => {
         if (alt.correta) corretaAtual = alt.nome_alternativa;
-        container.appendChild(criarAlternativa(alt));
+        container.appendChild(criarAlternativa(alt, index));
     });
     const btnResponder = document.createElement("button");
     btnResponder.textContent = "Responder";
@@ -304,8 +307,7 @@ export async function verificarResposta() {
             }]);
     }
     
-    const label = selecionada.nextElementSibling;
-    const respostaTexto = label ? label.innerText.trim() : "Resposta selecionada";
+    const respostaTexto = selecionada.dataset.texto || "Resposta selecionada";
 
     totalRespostas++;
     if (isCorreta) pontos++;
