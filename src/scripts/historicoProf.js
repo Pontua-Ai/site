@@ -154,6 +154,7 @@ export async function carregarHistorico() {
     }
 
     container.innerHTML = '<div class="empty-state" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 20px;color:var(--text-gray)"><span class="loading-spinner"></span> Carregando perguntas...</div>';
+    let primeiraRenderizada = false;
 
     for (const pergunta of perguntasFiltradas) {
         const { data: alternativas } = await supabaseClient
@@ -209,6 +210,10 @@ export async function carregarHistorico() {
                 <p>${respostas} respostas | ${respostas > 0 ? Math.round((acertos / respostas) * 100) : 0}% de acertos</p>
             </div>
         `;
+        if (!primeiraRenderizada) {
+            container.innerHTML = '';
+            primeiraRenderizada = true;
+        }
         container.appendChild(div);
     }
 
