@@ -181,8 +181,8 @@ export async function carregarHistorico() {
         const conteudoNome = pergunta.conteudo?.nome_conteudo || "Conteúdo";
         
         let textoPergunta = pergunta.pergunta_texto.replace(/<[^>]*>/g, "");
-        if (textoPergunta.length > 50) {
-            textoPergunta = textoPergunta.substring(0, 50) + "...";
+        if (textoPergunta.length > 150) {
+            textoPergunta = textoPergunta.substring(0, 150) + "...";
         }
 
         const dataPergunta = pergunta.data_pergunta
@@ -195,6 +195,8 @@ export async function carregarHistorico() {
             <div class="mainBox mainBoxTop">
                 <span class="materia-badge">${materiaNome}</span>
                 <span class="conteudo-badge">${conteudoNome}</span>
+            </div>
+            <div class="mainBox mainBoxButtons">
                 <div class="botoesAcoes">
                     <button class="visualizar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-eye"></i></button>
                     <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>

@@ -48,7 +48,6 @@ h1{
 .mainBoxTop{
     display: flex;
     align-items: center;
-    padding-right: 100px;
     gap: 8px;
 }
 
@@ -73,6 +72,12 @@ h1{
 
 .mainBoxTop .botoesAcoes{
     margin-left: auto;
+}
+
+.mainBoxButtons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
 }
 
 .botoesAcoes{
