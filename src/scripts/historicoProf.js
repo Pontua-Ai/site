@@ -193,7 +193,8 @@ export async function carregarHistorico() {
         div.className = "cardBox";
         div.innerHTML = `
             <div class="mainBox mainBoxTop">
-                <strong>${materiaNome} - ${conteudoNome}</strong>
+                <span class="materia-badge">${materiaNome}</span>
+                <span class="conteudo-badge">${conteudoNome}</span>
                 <div class="botoesAcoes">
                     <button class="visualizar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-eye"></i></button>
                     <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>

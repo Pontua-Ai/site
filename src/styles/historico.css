@@ -46,6 +46,26 @@ h1{
     display: flex;
     align-items: center;
     padding-right: 100px;
+    gap: 8px;
+}
+
+.materia-badge,
+.conteudo-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.materia-badge {
+    background: var(--primary-color);
+    color: white;
+}
+
+.conteudo-badge {
+    background: var(--terceary-color);
+    color: white;
 }
 
 .mainBoxTop .botoesAcoes{
