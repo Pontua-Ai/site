@@ -680,8 +680,8 @@ function startConversation() {
     `);
 
     const options = addBotOptions([
-        { label: '⌨️ Digitar manualmente', value: 'manual' },
-        { label: '📄 Enviar arquivo Word (várias questões)', value: 'upload' },
+        { label: 'Digitar manualmente', value: 'manual' },
+        { label: 'Enviar arquivo Word (várias questões)', value: 'upload' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'upload') {
