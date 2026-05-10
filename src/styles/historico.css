@@ -42,14 +42,24 @@ h1{
     gap: 100px;
 }
 
-.botoesAcoes{
+.mainBoxTop{
     display: flex;
-    justify-content: flex-end;
-    gap: 30px;
     align-items: center;
+    padding-right: 100px;
 }
 
-.lixo, .mudar{
+.mainBoxTop .botoesAcoes{
+    margin-left: auto;
+}
+
+.botoesAcoes{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.lixo, .mudar, .visualizar{
     width: 50px;
     height: 50px;
     border-radius: 10px;

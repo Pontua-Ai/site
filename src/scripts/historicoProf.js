@@ -3,12 +3,12 @@ import { toast } from "./utils.js";
 
 let botoesConfigurados = false;
 
-function configurarBotoes() {
+function configurarBotoes() { 
     const container = document.getElementById("historicoContainer");
     if (!container || botoesConfigurados) return;
     botoesConfigurados = true;
-
-    container.addEventListener('click', async (e) => {
+    // Excluir pergunta
+    container.addEventListener('click', async (e) => { 
         const btnLixo = e.target.closest('.lixo');
         if (btnLixo) {
             const idPergunta = btnLixo.dataset.id;
@@ -45,14 +45,13 @@ function configurarBotoes() {
             }
             return;
         }
-
+        // Editar pergunta
         const btnMudar = e.target.closest('.mudar');
         if (!btnMudar) return;
 
         const idPergunta = btnMudar.dataset.id;
         const card = btnMudar.closest('.cardBox');
         const p = card.querySelector('.headerBox p');
-        const alternativasDivs = card.querySelectorAll('.alternativasBox div');
 
         if (p.querySelector('input')) return;
 
@@ -61,17 +60,9 @@ function configurarBotoes() {
         const inputPergunta = p.querySelector('.input-pergunta');
         inputPergunta.focus();
 
-        const idsAlternativas = [];
-        alternativasDivs.forEach((div, i) => {
-            const textoLimpo = div.textContent.replace(/\(Correta\)/g, '').replace(/^[A-E]\)\s*/, '').trim();
-            const idAlt = div.dataset.id || null;
-            if (idAlt) idsAlternativas.push(idAlt);
-            div.innerHTML = `<input type="text" class="input-alt" data-index="${i}" data-id="${idAlt}" value="${textoLimpo}" style="width: 100%; border: 1px solid var(--primary-color); padding: 4px; border-radius: 4px; background: var(--bg-color); color: var(--text-color);">`;
-        });
-
         let salvando = false;
 
-        async function salvarAlteracoes() {
+        async function salvarAlteracoes() { 
             if (salvando) return;
             salvando = true;
 
@@ -80,8 +71,6 @@ function configurarBotoes() {
                 carregarHistorico();
                 return;
             }
-
-            let mudouAlgo = false;
 
             if (novoTexto !== textoOriginal) {
                 const { error } = await supabaseClient
@@ -94,24 +83,6 @@ function configurarBotoes() {
                     carregarHistorico();
                     return;
                 }
-                mudouAlgo = true;
-            }
-
-            const inputsAlt = card.querySelectorAll('.input-alt');
-            for (const input of inputsAlt) {
-                const idAlt = input.dataset.id;
-                const novoTextoAlt = input.value.trim();
-                if (idAlt && novoTextoAlt && novoTextoAlt !== input.defaultValue) {
-                    const { error } = await supabaseClient
-                        .from("alternativa")
-                        .update({ nome_alternativa: novoTextoAlt })
-                        .eq("id_alternativa", idAlt);
-
-                    if (!error) mudouAlgo = true;
-                }
-            }
-
-            if (mudouAlgo) {
                 toast("Atualizado com sucesso!", "success");
             }
 
@@ -213,34 +184,27 @@ export async function carregarHistorico() {
         if (textoPergunta.length > 50) {
             textoPergunta = textoPergunta.substring(0, 50) + "...";
         }
-        
-        let alternativasHtml = '';
-        if (alternativas && alternativas.length > 0) {
-            alternativas.forEach((alt, index) => {
-                const letra = String.fromCharCode(65 + index);
-                const correta = alt.correta ? ' <span style="color: green; font-weight: bold;">(Correta)</span>' : '';
-                alternativasHtml += `<div data-id="${alt.id_alternativa}">${letra}) ${alt.nome_alternativa}${correta}</div>`;
-            });
-        }
+
+        const dataPergunta = pergunta.data_pergunta
+            ? new Date(pergunta.data_pergunta).toLocaleDateString("pt-BR")
+            : "";
 
         const div = document.createElement("div");
         div.className = "cardBox";
         div.innerHTML = `
-            <div class="mainBox">
+            <div class="mainBox mainBoxTop">
                 <strong>${materiaNome} - ${conteudoNome}</strong>
-            </div>
-            <div class="headerBox">
-                <p>${textoPergunta}</p>
                 <div class="botoesAcoes">
-                    <button class="lixo" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-trash-can"></i></button>
+                    <button class="visualizar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-eye"></i></button>
                     <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>
+                    <button class="lixo" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             </div>
-            <div class="alternativasBox" style="margin: 10px 0;">
-                ${alternativasHtml}
+            ${dataPergunta ? `<div class="mainBox"><p><i class="fa-regular fa-calendar"></i> ${dataPergunta}</p></div>` : ''}
+            <div class="headerBox">
+                <p>${textoPergunta}</p>
             </div>
             <div class="mainBox">
-
                 <p>${respostas} respostas | ${respostas > 0 ? Math.round((acertos / respostas) * 100) : 0}% de acertos</p>
             </div>
         `;
