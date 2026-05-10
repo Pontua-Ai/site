@@ -397,7 +397,7 @@ ${texto}
           body: JSON.stringify({
             model: "google/gemini-2.5-flash",
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 8192
+            max_tokens: 4000
           })
         });
 
@@ -407,7 +407,8 @@ ${texto}
         }
 
         const json = await response.json();
-        const text = json.choices?.[0]?.message?.content?.trim() || "{}";
+        let text = json.choices?.[0]?.message?.content?.trim() || "{}";
+        text = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
         return { text };
       } catch (error) {
         if (i < retentativas - 1) {

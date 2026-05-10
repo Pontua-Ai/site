@@ -669,33 +669,256 @@ function uploadMostrarArea() {
     }
 }
 
-async function extrairComGemini(texto) {
-    const limite = 15000;
-    const textoTruncado = texto.length > limite ? texto.slice(0, limite) + "..." : texto;
+function extrairPngDeWmf(base64Data) {
+    try {
+        const raw = atob(base64Data);
+        const sig = '\x89PNG\r\n\x1a\n';
+        const start = raw.indexOf(sig);
+        if (start === -1) return null;
+        const iend = raw.lastIndexOf('IEND');
+        if (iend === -1) return null;
+        const pngRaw = raw.substring(start, iend + 8);
+        return 'data:image/png;base64,' + btoa(pngRaw);
+    } catch { return null; }
+}
 
-    const prompt = `Você é um extrator de questões de múltipla escolha. Analise o texto abaixo e extraia TODAS as questões de múltipla escolha encontradas.
+function tentarSalvarJSON(texto) {
+    try {
+        const inicio = texto.indexOf('[');
+        if (inicio === -1) return null;
+        const candidato = texto.substring(inicio);
+
+        const objetos = [];
+        let profundidade = 0;
+        let objInicio = -1;
+        for (let i = 0; i < candidato.length; i++) {
+            const ch = candidato[i];
+            if (ch === '{') {
+                if (profundidade === 0) objInicio = i;
+                profundidade++;
+            } else if (ch === '}') {
+                profundidade--;
+                if (profundidade === 0 && objInicio !== -1) {
+                    try {
+                        const obj = JSON.parse(candidato.substring(objInicio, i + 1));
+                        if (obj.enunciado && Array.isArray(obj.alternativas) && obj.alternativas.length >= 2) {
+                            objetos.push(obj);
+                        }
+                    } catch { }
+                    objInicio = -1;
+                }
+            }
+        }
+        return objetos.length > 0 ? objetos : null;
+    } catch { return null; }
+}
+
+function htmlParaMarcadores(html) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    function inserirQuebras(node) {
+        const filhos = Array.from(node.childNodes);
+        for (let i = 0; i < filhos.length; i++) {
+            const child = filhos[i];
+            if (child.nodeType !== 1) continue;
+            const tag = child.tagName.toLowerCase();
+            if (['p', 'div', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'tr', 'img'].includes(tag)) {
+                if (tag === 'br') {
+                    node.insertBefore(document.createTextNode('\n'), child);
+                    node.insertBefore(document.createTextNode('\n'), child.nextSibling);
+                } else {
+                    node.insertBefore(document.createTextNode('\n'), child);
+                    if (child.nextSibling) {
+                        node.insertBefore(document.createTextNode('\n'), child.nextSibling);
+                    }
+                }
+            }
+            inserirQuebras(child);
+        }
+    }
+    inserirQuebras(temp);
+
+    function walk(node) {
+        const filhos = Array.from(node.childNodes);
+        for (const child of filhos) {
+            if (child.nodeType !== 1) continue;
+            const tag = child.tagName.toLowerCase();
+            const inner = child.innerHTML;
+            if (tag === 'strong' || tag === 'b') {
+                child.innerHTML = `〖B〗${inner}〖/B〗`;
+            } else if (tag === 'em' || tag === 'i') {
+                child.innerHTML = `〖I〗${inner}〖/I〗`;
+            } else if (tag === 'u') {
+                child.innerHTML = `〖U〗${inner}〖/U〗`;
+            } else if (tag === 'sub') {
+                child.innerHTML = `〖SUB〗${inner}〖/SUB〗`;
+            } else if (tag === 'sup') {
+                child.innerHTML = `〖SUP〗${inner}〖/SUP〗`;
+            }
+            walk(child);
+        }
+    }
+    walk(temp);
+    return temp.textContent.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function marcadoresParaHtml(texto) {
+    return texto
+        .replace(/〖B〗([\s\S]*?)〖\/B〗/g, '<strong>$1</strong>')
+        .replace(/〖I〗([\s\S]*?)〖\/I〗/g, '<em>$1</em>')
+        .replace(/〖U〗([\s\S]*?)〖\/U〗/g, '<u>$1</u>')
+        .replace(/〖SUB〗([\s\S]*?)〖\/SUB〗/g, '<sub>$1</sub>')
+        .replace(/〖SUP〗([\s\S]*?)〖\/SUP〗/g, '<sup>$1</sup>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
+function inserirSeparadores(texto) {
+    const linhas = texto.split('\n');
+    const saida = [];
+    let linhaAnteriorVazia = false;
+    let jaTemConteudo = false;
+
+    for (const linha of linhas) {
+        const vazia = linha.trim() === '';
+
+        if (!vazia) {
+            const pareceInicioQuestao =
+                /^\d+\s*\.\s/.test(linha) ||
+                /^QUESTÃO\s+\d+/i.test(linha);
+            if (pareceInicioQuestao && linhaAnteriorVazia && jaTemConteudo) {
+                saida.push('===');
+            }
+            jaTemConteudo = true;
+            linhaAnteriorVazia = false;
+        } else {
+            linhaAnteriorVazia = true;
+        }
+        saida.push(linha);
+    }
+    return saida.join('\n');
+}
+
+async function extrairComGemini(html) {
+    const imagens = [];
+    const htmlComPlaceholders = html.replace(
+        /<img[^>]*src=["']([^"']*)["'][^>]*\/?>/gi,
+        (match) => {
+            const idx = imagens.length;
+            imagens.push(match);
+            return `〖IMG_${idx}〗`;
+        }
+    );
+    console.log('[ChatBot] Imagens extraídas do HTML:', imagens.length, imagens.map(m => m.substring(0, 120)));
+
+    const limite = 10000;
+    const htmlTruncado = htmlComPlaceholders.length > limite ? htmlComPlaceholders.slice(0, limite) + "..." : htmlComPlaceholders;
+    const textoMarcado = htmlParaMarcadores(htmlTruncado);
+    const textoComSeparadores = inserirSeparadores(textoMarcado);
+
+    function formatosRenderizaveis(contentType) {
+        return /image\/(png|jpeg|jpg|gif|svg(\+xml)?|webp|bmp|ico)/i.test(contentType);
+    }
+
+    function restaurarImagens(texto) {
+        return texto.replace(/〖IMG_(\d+)〗/g, (_, idx) => {
+            const imgTag = imagens[parseInt(idx)];
+            if (!imgTag) return '';
+            const srcMatch = imgTag.match(/src=["']([^"']*)["']/);
+            const altMatch = imgTag.match(/alt=["']([^"']*)["']/);
+            const alt = altMatch ? altMatch[1] : '';
+            if (!srcMatch) return imgTag;
+            const src = srcMatch[1];
+            if (!src.startsWith('data:')) return imgTag;
+            const ct = src.match(/^data:([^;]+)/);
+            const tipo = ct ? ct[1] : '';
+            if (tipo && !formatosRenderizaveis(tipo)) {
+                const base64 = src.replace(/^data:[^;]+;base64,/, '');
+                const png = extrairPngDeWmf(base64);
+                if (png) {
+                    return imgTag.replace(src, png);
+                }
+                const ext = tipo.replace('image/', '').toUpperCase();
+                return `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:6px 0;text-align:center;font-size:13px;color:#856404">📷 ${alt ? `"${alt}"` : `Imagem ${ext}`}<br><small>Formato não suportado pelo navegador</small></div>`;
+            }
+            return imgTag;
+        });
+    }
+
+    function limparAlternativa(texto) {
+        return texto
+            .replace(/^[a-zA-Z][\)\.]\s*/, '')
+            .replace(/^[a-zA-Z]\s*[-–]\s*/, '')
+            .replace(/^[ivxlcdm]+[\)\.]\s*/i, '')
+            .replace(/\(correta\)/gi, '')
+            .replace(/\(CORRETA\)/gi, '')
+            .replace(/\[correta\]/gi, '')
+            .replace(/✓\s*$/g, '')
+            .replace(/✅\s*$/g, '')
+            .trim();
+    }
+
+    function processarQuestoes(lista) {
+        if (!Array.isArray(lista)) return [];
+        lista.forEach(q => {
+            q.enunciado = q.enunciado.replace(/^===\s*/gm, '').trim();
+            q.enunciado = marcadoresParaHtml(q.enunciado);
+            q.enunciado = restaurarImagens(q.enunciado);
+            q.alternativas = q.alternativas.map(a => marcadoresParaHtml(a));
+            q.alternativas = q.alternativas.map(a => restaurarImagens(a));
+            q.alternativas = q.alternativas.map(a => limparAlternativa(a));
+        });
+        return lista;
+    }
+
+    const prompt = `Você é um extrator de múltipla escolha. O texto abaixo usa marcadores para formatação:
+
+〖B〗texto〖/B〗 = negrito (bold)
+〖I〗texto〖/I〗 = itálico
+〖U〗texto〖/U〗 = sublinhado
+〖SUB〗texto〖/SUB〗 = subscrito
+〖SUP〗texto〖/SUP〗 = sobrescrito
+
+〖IMG_N〗 = imagem presente no documento original. Preserve 〖IMG_N〗 exatamente onde a imagem aparece.
+
+O texto está dividido em blocos separados por "===". Cada bloco representa UMA questão separada.
+
+Extraia TODAS as questões de múltipla escolha encontradas, preservando os marcadores de formatação no enunciado e nas alternativas.
 
 Para cada questão, identifique:
-- O enunciado (a pergunta em si)
-- As alternativas (as opções de resposta)
+- O enunciado (texto completo com marcadores preservados)
+- As alternativas (com marcadores se houver)
 - Qual alternativa está correta (número 1-indexado, ou 0 se não identificada)
 
-Responda APENAS com um array JSON válido no seguinte formato, sem explicações:
+CRÍTICO: O enunciado deve conter o TEXTO COMPLETO incluindo numeração (ex: "1. "), cabeçalho da fonte (ex: "VUNESP - 2025 - ..."), e todo o texto antes das alternativas. NÃO remova nada.
+
+CRÍTICO: Cada bloco separado por "===" é uma questão DIFERENTE. NUNCA junte dois blocos em uma mesma questão.
+
+CRÍTICO: Se houver 〖IMG_N〗 no texto, mantenha 〖IMG_N〗 exatamente na posição correta dentro do enunciado ou alternativa. NÃO remova nem modifique.
+
+Responda APENAS com array JSON, sem explicações:
 [
   {
-    "enunciado": "texto completo da pergunta",
-    "alternativas": ["alternativa 1", "alternativa 2", "alternativa 3", ...],
+    "enunciado": "1. Fonte... texto com 〖B〗negrito〖/B〗 e 〖I〗itálico〖/I〗 e imagem 〖IMG_0〗",
+    "alternativas": ["alt 1", "alt 2 com 〖B〗negrito〖/B〗"],
     "correta": 2
   }
 ]
 
-Regras importantes:
-- O campo "correta" é o NÚMERO da alternativa correta (1, 2, 3, ...). Use 0 se não conseguir identificar.
-- Extraia TODAS as questões que encontrar no texto.
-- Se não encontrar nenhuma questão, retorne um array vazio [].
+Regras:
+- "correta" é o NÚMERO da alternativa (1, 2, 3...). Use 0 se não identificar.
+- NÃO inclua "(correta)", "(CORRETA)", "✓", "✅" ou qualquer marcador de resposta no texto das alternativas.
+- Se uma alternativa tiver "correta" ou "✓" ou "✅", remova esses marcadores do texto e use o número dela em "correta".
+- Preserve 〖B〗〖/B〗 〖I〗〖/I〗 〖U〗〖/U〗 〖SUB〗〖/SUB〗 〖SUP〗〖/SUP〗.
+- Preserve 〖IMG_N〗 se houver.
+- Extraia TODAS as questões (um array para CADA bloco ===).
+- Se não encontrar, retorne [].
+- Escape aspas duplas em JSON: use \\".
+- Escape quebras de linha: use \\n.
 
 TEXTO:
-${textoTruncado}`;
+${textoComSeparadores}`;
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
@@ -708,7 +931,7 @@ ${textoTruncado}`;
             messages: [
                 { role: "user", content: prompt }
             ],
-            max_tokens: 4096
+            max_tokens: 4000
         })
     });
 
@@ -718,10 +941,87 @@ ${textoTruncado}`;
     }
 
     const json = await response.json();
-    const text = json.choices?.[0]?.message?.content?.trim() || "[]";
-    const cleaned = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-    const data = JSON.parse(cleaned);
-    return Array.isArray(data) ? data : [];
+    let text = json.choices?.[0]?.message?.content?.trim() || "[]";
+    text = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error('[ChatBot] JSON inválido da IA. Resposta:', text.substring(0, 300));
+        const salvado = tentarSalvarJSON(text);
+        if (salvado) {
+            console.log('[ChatBot] JSON recuperado parcialmente:', salvado.length, 'questões');
+            return processarQuestoes(salvado);
+        }
+        throw new Error(`Resposta inválida da IA: ${e.message}`);
+    }
+
+    return processarQuestoes(data);
+}
+
+function tryCanvasConversion(dataUri) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(null);
+        img.src = dataUri;
+    });
+}
+
+async function extrairImagensZip(arrayBuffer) {
+    try {
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        const pasta = zip.folder("word/media");
+        if (!pasta) return [];
+        const arquivos = [];
+        pasta.forEach((path, file) => arquivos.push({ path, file }));
+        arquivos.sort((a, b) => a.path.localeCompare(b.path));
+
+        const grupos = {};
+        for (const a of arquivos) {
+            const base = a.path.replace(/\.[^.]+$/, '');
+            if (!grupos[base]) grupos[base] = [];
+            grupos[base].push(a);
+        }
+
+        const prioridade = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'wmf', 'emf'];
+        const melhores = [];
+        for (const base of Object.keys(grupos).sort()) {
+            for (const fmt of prioridade) {
+                const found = grupos[base].find(a => a.path.toLowerCase().endsWith('.' + fmt));
+                if (found) { melhores.push(found); break; }
+            }
+        }
+
+        const resultado = [];
+        for (const m of melhores) {
+            const ext = m.path.split('.').pop().toLowerCase();
+            const data = await m.file.async('base64');
+            const mimeTypes = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml', webp: 'image/webp', bmp: 'image/bmp', wmf: 'image/x-wmf', emf: 'image/x-emf' };
+            const contentType = mimeTypes[ext] || 'application/octet-stream';
+            const dataUri = `data:${contentType};base64,${data}`;
+            let pngUri;
+            if (ext === 'wmf' || ext === 'emf') {
+                pngUri = extrairPngDeWmf(data) || null;
+                console.log('[ChatBot] WMF->PNG extração:', m.path, pngUri ? '✅' : '❌ sem PNG embutido');
+            } else {
+                pngUri = await tryCanvasConversion(dataUri);
+            }
+            resultado.push({ path: m.path, ext, pngUri: pngUri || dataUri });
+        }
+        return resultado;
+    } catch (e) {
+        console.error('[ChatBot] Erro ao extrair imagens do ZIP:', e);
+        return [];
+    }
 }
 
 async function processarDocumentoMulti(file) {
@@ -740,10 +1040,36 @@ async function processarDocumentoMulti(file) {
 
     try {
         const arrayBuffer = await file.arrayBuffer();
-        const result = await window.mammoth.extractRawText({ arrayBuffer });
-        const text = result.value.trim();
+        const htmlResult = await window.mammoth.convertToHtml({ arrayBuffer });
+        let htmlDoc = htmlResult.value.trim();
 
-        if (!text) {
+        console.log('[ChatBot] Mammoth HTML (primeiros 500 chars):', htmlDoc.substring(0, 500));
+        const imgMatch = htmlDoc.match(/<img[^>]*>/gi);
+        console.log('[ChatBot] Imagens encontradas por mammoth:', imgMatch ? imgMatch.length : 0, imgMatch ? imgMatch.map(m => m.substring(0, 100)) : []);
+
+        let imagensConvertidas = null;
+
+        if (imgMatch && imgMatch.length > 0) {
+            loadingEl.innerHTML = '📄 Lendo documento... convertendo imagens...';
+
+            if (typeof JSZip !== 'undefined') {
+                imagensConvertidas = await extrairImagensZip(arrayBuffer);
+                console.log('[ChatBot] JSZip retornou', imagensConvertidas.length, 'imagens');
+            }
+
+            if (imagensConvertidas) {
+                imgMatch.forEach((tag, i) => {
+                    if (!imagensConvertidas[i] || !imagensConvertidas[i].pngUri) return;
+                    const srcMatch = tag.match(/src=["']([^"']*)["']/);
+                    if (!srcMatch) return;
+                    const src = srcMatch[0];
+                    htmlDoc = htmlDoc.replace(tag, tag.replace(src, `src="${imagensConvertidas[i].pngUri}"`));
+                });
+                console.log('[ChatBot] HTML após substituir imagens:', (htmlDoc.match(/<img[^>]*>/gi) || []).length, 'imagens');
+            }
+        }
+
+        if (!htmlDoc) {
             loadingEl.remove();
             addMessage('⚠️ Documento vazio ou corrompido.', 'system');
             return;
@@ -754,7 +1080,7 @@ async function processarDocumentoMulti(file) {
         const analiseEl = addMessage('🤖 Analisando questões com IA...', 'loading');
 
         try {
-            state.questoes = await extrairComGemini(text);
+            state.questoes = await extrairComGemini(htmlDoc);
         } catch (e) {
             analiseEl.remove();
             addMessage(`⚠️ Erro ao processar com IA: ${e.message}`, 'system');
@@ -763,17 +1089,42 @@ async function processarDocumentoMulti(file) {
 
         analiseEl.remove();
         console.log('[ChatBot] Questões extraídas:', state.questoes.length);
+        state.questoes.forEach((q, i) => {
+            const imgCount = (q.enunciado.match(/<img[^>]*>/gi) || []).length;
+            console.log(`[ChatBot] Questão ${i + 1}: ${imgCount} imagem(ns) no enunciado`);
+        });
 
         if (!Array.isArray(state.questoes) || state.questoes.length === 0) {
             addMessage('⚠️ A IA não conseguiu identificar questões no documento. Verifique o formato.', 'system');
             return;
         }
 
+        function renderAlternativas(alternativas, correta) {
+            const letras = 'ABCDEFGHIJ';
+            return alternativas.map((alt, j) => {
+                const isCorreta = (j + 1) === correta;
+                const bg = isCorreta ? 'rgba(76,175,80,0.1)' : 'transparent';
+                const border = isCorreta ? '1.5px solid #4caf50' : '1px solid transparent';
+                return `<div style="padding:4px 8px;margin:2px 0;border-radius:6px;background:${bg};border:${border};font-size:13px">
+                    <strong>${letras[j]}.</strong> ${alt} ${isCorreta ? '✅' : ''}</div>`;
+            }).join('');
+        }
+
         let html = `📋 <strong>Encontrei ${state.questoes.length} questões!</strong><br><br>`;
         state.questoes.forEach((q, i) => {
+            const idToggle = `ver-mais-${i}`;
+            const idConteudo = `conteudo-${i}`;
+            const curto = q.enunciado.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').substring(0, 80);
+            const temMais = q.enunciado.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').length > 80;
             html += `<div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:10px;padding:10px;margin-bottom:8px">`;
-            html += `<strong style="color:var(--primary-color)">#${i + 1}</strong> ${escapeHtml(q.enunciado.substring(0, 80))}${q.enunciado.length > 80 ? '...' : ''}<br>`;
-            html += `<span style="font-size:12px;color:var(--text-gray)">${q.alternativas.length} alternativas${q.correta ? ' · correta: ' + q.correta : ''}</span>`;
+            html += `<strong style="color:var(--primary-color)">#${i + 1}</strong> `;
+            html += `<span id="${idConteudo}-curto">${escapeHtml(curto)}${temMais ? '...' : ''}</span>`;
+            html += `<span id="${idConteudo}-completo" style="display:none">${q.enunciado}</span>`;
+            if (temMais) {
+                html += ` <button class="msg-option" onclick="document.getElementById('${idConteudo}-curto').style.display='none';document.getElementById('${idConteudo}-completo').style.display='inline';this.style.display='none'" style="font-size:12px;padding:2px 8px;cursor:pointer">Ver tudo</button>`;
+            }
+            html += `<br>`;
+            html += renderAlternativas(q.alternativas, q.correta);
             html += `</div>`;
         });
 
