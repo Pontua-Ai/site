@@ -195,17 +195,15 @@ export async function carregarHistorico() {
             <div class="mainBox mainBoxTop">
                 <span class="materia-badge">${materiaNome}</span>
                 <span class="conteudo-badge">${conteudoNome}</span>
-            </div>
-            <div class="mainBox mainBoxButtons">
+                ${dataPergunta ? `<span class="data-info"><i class="fa-regular fa-calendar"></i> ${dataPergunta}</span>` : ''}
                 <div class="botoesAcoes">
                     <button class="visualizar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-eye"></i></button>
                     <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>
                     <button class="lixo" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             </div>
-            ${dataPergunta ? `<div class="mainBox"><p><i class="fa-regular fa-calendar"></i> ${dataPergunta}</p></div>` : ''}
             <div class="headerBox">
-                <p>${textoPergunta}</p>
+                <p class="texto-enunciado">${textoPergunta}</p>
             </div>
             <div class="mainBox">
                 <p>${respostas} respostas | ${respostas > 0 ? Math.round((acertos / respostas) * 100) : 0}% de acertos</p>
