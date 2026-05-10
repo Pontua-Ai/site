@@ -92,6 +92,29 @@ h1{
     border: none;
     background-color: var(--input);
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visualizar:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.mudar:hover {
+    background: #f39c12;
+    color: white;
+    transform: scale(1.1);
+}
+
+.lixo:hover {
+    background: #e74c3c;
+    color: white;
+    transform: scale(1.1);
 }
 
 .texto-enunciado {
