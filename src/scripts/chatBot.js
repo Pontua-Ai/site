@@ -12,6 +12,7 @@ const state = {
         enunciado: '',
         alternativas: [],
         correta: null,
+        visibilidade: null,
     },
     questoes: []
 };
@@ -225,7 +226,7 @@ async function criarPergunta() {
             id_conteudo: state.dados.conteudoObj.id_conteudo,
             id_materia: state.dados.materiaObj.id_materia,
             id_usuario: userLogado.id_usuario,
-            visibilidade: "publico"
+            visibilidade: state.dados.visibilidade || "publico"
         }])
         .select()
         .single();
@@ -257,7 +258,7 @@ async function processUserInput(texto) {
 
     if (lower === 'cancelar' || lower === 'voltar') {
         state.passo = 'start';
-        state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null };
+        state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
         setTimeout(() => startConversation(), 300);
         return;
     }
@@ -377,6 +378,23 @@ async function processUserInput(texto) {
             state.dados.correta = num;
             setInputEnabled(false);
             addMessage(`Alternativa correta: <strong>${num}</strong> ✅`);
+            setTimeout(() => perguntarVisibilidade(), 400);
+            break;
+        }
+
+        case 'await_visibilidade': {
+            const lower = texto.toLowerCase();
+            if (lower === 'publico' || lower === 'pública' || lower === 'publica' || lower === '1') {
+                state.dados.visibilidade = 'publico';
+            } else if (lower === 'privado' || lower === 'privada' || lower === '2') {
+                state.dados.visibilidade = 'privado';
+            } else {
+                addMessage('Digite <strong>1</strong> para Público ou <strong>2</strong> para Privado:');
+                return;
+            }
+            setInputEnabled(false);
+            const label = state.dados.visibilidade === 'publico' ? 'Público' : 'Privado';
+            addMessage(`Visibilidade: <strong>${label}</strong> ✅`);
             setTimeout(() => mostrarResumo(), 400);
             break;
         }
@@ -437,7 +455,7 @@ function perguntarAlternativas() {
 
 function perguntarCorreta() {
     if (state.dados.correta) {
-        setTimeout(() => mostrarResumo(), 200);
+        setTimeout(() => perguntarVisibilidade(), 200);
         return;
     }
     state.passo = 'await_correta';
@@ -447,6 +465,16 @@ function perguntarCorreta() {
         html += `<strong>${i + 1}.</strong> ${escapeHtml(alt)}<br>`;
     });
     addMessage(html);
+}
+
+function perguntarVisibilidade() {
+    if (state.dados.visibilidade) {
+        setTimeout(() => mostrarResumo(), 200);
+        return;
+    }
+    state.passo = 'await_visibilidade';
+    setInputEnabled(true);
+    addMessage('👁️ As perguntas serão <strong>Públicas</strong> ou <strong>Privadas</strong>?<br><br>1 - Público (todos podem ver)<br>2 - Privado (só você vê)');
 }
 
 function mostrarResumo() {
@@ -503,7 +531,7 @@ function perguntarNova() {
     addConfirmButtons(msg,
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null };
+            state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
             setTimeout(() => perguntarMateria(), 400);
         },
         () => {
@@ -519,7 +547,7 @@ function startConversation() {
     state.passo = 'start';
 
     const msg = addMessage(`
-        👋 <strong>Olá! Sou o assistente do PontuaAI!</strong><br><br>
+        <strong>Olá! Sou o assistente do PontuaAI!</strong><br><br>
         Vou te ajudar a cadastrar perguntas de forma rápida.<br><br>
         Como você quer começar?
     `);
@@ -540,7 +568,7 @@ function startConversation() {
 
 function resetState() {
     state.passo = 'start';
-    state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null };
+    state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
     state.questoes = [];
 }
 
@@ -1030,11 +1058,11 @@ async function processarDocumentoMulti(file) {
     console.log('[ChatBot] Processando documento multi:', file.name);
 
     if (!file.name.toLowerCase().endsWith('.docx')) {
-        addMessage('⚠️ Envie apenas arquivos .docx.', 'system');
+        addMessage('Envie apenas arquivos .docx.', 'system');
         return;
     }
     if (typeof window.mammoth === 'undefined') {
-        addMessage('⚠️ mammoth.js não carregado. Recarregue a página.', 'system');
+        addMessage('mammoth.js não carregado. Recarregue a página.', 'system');
         return;
     }
 
@@ -1073,19 +1101,19 @@ async function processarDocumentoMulti(file) {
 
         if (!htmlDoc) {
             loadingEl.remove();
-            addMessage('⚠️ Documento vazio ou corrompido.', 'system');
+            addMessage('Documento vazio ou corrompido.', 'system');
             return;
         }
 
         loadingEl.remove();
 
-        const analiseEl = addMessage('🤖 Analisando questões com IA...', 'loading');
+        const analiseEl = addMessage('🐨 Analisando questões com IA...', 'loading');
 
         try {
             state.questoes = await extrairComGemini(htmlDoc);
         } catch (e) {
             analiseEl.remove();
-            addMessage(`⚠️ Erro ao processar com IA: ${e.message}`, 'system');
+            addMessage(`Erro ao processar com IA: ${e.message}`, 'system');
             return;
         }
 
@@ -1097,7 +1125,7 @@ async function processarDocumentoMulti(file) {
         });
 
         if (!Array.isArray(state.questoes) || state.questoes.length === 0) {
-            addMessage('⚠️ A IA não conseguiu identificar questões no documento. Verifique o formato.', 'system');
+            addMessage('A IA não conseguiu identificar questões no documento. Verifique o formato.', 'system');
             return;
         }
 
@@ -1132,21 +1160,33 @@ async function processarDocumentoMulti(file) {
 
         addMessage(html);
 
-        const confirmMsg = addMessage(`Deseja <strong>cadastrar todas</strong> as ${state.questoes.length} questões?`);
-        addConfirmButtons(confirmMsg,
-            async () => {
-                confirmMsg.querySelector('.chatbot-confirm')?.remove();
-                await criarMultiplasPerguntas();
-            },
-            () => {
-                confirmMsg.querySelector('.chatbot-confirm')?.remove();
-                resetState();
-                setTimeout(() => startConversation(), 400);
-            }
-        );
+        const visMsg = addMessage('👁️ Essas questões serão <strong>Públicas</strong> ou <strong>Privadas</strong>?');
+        const visOpts = addBotOptions([
+            { label: '🌍 Público', value: 'publico' },
+            { label: '🔒 Privado', value: 'privado' },
+        ], (value) => {
+            visMsg.querySelector('.msg-options')?.remove();
+            state.dados.visibilidade = value;
+            const label = value === 'publico' ? 'Público' : 'Privado';
+            visMsg.innerHTML = `👁️ Visibilidade: <strong>${label}</strong> ✅`;
+
+            const confirmMsg = addMessage(`Deseja <strong>cadastrar todas</strong> as ${state.questoes.length} questões?`);
+            addConfirmButtons(confirmMsg,
+                async () => {
+                    confirmMsg.querySelector('.chatbot-confirm')?.remove();
+                    await criarMultiplasPerguntas();
+                },
+                () => {
+                    confirmMsg.querySelector('.chatbot-confirm')?.remove();
+                    resetState();
+                    setTimeout(() => startConversation(), 400);
+                }
+            );
+        });
+        visMsg.appendChild(visOpts);
 
     } catch (e) {
-        addMessage(`⚠️ Erro: ${e.message}`, 'system');
+        addMessage(`Erro: ${e.message}`, 'system');
         console.error('[ChatBot]', e);
     }
 }
@@ -1154,7 +1194,7 @@ async function processarDocumentoMulti(file) {
 async function criarMultiplasPerguntas() {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     if (!userLogado) {
-        addMessage('⚠️ Usuário não logado.', 'system');
+        addMessage('Usuário não logado.', 'system');
         return;
     }
 
@@ -1172,7 +1212,7 @@ async function criarMultiplasPerguntas() {
                 id_conteudo: state.dados.conteudoObj.id_conteudo,
                 id_materia: state.dados.materiaObj.id_materia,
                 id_usuario: userLogado.id_usuario,
-                visibilidade: "publico"
+                visibilidade: state.dados.visibilidade || "publico"
             }])
             .select()
             .single();
