@@ -22,7 +22,6 @@ let chatInput = null;
 let chatSend = null;
 let chatToggle = null;
 let chatPanel = null;
-let chatFileInput = null;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -1234,7 +1233,7 @@ function initChat() {
     chatPanel.className = 'chatbot-panel';
     chatPanel.innerHTML = `
         <div class="chatbot-header">
-            <div class="chatbot-header-icon">🤖</div>
+            <div class="chatbot-header-icon">🐨</div>
             <div class="chatbot-header-text">
                 <h3>Assistente PontuaAI</h3>
                 <p>Cadastre perguntas rapidamente</p>
@@ -1242,10 +1241,6 @@ function initChat() {
         </div>
         <div class="chatbot-messages"></div>
         <div class="chatbot-input-area">
-            <button class="chatbot-file-btn" id="chatFileBtn" title="Enviar arquivo Word">
-                📎
-                <input type="file" accept=".docx" id="chatFileInput">
-            </button>
             <textarea id="chatInput" placeholder="Digite sua resposta..." autocomplete="off" rows="1"></textarea>
             <button class="chatbot-send" id="chatSend">➤</button>
         </div>
@@ -1257,7 +1252,6 @@ function initChat() {
     chatMessages = chatPanel.querySelector('.chatbot-messages');
     chatInput = chatPanel.querySelector('#chatInput');
     chatSend = chatPanel.querySelector('#chatSend');
-    chatFileInput = chatPanel.querySelector('#chatFileInput');
 
     function autoResizeTextarea() {
         chatInput.style.height = 'auto';
@@ -1272,21 +1266,6 @@ function initChat() {
         }
     });
     chatInput.addEventListener('input', autoResizeTextarea);
-
-    chatFileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (chatPanel.classList.contains('open') && state.dados.materiaObj) {
-            addMessage(`📎 <strong>${escapeHtml(file.name)}</strong> selecionado. Processando...`, 'system');
-            await processarDocumentoMulti(file);
-        }
-        chatFileInput.value = '';
-    });
-
-    document.getElementById('chatFileBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        chatFileInput.click();
-    });
 
     setTimeout(() => {
         startConversation();
