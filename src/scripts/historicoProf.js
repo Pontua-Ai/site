@@ -153,7 +153,7 @@ export async function carregarHistorico() {
         container.parentNode.insertBefore(filterInfo, container);
     }
 
-    container.innerHTML = '';
+    container.innerHTML = '<div class="empty-state" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 20px;color:var(--text-gray)"><span class="loading-spinner"></span> Carregando perguntas...</div>';
 
     for (const pergunta of perguntasFiltradas) {
         const { data: alternativas } = await supabaseClient
