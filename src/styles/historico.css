@@ -86,8 +86,8 @@ h1{
 }
 
 .lixo, .mudar, .visualizar{
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     border-radius: 8px;
     border: none;
     background-color: var(--input);
