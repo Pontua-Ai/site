@@ -35,6 +35,42 @@ function normalizar(texto) {
     return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+function levenshteinDistance(a, b) {
+    const an = a.length, bn = b.length;
+    const matrix = [];
+    for (let i = 0; i <= an; i++) {
+        matrix[i] = [i];
+        for (let j = 1; j <= bn; j++) {
+            if (i === 0) { matrix[i][j] = j; continue; }
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + cost
+            );
+        }
+    }
+    return matrix[an][bn];
+}
+
+function buscarSugestao(texto, lista, campo) {
+    const norm = normalizar(texto);
+    let melhor = null;
+    let menorDist = Infinity;
+    for (const item of lista) {
+        const nome = normalizar(item[campo]);
+        const dist = levenshteinDistance(norm, nome);
+        if (dist < menorDist) {
+            menorDist = dist;
+            melhor = item;
+        }
+    }
+    if (melhor && menorDist <= 3) {
+        return { sugestao: melhor, distancia: menorDist };
+    }
+    return null;
+}
+
 function addMessage(text, type = 'bot') {
     const msg = document.createElement('div');
     msg.className = `chatbot-msg ${type}`;
@@ -272,32 +308,77 @@ async function processUserInput(texto) {
             if (materia) {
                 state.dados.materia = materia.nome_materia;
                 state.dados.materiaObj = materia;
-                const m = addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>! ✅`);
+                addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>! ✅`);
                 setTimeout(() => perguntarConteudo(), 600);
             } else {
-                const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                addConfirmButtons(m,
-                    async () => {
-                        m.querySelector('.chatbot-confirm')?.remove();
-                        const loading = addMessage('Criando matéria...', 'loading');
-                        try {
-                            const nova = await criarMateria(texto);
-                            loading.remove();
-                            state.dados.materia = nova.nome_materia;
-                            state.dados.materiaObj = nova;
-                            addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
+                const { data: todasMaterias } = await supabaseClient
+                    .from("materia")
+                    .select("id_materia, nome_materia");
+                const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
+
+                if (sugestao) {
+                    const nomeSugerido = sugestao.sugestao.nome_materia;
+                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+                    addConfirmButtons(m,
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            state.dados.materia = nomeSugerido;
+                            state.dados.materiaObj = sugestao.sugestao;
+                            addMessage(`Matéria <strong>${escapeHtml(nomeSugerido)}</strong>! ✅`);
                             setTimeout(() => perguntarConteudo(), 600);
-                        } catch (e) {
-                            loading.remove();
-                            addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
-                            setTimeout(() => perguntarMateria(), 600);
+                        },
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
+                            addConfirmButtons(m2,
+                                async () => {
+                                    m2.querySelector('.chatbot-confirm')?.remove();
+                                    const loading = addMessage('Criando matéria...', 'loading');
+                                    try {
+                                        const nova = await criarMateria(texto);
+                                        loading.remove();
+                                        state.dados.materia = nova.nome_materia;
+                                        state.dados.materiaObj = nova;
+                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
+                                        setTimeout(() => perguntarConteudo(), 600);
+                                    } catch (e) {
+                                        loading.remove();
+                                        addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
+                                        setTimeout(() => perguntarMateria(), 600);
+                                    }
+                                },
+                                () => {
+                                    m2.querySelector('.chatbot-confirm')?.remove();
+                                    addMessage('OK, digite outra matéria:');
+                                }
+                            );
                         }
-                    },
-                    () => {
-                        m.querySelector('.chatbot-confirm')?.remove();
-                        addMessage('OK, digite outra matéria:');
-                    }
-                );
+                    );
+                } else {
+                    const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
+                    addConfirmButtons(m,
+                        async () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            const loading = addMessage('Criando matéria...', 'loading');
+                            try {
+                                const nova = await criarMateria(texto);
+                                loading.remove();
+                                state.dados.materia = nova.nome_materia;
+                                state.dados.materiaObj = nova;
+                                addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
+                                setTimeout(() => perguntarConteudo(), 600);
+                            } catch (e) {
+                                loading.remove();
+                                addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
+                                setTimeout(() => perguntarMateria(), 600);
+                            }
+                        },
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            addMessage('OK, digite outra matéria:');
+                        }
+                    );
+                }
             }
             break;
         }
@@ -310,32 +391,78 @@ async function processUserInput(texto) {
             if (conteudo) {
                 state.dados.conteudo = conteudo.nome_conteudo;
                 state.dados.conteudoObj = conteudo;
-                const m = addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>! ✅`);
+                addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>! ✅`);
                 setTimeout(() => perguntarEnunciado(), 600);
             } else {
-                const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                addConfirmButtons(m,
-                    async () => {
-                        m.querySelector('.chatbot-confirm')?.remove();
-                        const loading = addMessage('Criando conteúdo...', 'loading');
-                        try {
-                            const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                            loading.remove();
-                            state.dados.conteudo = novo.nome_conteudo;
-                            state.dados.conteudoObj = novo;
-                            addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
+                const { data: todosConteudos } = await supabaseClient
+                    .from("conteudo")
+                    .select("id_conteudo, nome_conteudo")
+                    .eq("id_materia", state.dados.materiaObj.id_materia);
+                const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
+
+                if (sugestao) {
+                    const nomeSugerido = sugestao.sugestao.nome_conteudo;
+                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+                    addConfirmButtons(m,
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            state.dados.conteudo = nomeSugerido;
+                            state.dados.conteudoObj = sugestao.sugestao;
+                            addMessage(`Conteúdo <strong>${escapeHtml(nomeSugerido)}</strong>! ✅`);
                             setTimeout(() => perguntarEnunciado(), 600);
-                        } catch (e) {
-                            loading.remove();
-                            addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                            setTimeout(() => perguntarConteudo(), 600);
+                        },
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
+                            addConfirmButtons(m2,
+                                async () => {
+                                    m2.querySelector('.chatbot-confirm')?.remove();
+                                    const loading = addMessage('Criando conteúdo...', 'loading');
+                                    try {
+                                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                                        loading.remove();
+                                        state.dados.conteudo = novo.nome_conteudo;
+                                        state.dados.conteudoObj = novo;
+                                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
+                                        setTimeout(() => perguntarEnunciado(), 600);
+                                    } catch (e) {
+                                        loading.remove();
+                                        addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
+                                        setTimeout(() => perguntarConteudo(), 600);
+                                    }
+                                },
+                                () => {
+                                    m2.querySelector('.chatbot-confirm')?.remove();
+                                    addMessage('OK, digite outro conteúdo:');
+                                }
+                            );
                         }
-                    },
-                    () => {
-                        m.querySelector('.chatbot-confirm')?.remove();
-                        addMessage('OK, digite outro conteúdo:');
-                    }
-                );
+                    );
+                } else {
+                    const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
+                    addConfirmButtons(m,
+                        async () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            const loading = addMessage('Criando conteúdo...', 'loading');
+                            try {
+                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                                loading.remove();
+                                state.dados.conteudo = novo.nome_conteudo;
+                                state.dados.conteudoObj = novo;
+                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
+                                setTimeout(() => perguntarEnunciado(), 600);
+                            } catch (e) {
+                                loading.remove();
+                                addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
+                                setTimeout(() => perguntarConteudo(), 600);
+                            }
+                        },
+                        () => {
+                            m.querySelector('.chatbot-confirm')?.remove();
+                            addMessage('OK, digite outro conteúdo:');
+                        }
+                    );
+                }
             }
             break;
         }
@@ -590,29 +717,74 @@ async function uploadFinalizarMateria(texto) {
         addMessage(`Matéria: <strong>${escapeHtml(materia.nome_materia)}</strong> ✅`);
         setTimeout(() => uploadPerguntarConteudo(), 500);
     } else {
-        const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-        addConfirmButtons(m,
-            async () => {
-                m.querySelector('.chatbot-confirm')?.remove();
-                const loading = addMessage('Criando matéria...', 'loading');
-                try {
-                    const nova = await criarMateria(texto);
-                    loading.remove();
-                    state.dados.materia = nova.nome_materia;
-                    state.dados.materiaObj = nova;
-                    addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
+        const { data: todasMaterias } = await supabaseClient
+            .from("materia")
+            .select("id_materia, nome_materia");
+        const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
+
+        if (sugestao) {
+            const nomeSugerido = sugestao.sugestao.nome_materia;
+            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+            addConfirmButtons(m,
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    state.dados.materia = nomeSugerido;
+                    state.dados.materiaObj = sugestao.sugestao;
+                    addMessage(`Matéria: <strong>${escapeHtml(nomeSugerido)}</strong> ✅`);
                     setTimeout(() => uploadPerguntarConteudo(), 500);
-                } catch (e) {
-                    loading.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
-                    setTimeout(() => startUploadFlow(), 600);
+                },
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
+                    addConfirmButtons(m2,
+                        async () => {
+                            m2.querySelector('.chatbot-confirm')?.remove();
+                            const loading = addMessage('Criando matéria...', 'loading');
+                            try {
+                                const nova = await criarMateria(texto);
+                                loading.remove();
+                                state.dados.materia = nova.nome_materia;
+                                state.dados.materiaObj = nova;
+                                addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
+                                setTimeout(() => uploadPerguntarConteudo(), 500);
+                            } catch (e) {
+                                loading.remove();
+                                addMessage(`Erro: ${e.message}`, 'system');
+                                setTimeout(() => startUploadFlow(), 600);
+                            }
+                        },
+                        () => {
+                            m2.querySelector('.chatbot-confirm')?.remove();
+                            addMessage('OK, digite outra matéria:');
+                        }
+                    );
                 }
-            },
-            () => {
-                m.querySelector('.chatbot-confirm')?.remove();
-                addMessage('OK, digite outra matéria:');
-            }
-        );
+            );
+        } else {
+            const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
+            addConfirmButtons(m,
+                async () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    const loading = addMessage('Criando matéria...', 'loading');
+                    try {
+                        const nova = await criarMateria(texto);
+                        loading.remove();
+                        state.dados.materia = nova.nome_materia;
+                        state.dados.materiaObj = nova;
+                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
+                        setTimeout(() => uploadPerguntarConteudo(), 500);
+                    } catch (e) {
+                        loading.remove();
+                        addMessage(`Erro: ${e.message}`, 'system');
+                        setTimeout(() => startUploadFlow(), 600);
+                    }
+                },
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    addMessage('OK, digite outra matéria:');
+                }
+            );
+        }
     }
 }
 
@@ -633,29 +805,75 @@ async function uploadFinalizarConteudo(texto) {
         addMessage(`Conteúdo: <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ✅`);
         setTimeout(() => uploadMostrarArea(), 500);
     } else {
-        const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-        addConfirmButtons(m,
-            async () => {
-                m.querySelector('.chatbot-confirm')?.remove();
-                const loading = addMessage('Criando conteúdo...', 'loading');
-                try {
-                    const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                    loading.remove();
-                    state.dados.conteudo = novo.nome_conteudo;
-                    state.dados.conteudoObj = novo;
-                    addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
+        const { data: todosConteudos } = await supabaseClient
+            .from("conteudo")
+            .select("id_conteudo, nome_conteudo")
+            .eq("id_materia", state.dados.materiaObj.id_materia);
+        const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
+
+        if (sugestao) {
+            const nomeSugerido = sugestao.sugestao.nome_conteudo;
+            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+            addConfirmButtons(m,
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    state.dados.conteudo = nomeSugerido;
+                    state.dados.conteudoObj = sugestao.sugestao;
+                    addMessage(`Conteúdo: <strong>${escapeHtml(nomeSugerido)}</strong> ✅`);
                     setTimeout(() => uploadMostrarArea(), 500);
-                } catch (e) {
-                    loading.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
-                    setTimeout(() => uploadPerguntarConteudo(), 600);
+                },
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
+                    addConfirmButtons(m2,
+                        async () => {
+                            m2.querySelector('.chatbot-confirm')?.remove();
+                            const loading = addMessage('Criando conteúdo...', 'loading');
+                            try {
+                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                                loading.remove();
+                                state.dados.conteudo = novo.nome_conteudo;
+                                state.dados.conteudoObj = novo;
+                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
+                                setTimeout(() => uploadMostrarArea(), 500);
+                            } catch (e) {
+                                loading.remove();
+                                addMessage(`Erro: ${e.message}`, 'system');
+                                setTimeout(() => uploadPerguntarConteudo(), 600);
+                            }
+                        },
+                        () => {
+                            m2.querySelector('.chatbot-confirm')?.remove();
+                            addMessage('OK, digite outro conteúdo:');
+                        }
+                    );
                 }
-            },
-            () => {
-                m.querySelector('.chatbot-confirm')?.remove();
-                addMessage('OK, digite outro conteúdo:');
-            }
-        );
+            );
+        } else {
+            const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
+            addConfirmButtons(m,
+                async () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    const loading = addMessage('Criando conteúdo...', 'loading');
+                    try {
+                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                        loading.remove();
+                        state.dados.conteudo = novo.nome_conteudo;
+                        state.dados.conteudoObj = novo;
+                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
+                        setTimeout(() => uploadMostrarArea(), 500);
+                    } catch (e) {
+                        loading.remove();
+                        addMessage(`Erro: ${e.message}`, 'system');
+                        setTimeout(() => uploadPerguntarConteudo(), 600);
+                    }
+                },
+                () => {
+                    m.querySelector('.chatbot-confirm')?.remove();
+                    addMessage('OK, digite outro conteúdo:');
+                }
+            );
+        }
     }
 }
 
