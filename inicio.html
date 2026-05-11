@@ -43,7 +43,27 @@
         </div>
     </div>
 
+    <div id="alerta" style="display:none; padding: 12px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;"></div>
+
     <script src="src/scripts/validationFom.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("confirmado") === "true") {
+            const alerta = document.getElementById("alerta");
+            alerta.style.display = "block";
+            alerta.style.backgroundColor = "#d4edda";
+            alerta.style.color = "#155724";
+            alerta.style.border = "1px solid #c3e6cb";
+            alerta.textContent = "Conta confirmada com sucesso! Faça login para continuar.";
+        } else if (params.get("erro")) {
+            const alerta = document.getElementById("alerta");
+            alerta.style.display = "block";
+            alerta.style.backgroundColor = "#f8d7da";
+            alerta.style.color = "#721c24";
+            alerta.style.border = "1px solid #f5c6cb";
+            alerta.textContent = decodeURIComponent(params.get("erro"));
+        }
+    </script>
     <script type="module" src="src/scripts/app.js"></script>
 </body>
 </html>

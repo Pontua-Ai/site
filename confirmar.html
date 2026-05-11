@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmando cadastro</title>
+    <link rel="icon" href="img/cabeca.png">
+</head>
+
+<body>
+    <script type="module">
+        import { config } from "./src/scripts/config.js";
+
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+
+        if (!token) {
+            window.location.href = "inicio.html?erro=Link+inv%C3%A1lido";
+        } else {
+            const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/confirm-email";
+            try {
+                const res = await fetch(functionUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": config.SUPABASE_KEY,
+                    },
+                    body: JSON.stringify({ token }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = "inicio.html?confirmado=true";
+                } else {
+                    window.location.href = "inicio.html?erro=" + encodeURIComponent(data.error || "Erro ao confirmar");
+                }
+            } catch {
+                window.location.href = "inicio.html?erro=Erro+de+conex%C3%A3o";
+            }
+        }
+    </script>
+</body>
+
+</html>

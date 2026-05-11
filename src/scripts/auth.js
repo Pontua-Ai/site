@@ -1,4 +1,5 @@
 import supabaseClient from "./supabase.js";
+import { config } from "./config.js";
 
 async function hashSenha(senha) {
     const encoder = new TextEncoder();
@@ -25,15 +26,42 @@ export async function signup(username, email, senha) {
     }
 
     const tipoConta = dominio === 'aluno.cps.sp.gov.br' ? 'aluno' : 'professor';
-
     const senhaHash = await hashSenha(senha);
+    const token = crypto.randomUUID();
 
     const { data, error } = await supabaseClient
         .from("users")
-        .insert([{ email: email, senha: senhaHash, username: username, tipo_conta: tipoConta }]);
+        .insert([{
+            email: email,
+            senha: senhaHash,
+            username: username,
+            tipo_conta: tipoConta,
+            token_confirmacao: token,
+            confirmado: false
+        }]);
 
     if (error) {
         return { success: false, error: error.message };
+    }
+
+    try {
+        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
+        const response = await fetch(functionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": config.SUPABASE_KEY,
+            },
+            body: JSON.stringify({ email, username, token, tipo_conta: tipoConta, site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "") }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+            console.error("Edge Function retornou erro:", data.error);
+        } else {
+            console.log("Email de confirmação enviado com sucesso");
+        }
+    } catch (e) {
+        console.error("Erro ao chamar Edge Function:", e);
     }
 
     return { success: true, tipo_conta: tipoConta };
@@ -48,6 +76,9 @@ export async function loginUsuario(login, senha) {
         .single();
     if (error || !data) {
         return { success: false, error: "Usuário não encontrado" };
+    }
+    if (!data.confirmado) {
+        return { success: false, error: "Confirme seu email antes de fazer login. Verifique sua caixa de entrada." };
     }
     const hashInput = await hashSenha(senha);
     if (data.senha !== hashInput) {
