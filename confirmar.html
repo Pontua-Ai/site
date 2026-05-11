@@ -5,76 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmando cadastro</title>
-    <link rel="stylesheet" href="src/styles/global.css">
-    <link rel="stylesheet" href="src/styles/form.css">
     <link rel="icon" href="img/cabeca.png">
 </head>
 
 <body>
-    <div class="login" style="text-align: center;">
-        <div class="logo">
-            <img src="img/logo-completa.png" alt="Logo da plataforma">
-        </div>
-
-        <div style="padding: 40px 20px;">
-            <div id="loading">
-                <h2>⏳ Confirmando seu cadastro...</h2>
-            </div>
-            <div id="sucesso" style="display: none;">
-                <h2 style="color: #4CAF50;">✅ Cadastro confirmado!</h2>
-                <p style="font-size: 16px; color: #666; margin-top: 20px;">
-                    Sua conta foi ativada com sucesso!
-                </p>
-                <a href="inicio.html" style="display: inline-block; margin-top: 30px; padding: 14px 28px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                    Fazer login
-                </a>
-            </div>
-            <div id="erro" style="display: none;">
-                <h2 style="color: #e74c3c;">❌ Erro</h2>
-                <p id="erroMensagem" style="font-size: 16px; color: #666; margin-top: 20px;"></p>
-                <a href="inicio.html" style="display: inline-block; margin-top: 30px; padding: 14px 28px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                    Voltar ao início
-                </a>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
-        import supabaseClient from "./src/scripts/supabase.js";
         import { config } from "./src/scripts/config.js";
 
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
 
         if (!token) {
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("erro").style.display = "block";
-            document.getElementById("erroMensagem").textContent = "Link inválido. Nenhum token encontrado.";
+            window.location.href = "inicio.html?erro=Link+inv%C3%A1lido";
         } else {
             const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/confirm-email";
-            fetch(functionUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "apikey": config.SUPABASE_KEY,
-                },
-                body: JSON.stringify({ token }),
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("loading").style.display = "none";
+            try {
+                const res = await fetch(functionUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": config.SUPABASE_KEY,
+                    },
+                    body: JSON.stringify({ token }),
+                });
+                const data = await res.json();
                 if (data.success) {
-                    document.getElementById("sucesso").style.display = "block";
+                    window.location.href = "inicio.html?confirmado=true";
                 } else {
-                    document.getElementById("erro").style.display = "block";
-                    document.getElementById("erroMensagem").textContent = data.error || "Erro ao confirmar cadastro.";
+                    window.location.href = "inicio.html?erro=" + encodeURIComponent(data.error || "Erro ao confirmar");
                 }
-            })
-            .catch(err => {
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("erro").style.display = "block";
-                document.getElementById("erroMensagem").textContent = "Erro de conexão. Tente novamente.";
-            });
+            } catch {
+                window.location.href = "inicio.html?erro=Erro+de+conex%C3%A3o";
+            }
         }
     </script>
 </body>
