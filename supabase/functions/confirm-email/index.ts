@@ -1,11 +1,21 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+}
+
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders })
+  }
+
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Método não permitido" }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }
 
@@ -15,7 +25,7 @@ serve(async (req) => {
     if (!token) {
       return new Response(JSON.stringify({ error: "token é obrigatório" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
@@ -34,19 +44,19 @@ serve(async (req) => {
     if (error || !data) {
       return new Response(JSON.stringify({ error: "Token inválido ou conta já confirmada" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
     return new Response(JSON.stringify({ success: true, email: data.email }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (error) {
     console.error(error)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }
 })
