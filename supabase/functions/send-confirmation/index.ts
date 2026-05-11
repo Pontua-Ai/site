@@ -37,7 +37,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, username, token, tipo_conta } = await req.json()
+    const { email, username, token, tipo_conta, site_url } = await req.json()
 
     if (!email || !username || !token) {
       return new Response(JSON.stringify({ error: "email, username e token são obrigatórios" }), {
@@ -46,7 +46,8 @@ serve(async (req) => {
       })
     }
 
-    const confirmLink = `${SITE_URL.replace(/\/+$/, "")}/confirmar.html?token=${encodeURIComponent(token)}`
+    const baseUrl = (site_url || SITE_URL).replace(/\/+$/, "")
+    const confirmLink = `${baseUrl}/confirmar.html?token=${encodeURIComponent(token)}`
 
     await transporter.sendMail({
       from: FROM_EMAIL,

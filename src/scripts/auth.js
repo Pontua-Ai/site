@@ -52,7 +52,7 @@ export async function signup(username, email, senha) {
                 "Content-Type": "application/json",
                 "apikey": config.SUPABASE_KEY,
             },
-            body: JSON.stringify({ email, username, token, tipo_conta: tipoConta }),
+            body: JSON.stringify({ email, username, token, tipo_conta: tipoConta, site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "") }),
         });
         const data = await response.json();
         if (!data.success) {
