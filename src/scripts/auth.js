@@ -48,7 +48,10 @@ export async function signup(username, email, senha) {
         const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
         await fetch(functionUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": config.SUPABASE_KEY,
+            },
             body: JSON.stringify({ email, username, token, tipo_conta: tipoConta }),
         });
     } catch (e) {
