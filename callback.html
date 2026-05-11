@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirme seu email</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/form.css">
+    <link rel="icon" href="img/cabeca.png">
+</head>
+
+<body>
+    <div class="login" style="text-align: center;">
+        <div class="logo">
+            <img src="img/logo-completa.png" alt="Logo da plataforma">
+        </div>
+
+        <div style="padding: 40px 20px;">
+            <h2>📧 Verifique seu email</h2>
+            <p id="mensagem" style="font-size: 16px; color: #666; margin-top: 20px;">
+                Enviamos um link de confirmação para <strong id="emailDisplay"></strong>.
+            </p>
+            <p style="font-size: 14px; color: #888; margin-top: 10px;">
+                Clique no link enviado no email para ativar sua conta.
+            </p>
+            <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+                <p style="font-size: 14px; color: #666;">Não recebeu o email?</p>
+                <p style="font-size: 13px; color: #999;">Verifique a caixa de spam ou lixeira.</p>
+            </div>
+            <p style="margin-top: 30px;">
+                <a href="inicio.html" style="color: #4CAF50;">Voltar para o início</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get("email");
+        if (email) {
+            document.getElementById("emailDisplay").textContent = email;
+        }
+    </script>
+</body>
+
+</html>

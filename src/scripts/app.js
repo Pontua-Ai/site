@@ -116,8 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await signup(name, email, password);
 
             if (result && result.success) {
-                toast("Cadastro realizado com sucesso! Faça login para continuar.", "success");
-                window.location.href = "inicio.html";
+                window.location.href = "callback.html?email=" + encodeURIComponent(email);
             } else {
                 toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
             }
