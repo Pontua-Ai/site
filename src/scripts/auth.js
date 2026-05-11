@@ -46,7 +46,7 @@ export async function signup(username, email, senha) {
 
     try {
         const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
-        await fetch(functionUrl, {
+        const response = await fetch(functionUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -54,8 +54,14 @@ export async function signup(username, email, senha) {
             },
             body: JSON.stringify({ email, username, token, tipo_conta: tipoConta }),
         });
+        const data = await response.json();
+        if (!data.success) {
+            console.error("Edge Function retornou erro:", data.error);
+        } else {
+            console.log("Email de confirmação enviado com sucesso");
+        }
     } catch (e) {
-        console.error("Erro ao enviar email de confirmação:", e);
+        console.error("Erro ao chamar Edge Function:", e);
     }
 
     return { success: true, tipo_conta: tipoConta };

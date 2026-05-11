@@ -1,7 +1,5 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts"
-import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts"
-
-const client = new SmtpClient()
+import nodemailer from "npm:nodemailer@6.9.16"
 
 const SMTP_HOST = Deno.env.get("SMTP_HOST") || "smtp.gmail.com"
 const SMTP_PORT = parseInt(Deno.env.get("SMTP_PORT") || "587")
@@ -9,6 +7,16 @@ const SMTP_USER = Deno.env.get("SMTP_USER") || ""
 const SMTP_PASS = Deno.env.get("SMTP_PASS") || ""
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || SMTP_USER
 const SITE_URL = Deno.env.get("SITE_URL") || "https://pontua-ai.github.io/site"
+
+const transporter = nodemailer.createTransport({
+  host: SMTP_HOST,
+  port: SMTP_PORT,
+  secure: false,
+  auth: {
+    user: SMTP_USER,
+    pass: SMTP_PASS,
+  },
+})
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,18 +48,11 @@ serve(async (req) => {
 
     const confirmLink = `${SITE_URL.replace(/\/+$/, "")}/confirmar.html?token=${encodeURIComponent(token)}`
 
-    await client.connectTLS({
-      hostname: SMTP_HOST,
-      port: SMTP_PORT,
-      username: SMTP_USER,
-      password: SMTP_PASS,
-    })
-
-    await client.send({
+    await transporter.sendMail({
       from: FROM_EMAIL,
       to: email,
       subject: "Confirme seu cadastro no Pontua Aí!",
-      content: `Olá, ${username}!\n\nObrigado por se cadastrar no Pontua Aí!\n\nPara ativar sua conta, clique no link abaixo:\n${confirmLink}\n\nSe você não se cadastrou, ignore este email.\n\nEquipe Pontua Aí`,
+      text: `Olá, ${username}!\n\nObrigado por se cadastrar no Pontua Aí!\n\nPara ativar sua conta, clique no link abaixo:\n${confirmLink}\n\nSe você não se cadastrou, ignore este email.\n\nEquipe Pontua Aí`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; text-align: center;">
           <h2 style="color: #4CAF50;">Bem-vindo ao Pontua Aí! 🐨</h2>
@@ -68,8 +69,6 @@ serve(async (req) => {
         </div>
       `,
     })
-
-    await client.close()
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
