@@ -117,6 +117,51 @@ export async function verificarSenha(email, senha) {
     return { success: true };
 }
 
+export async function enviarRecuperacao(email) {
+    try {
+        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-recovery";
+        const response = await fetch(functionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": config.SUPABASE_KEY,
+            },
+            body: JSON.stringify({ email, site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "") }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+            return { success: false, error: data.error || "Erro ao enviar email de recuperação" };
+        }
+        return { success: true };
+    } catch (e) {
+        console.error("Erro ao chamar Edge Function:", e);
+        return { success: false, error: "Erro de conexão. Tente novamente." };
+    }
+}
+
+export async function redefinirSenha(token, novaSenha) {
+    const senhaHash = await hashSenha(novaSenha);
+    try {
+        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/reset-password";
+        const response = await fetch(functionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": config.SUPABASE_KEY,
+            },
+            body: JSON.stringify({ token, senha_hash: senhaHash }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+            return { success: false, error: data.error || "Erro ao redefinir senha" };
+        }
+        return { success: true };
+    } catch (e) {
+        console.error("Erro ao chamar Edge Function:", e);
+        return { success: false, error: "Erro de conexão. Tente novamente." };
+    }
+}
+
 export async function excluirConta(idUsuario) {
     const { error } = await supabaseClient
         .from("users")

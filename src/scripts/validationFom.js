@@ -9,20 +9,21 @@ passwordIcons.forEach(icon => {
     })
 })
 
-const senhaInput = document.getElementById('senha');
-const criteriaList = document.getElementById('passwordCriteria');
+function initPasswordCriteria(inputId) {
+    const input = document.getElementById(inputId);
+    const criteriaList = document.getElementById('passwordCriteria');
+    if (!input || !criteriaList) return;
 
-if (senhaInput && criteriaList) {
-    senhaInput.addEventListener('focus', () => {
+    input.addEventListener('focus', () => {
         criteriaList.classList.add('visible');
     });
 
-    senhaInput.addEventListener('blur', () => {
+    input.addEventListener('blur', () => {
         criteriaList.classList.remove('visible');
     });
 
-    senhaInput.addEventListener('input', () => {
-        const senha = senhaInput.value;
+    input.addEventListener('input', () => {
+        const senha = input.value;
 
         document.getElementById('critMinimo').classList.toggle('valido', senha.length >= 8);
         document.getElementById('critMaiuscula').classList.toggle('valido', /[A-Z]/.test(senha));
@@ -31,3 +32,6 @@ if (senhaInput && criteriaList) {
         document.getElementById('critEspecial').classList.toggle('valido', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha));
     });
 }
+
+initPasswordCriteria('senha');
+initPasswordCriteria('novaSenha');
