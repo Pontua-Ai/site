@@ -227,7 +227,7 @@ export function initDadosConta() {
     
     const path = window.location.pathname;
     const isPaginaLogin = path.includes("inicio.html") || path.includes("inicio") || path.endsWith("/") || path.endsWith("\\");
-    const isPaginaPublica = path.includes("cadastro.html") || path.includes("cadastro") || isPaginaLogin;
+    const isPaginaPublica = path.includes("cadastro.html") || path.includes("cadastro") || path.includes("recuperar") || path.includes("redefinir-senha") || path.includes("callback") || path.includes("confirmar") || isPaginaLogin;
     
     if (!userLogado && !isPaginaPublica) {
         window.location.href = "inicio.html";

@@ -64,6 +64,7 @@ CREATE TABLE public.users (
   foto_url text,
   data_criacao timestamp without time zone DEFAULT now(),
   token_confirmacao text,
+  token_recuperacao text,
   confirmado boolean DEFAULT false,
   auth_id uuid UNIQUE,
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
