@@ -157,15 +157,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const recoveryForm = document.getElementById("recoveryForm");
     if (recoveryForm) {
+        let enviando = false;
         recoveryForm.addEventListener("submit", async (event) => {
             event.preventDefault();
+            if (enviando) return;
+            enviando = true;
+
             const email = document.getElementById("recoveryEmail").value;
+            const btn = recoveryForm.querySelector('button[type="submit"]');
+            const textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
             const result = await enviarRecuperacao(email);
+
             if (result.success) {
                 toast("Link de recuperação enviado para seu email!", "success");
                 recoveryForm.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:20px 0;">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>';
             } else {
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+                enviando = false;
                 toast("Erro: " + (result.error || "Erro desconhecido"), "error");
             }
         });
