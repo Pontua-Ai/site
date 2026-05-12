@@ -129,3 +129,44 @@ input:focus{
     border-bottom: 2px solid var(--primary-color);
     border-radius: 0;
 }
+
+.password-criteria {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    font-size: 13px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.password-criteria.visible {
+    max-height: 150px;
+    opacity: 1;
+}
+
+.password-criteria li {
+    color: var(--text-gray);
+    transition: color 0.3s ease;
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 4px;
+}
+
+.password-criteria li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: var(--text-gray);
+    transition: color 0.3s ease;
+}
+
+.password-criteria li.valido {
+    color: var(--primary-color);
+}
+
+.password-criteria li.valido::before {
+    content: "●";
+    color: var(--primary-color);
+}

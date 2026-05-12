@@ -8,3 +8,26 @@ passwordIcons.forEach(icon => {
         this.classList.toggle('fa-eye');
     })
 })
+
+const senhaInput = document.getElementById('senha');
+const criteriaList = document.getElementById('passwordCriteria');
+
+if (senhaInput && criteriaList) {
+    senhaInput.addEventListener('focus', () => {
+        criteriaList.classList.add('visible');
+    });
+
+    senhaInput.addEventListener('blur', () => {
+        criteriaList.classList.remove('visible');
+    });
+
+    senhaInput.addEventListener('input', () => {
+        const senha = senhaInput.value;
+
+        document.getElementById('critMinimo').classList.toggle('valido', senha.length >= 8);
+        document.getElementById('critMaiuscula').classList.toggle('valido', /[A-Z]/.test(senha));
+        document.getElementById('critMinuscula').classList.toggle('valido', /[a-z]/.test(senha));
+        document.getElementById('critNumero').classList.toggle('valido', /[0-9]/.test(senha));
+        document.getElementById('critEspecial').classList.toggle('valido', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha));
+    });
+}

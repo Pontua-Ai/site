@@ -1,6 +1,16 @@
 import supabaseClient from "./supabase.js";
 import { config } from "./config.js";
 
+export function validarSenha(senha) {
+    const erros = [];
+    if (senha.length < 8) erros.push("pelo menos 8 caracteres");
+    if (!/[A-Z]/.test(senha)) erros.push("Pelo menos 1 letra maiúscula");
+    if (!/[a-z]/.test(senha)) erros.push("Pelo menos 1 letra minúscula");
+    if (!/[0-9]/.test(senha)) erros.push("Pelo menos 1 número");
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)) erros.push("Pelo menos 1 caractere especial");
+    return erros;
+}
+
 async function hashSenha(senha) {
     const encoder = new TextEncoder();
     const data = encoder.encode(senha);

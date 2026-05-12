@@ -112,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = document.getElementById("username").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("senha").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                toast("As senhas não conferem", "error");
+                return;
+            }
 
             const result = await signup(name, email, password);
 
