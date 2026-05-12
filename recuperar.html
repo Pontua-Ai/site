@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar senha</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/form.css">
+    <link rel="icon" href="img/cabeca.png">
+</head>
+<body>
+    <div class="login">
+        <div class="logo">
+            <img src="img/logo-completa.png" alt="Logo da plataforma">
+            <h2>Recuperar senha</h2>
+        </div>
+
+        <form id="recoveryForm">
+            <div class="email">
+                <label>E-mail</label>
+                <input type="email" name="email" id="recoveryEmail" placeholder="Digite seu e-mail cadastrado" required>
+            </div>
+
+            <button type="submit" class="btn-continue">
+                Enviar link de recuperação &rarr;
+            </button>
+        </form>
+
+        <div class="ajuda">
+            <p>Lembrou a senha? <a href="inicio.html">Faça login</a></p>
+        </div>
+    </div>
+
+    <script type="module" src="src/scripts/app.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { signup, loginUsuario, verificarSenha, excluirConta } from "./auth.js";
+import { signup, loginUsuario, verificarSenha, excluirConta, enviarRecuperacao, redefinirSenha, validarSenha } from "./auth.js";
 import supabaseClient from "./supabase.js";
 import { carregarConteudo } from './buscarConteudo.js';
 import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
@@ -151,6 +151,68 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } else {
                 toast("Erro ao realizar login: " + (result?.error || "Erro desconhecido"), "error");
+            }
+        });
+    }
+
+    const recoveryForm = document.getElementById("recoveryForm");
+    if (recoveryForm) {
+        recoveryForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const email = document.getElementById("recoveryEmail").value;
+
+            const result = await enviarRecuperacao(email);
+            if (result.success) {
+                toast("Link de recuperação enviado para seu email!", "success");
+                recoveryForm.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:20px 0;">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>';
+            } else {
+                toast("Erro: " + (result.error || "Erro desconhecido"), "error");
+            }
+        });
+    }
+
+    const resetForm = document.getElementById("resetForm");
+    if (resetForm) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+
+
+        if (!token) {
+            const alerta = document.getElementById("alerta");
+            if (alerta) {
+                alerta.style.display = "block";
+                alerta.style.backgroundColor = "#f8d7da";
+                alerta.style.color = "#721c24";
+                alerta.style.border = "1px solid #f5c6cb";
+                alerta.textContent = "Link inválido ou expirado. Solicite uma nova recuperação de senha.";
+                resetForm.style.display = "none";
+            }
+        }
+
+        resetForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const novaSenha = document.getElementById("novaSenha").value;
+            const confirmarSenha = document.getElementById("confirmarNovaSenha").value;
+
+            if (novaSenha !== confirmarSenha) {
+                toast("As senhas não conferem", "error");
+                return;
+            }
+
+            const errosSenha = validarSenha(novaSenha);
+            if (errosSenha.length > 0) {
+                toast("A senha deve ter " + errosSenha.join(", "), "error");
+                return;
+            }
+
+            const result = await redefinirSenha(token, novaSenha);
+            if (result.success) {
+                toast("Senha redefinida com sucesso!", "success");
+                setTimeout(() => {
+                    window.location.href = "inicio.html";
+                }, 2000);
+            } else {
+                toast("Erro: " + (result.error || "Erro desconhecido"), "error");
             }
         });
     }
