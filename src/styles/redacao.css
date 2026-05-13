@@ -57,6 +57,19 @@ h1{
     color: var(--text-primary);
 }
 
+.contador-caracteres {
+    text-align: right;
+    font-size: 13px;
+    color: var(--text-gray);
+    margin-top: 5px;
+    padding: 0 5px;
+}
+
+.contador-caracteres.aviso {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
 .resultado-box {
     width: 100%;
     margin: 20px auto;
