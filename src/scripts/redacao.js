@@ -16,6 +16,11 @@ window.corrigir = async function () {
     return;
   }
 
+  if (texto.length < 2500) {
+    toast("Sua redação precisa ter pelo menos 2500 caracteres!", "error");
+    return;
+  }
+
   estaCorrigindo = true;
   botao.disabled = true;
   botao.textContent = "Carregando...";
@@ -536,3 +541,17 @@ Motivo: ${data.E.motivo}
     behavior: "smooth"
   });
 };
+
+const textoTextarea = document.getElementById("texto");
+const contadorSpan = document.getElementById("contador");
+const contadorDiv = document.querySelector(".contador-caracteres");
+
+textoTextarea.addEventListener("input", () => {
+  const len = textoTextarea.value.length;
+  contadorSpan.textContent = len;
+  if (len < 2500) {
+    contadorDiv.classList.add("aviso");
+  } else {
+    contadorDiv.classList.remove("aviso");
+  }
+});
