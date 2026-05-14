@@ -194,21 +194,68 @@ function getUserId() {
     return user?.id_usuario || null;
 }
 
+async function getMateriasOcultasIds() {
+    const userId = getUserId();
+    if (!userId) return [];
+    const { data } = await supabaseClient
+        .from("materia_oculta")
+        .select("id_materia")
+        .eq("id_usuario", userId);
+    return (data || []).map(o => o.id_materia);
+}
+
+async function getConteudosOcultosIds() {
+    const userId = getUserId();
+    if (!userId) return [];
+    const { data: ocultos } = await supabaseClient
+        .from("conteudo_oculto")
+        .select("id_conteudo")
+        .eq("id_usuario", userId);
+    const idsConteudos = (ocultos || []).map(o => o.id_conteudo);
+    const { data: materiasOcultas } = await supabaseClient
+        .from("materia_oculta")
+        .select("id_materia")
+        .eq("id_usuario", userId);
+    const idsMateriasOcultas = (materiasOcultas || []).map(m => m.id_materia);
+    if (idsMateriasOcultas.length > 0) {
+        const { data: conteudosDasMaterias } = await supabaseClient
+            .from("conteudo")
+            .select("id_conteudo")
+            .in("id_materia", idsMateriasOcultas);
+        if (conteudosDasMaterias) {
+            conteudosDasMaterias.forEach(c => {
+                if (!idsConteudos.includes(c.id_conteudo)) {
+                    idsConteudos.push(c.id_conteudo);
+                }
+            });
+        }
+    }
+    return idsConteudos;
+}
+
 async function buscarMateria(nome) {
     const userId = getUserId();
     const nomes = nome.trim();
-    const { data: exato } = await supabaseClient
+    const idsOcultas = await getMateriasOcultasIds();
+    let query = supabaseClient
         .from("materia")
         .select("id_materia, nome_materia")
         .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_materia", nomes)
-        .maybeSingle();
+        .ilike("nome_materia", nomes);
+    if (idsOcultas.length > 0) {
+        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+    }
+    const { data: exato } = await query.maybeSingle();
     if (exato) return exato;
 
-    const { data: todas } = await supabaseClient
+    let query2 = supabaseClient
         .from("materia")
         .select("id_materia, nome_materia")
         .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultas.length > 0) {
+        query2 = query2.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+    }
+    const { data: todas } = await query2;
 
     if (!todas) return null;
 
@@ -219,20 +266,28 @@ async function buscarMateria(nome) {
 async function buscarConteudo(nome, idMateria) {
     const userId = getUserId();
     const nomes = nome.trim();
-    const { data: exato } = await supabaseClient
+    const idsOcultos = await getConteudosOcultosIds();
+    let query = supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria)
         .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_conteudo", nomes)
-        .maybeSingle();
+        .ilike("nome_conteudo", nomes);
+    if (idsOcultos.length > 0) {
+        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+    }
+    const { data: exato } = await query.maybeSingle();
     if (exato) return exato;
 
-    const { data: todos } = await supabaseClient
+    let query2 = supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria)
         .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultos.length > 0) {
+        query2 = query2.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+    }
+    const { data: todos } = await query2;
 
     if (!todos) return null;
 
@@ -306,7 +361,7 @@ async function criarPergunta() {
 async function processUserInput(texto) {
     const lower = texto.toLowerCase();
 
-    if (lower === 'cancelar' || lower === 'voltar') {
+    if (lower === 'cancelar' || lower === 'voltar' || lower === 'menu') {
         state.passo = 'start';
         state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
         setTimeout(() => startConversation(), 300);
@@ -326,10 +381,15 @@ async function processUserInput(texto) {
                 setTimeout(() => perguntarConteudo(), 600);
             } else {
                 const userId = getUserId();
-                const { data: todasMaterias } = await supabaseClient
+                const idsOcultasM = await getMateriasOcultasIds();
+                let qMaterias = supabaseClient
                     .from("materia")
                     .select("id_materia, nome_materia")
                     .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+                if (idsOcultasM.length > 0) {
+                    qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
+                }
+                const { data: todasMaterias } = await qMaterias;
                 const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
                 if (sugestao) {
@@ -350,7 +410,7 @@ async function processUserInput(texto) {
                                 async () => {
                                     m2.querySelector('.chatbot-confirm')?.remove();
                                     const loading = addMessage('Criando matéria...', 'loading');
-                                        try {
+                                    try {
                                         const nova = await criarMateria(texto);
                                         loading.remove();
                                         state.dados.materia = nova.nome_materia;
@@ -430,11 +490,16 @@ async function processUserInput(texto) {
                 setTimeout(() => perguntarEnunciado(), 600);
             } else {
                 const userId = getUserId();
-                const { data: todosConteudos } = await supabaseClient
+                const idsOcultosC = await getConteudosOcultosIds();
+                let qConteudos = supabaseClient
                     .from("conteudo")
                     .select("id_conteudo, nome_conteudo")
                     .eq("id_materia", state.dados.materiaObj.id_materia)
                     .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+                if (idsOcultosC.length > 0) {
+                    qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
+                }
+                const { data: todosConteudos } = await qConteudos;
                 const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
                 if (sugestao) {
@@ -562,6 +627,10 @@ async function processUserInput(texto) {
             setTimeout(() => mostrarResumo(), 400);
             break;
         }
+
+        case 'await_outro':
+            await processarOutro(texto);
+            break;
 
         case 'upload_await_materia':
             await uploadFinalizarMateria(texto);
@@ -707,27 +776,286 @@ function perguntarNova() {
     );
 }
 
+async function processarOutro(texto) {
+    const lower = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const userId = getUserId();
+    const idsOcultasM = await getMateriasOcultasIds();
+    const idsOcultosC = await getConteudosOcultosIds();
+
+    if (lower.includes('conteudo')) {
+        let qConteudos = supabaseClient
+            .from("conteudo")
+            .select("id_conteudo, nome_conteudo, id_materia")
+            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+        if (idsOcultosC.length > 0) {
+            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
+        }
+        const { data: conteudos } = await qConteudos;
+        if (!conteudos || conteudos.length === 0) {
+            addMessage('Nenhum conteúdo cadastrado.');
+        } else {
+            let qMaterias = supabaseClient
+                .from("materia")
+                .select("id_materia, nome_materia")
+                .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+            if (idsOcultasM.length > 0) {
+                qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
+            }
+            const { data: materias } = await qMaterias;
+            const mapMaterias = {};
+            if (materias) materias.forEach(m => mapMaterias[m.id_materia] = m.nome_materia);
+            const nomes = conteudos.map(c => {
+                const materiaNome = mapMaterias[c.id_materia] || 'Sem matéria';
+                return `${escapeHtml(c.nome_conteudo)} (${escapeHtml(materiaNome)})`;
+            }).join(', ');
+            addMessage(`📖 <strong>Conteúdos disponíveis:</strong> ${nomes}`);
+        }
+        setTimeout(() => perguntarVoltarMenu(), 1200);
+        return;
+    }
+
+    if (lower.includes('lista') || lower.includes('listar') || lower.includes('quai') || lower.includes('mostra') || lower.includes('materia')) {
+        let qMaterias = supabaseClient
+            .from("materia")
+            .select("id_materia, nome_materia")
+            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+        if (idsOcultasM.length > 0) {
+            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
+        }
+        const { data: materias } = await qMaterias;
+        if (!materias || materias.length === 0) {
+            addMessage('Nenhuma matéria cadastrada.');
+        } else {
+            const nomes = materias.map(m => m.nome_materia).join(', ');
+            addMessage(`📚 <strong>Matérias disponíveis:</strong> ${escapeHtml(nomes)}`);
+        }
+        setTimeout(() => perguntarVoltarMenu(), 1200);
+        return;
+    }
+
+    if (lower === 'voltar' || lower === 'menu' || lower === 'cancelar') {
+        setTimeout(() => startConversation(), 300);
+        return;
+    }
+
+    addMessage('Não entendi. Pode tentar de outro jeito? 😅<br><small>Digite <strong>menu</strong> para voltar ao início.</small>');
+    state.passo = 'await_outro';
+    setInputEnabled(true);
+}
+
+function perguntarVoltarMenu() {
+    const conf = addMessage('Deseja voltar ao menu principal?');
+    addConfirmButtons(conf,
+        () => {
+            conf.querySelector('.chatbot-confirm')?.remove();
+            setTimeout(() => startConversation(), 300);
+        },
+        () => {
+            conf.querySelector('.chatbot-confirm')?.remove();
+            addMessage('OK! Digite algo ou <strong>menu</strong> para voltar.');
+            state.passo = 'await_outro';
+            setInputEnabled(true);
+        }
+    );
+}
+
 function startConversation() {
     state.passo = 'start';
 
     const msg = addMessage(`
-        <strong>Olá! Sou o assistente do PontuaAI!</strong><br><br>
-        Vou te ajudar a cadastrar perguntas de forma rápida.<br><br>
-        Como você quer começar?
+        <strong>🐨 Olá! Sou o assistente do PontuaAI!</strong><br><br>
+        Vou te ajudar com tudo que precisar. Escolha uma opção:
     `);
 
     const options = addBotOptions([
-        { label: 'Digitar manualmente', value: 'manual' },
-        { label: 'Enviar arquivo Word (várias questões)', value: 'upload' },
+        { label: '📝 Cadastrar pergunta', value: 'cadastrar' },
+        { label: '🙈 Ocultar conteúdo', value: 'ocultar_conteudo' },
+        { label: '🙈 Ocultar matéria', value: 'ocultar_materia' },
+        { label: '💬 Outro', value: 'outro' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
-        if (value === 'upload') {
+        switch (value) {
+            case 'cadastrar':
+                mostrarOpcoesCadastro();
+                break;
+            case 'ocultar_conteudo':
+                iniciarOcultarConteudo();
+                break;
+            case 'ocultar_materia':
+                iniciarOcultarMateria();
+                break;
+            case 'outro':
+                iniciarOutro();
+                break;
+        }
+    });
+    msg.appendChild(options);
+}
+
+function mostrarOpcoesCadastro() {
+    const msg = addMessage('Como você quer cadastrar a pergunta?');
+    const options = addBotOptions([
+        { label: '✏️ Digitar manualmente', value: 'manual' },
+        { label: '📄 Enviar arquivo Word', value: 'upload' },
+        { label: '⬅️ Voltar', value: 'voltar' },
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => startConversation(), 300);
+        } else if (value === 'upload') {
             startUploadFlow();
         } else {
             setTimeout(() => perguntarMateria(), 400);
         }
     });
     msg.appendChild(options);
+}
+
+async function iniciarOcultarMateria() {
+    const userId = getUserId();
+    const { data: ocultas } = await supabaseClient
+        .from("materia_oculta")
+        .select("id_materia")
+        .eq("id_usuario", userId);
+    const idsOcultas = (ocultas || []).map(o => o.id_materia);
+
+    let query = supabaseClient
+        .from("materia")
+        .select("id_materia, nome_materia")
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultas.length > 0) {
+        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+    }
+    const { data: materias } = await query;
+
+    if (!materias || materias.length === 0) {
+        addMessage('Nenhuma matéria disponível para ocultar.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+
+    const msg = addMessage('Qual matéria você quer ocultar da sua conta?');
+    const options = addBotOptions([
+        ...materias.map(m => ({ label: m.nome_materia, value: String(m.id_materia) })),
+        { label: '⬅️ Voltar', value: 'voltar' }
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => startConversation(), 300);
+            return;
+        }
+        const materia = materias.find(m => String(m.id_materia) === value);
+        const conf = addMessage(`Ocultar <strong>${escapeHtml(materia.nome_materia)}</strong> da sua conta?`);
+        addConfirmButtons(conf,
+            async () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                const load = addMessage('Ocultando matéria...', 'loading');
+                try {
+                    await supabaseClient.from("materia_oculta").insert({ id_materia: materia.id_materia, id_usuario: userId });
+                    const { data: conteudos } = await supabaseClient
+                        .from("conteudo")
+                        .select("id_conteudo")
+                        .eq("id_materia", materia.id_materia);
+                    if (conteudos && conteudos.length > 0) {
+                        await supabaseClient.from("conteudo_oculto").insert(
+                            conteudos.map(c => ({ id_conteudo: c.id_conteudo, id_usuario: userId }))
+                        );
+                    }
+                    load.remove();
+                    addMessage(`🙈 Matéria <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos ocultados da sua conta!`);
+                    toast("Matéria e conteúdos ocultados!", "success");
+                    setTimeout(() => startConversation(), 1500);
+                } catch (e) {
+                    load.remove();
+                    addMessage(`Erro: ${e.message}`, 'system');
+                    setTimeout(() => startConversation(), 1500);
+                }
+            },
+            () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                addMessage('OK, cancelado.');
+                setTimeout(() => startConversation(), 1000);
+            }
+        );
+    });
+    msg.appendChild(options);
+}
+
+async function iniciarOcultarConteudo() {
+    const userId = getUserId();
+    const { data: ocultos } = await supabaseClient
+        .from("conteudo_oculto")
+        .select("id_conteudo")
+        .eq("id_usuario", userId);
+    const idsOcultos = (ocultos || []).map(o => o.id_conteudo);
+
+    let query = supabaseClient
+        .from("conteudo")
+        .select("id_conteudo, nome_conteudo, id_materia")
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultos.length > 0) {
+        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+    }
+    const { data: conteudos } = await query;
+
+    if (!conteudos || conteudos.length === 0) {
+        addMessage('Nenhum conteúdo disponível para ocultar.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+
+    const { data: materias } = await supabaseClient
+        .from("materia")
+        .select("id_materia, nome_materia");
+    const mapMaterias = {};
+    if (materias) materias.forEach(m => mapMaterias[m.id_materia] = m.nome_materia);
+
+    const msg = addMessage('Qual conteúdo você quer ocultar da sua conta?');
+    const options = addBotOptions([
+        ...conteudos.map(c => ({
+            label: `${c.nome_conteudo} (${mapMaterias[c.id_materia] || '?'})`,
+            value: String(c.id_conteudo)
+        })),
+        { label: '⬅️ Voltar', value: 'voltar' }
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => startConversation(), 300);
+            return;
+        }
+        const conteudo = conteudos.find(c => String(c.id_conteudo) === value);
+        const materiaNome = mapMaterias[conteudo.id_materia] || '?';
+        const conf = addMessage(`Ocultar <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> (${escapeHtml(materiaNome)}) da sua conta?`);
+        addConfirmButtons(conf,
+            async () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                const load = addMessage('Ocultando conteúdo...', 'loading');
+                try {
+                    await supabaseClient.from("conteudo_oculto").insert({ id_conteudo: conteudo.id_conteudo, id_usuario: userId });
+                    load.remove();
+                    addMessage(`🙈 Conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ocultado da sua conta!`);
+                    toast("Conteúdo ocultado!", "success");
+                    setTimeout(() => startConversation(), 1500);
+                } catch (e) {
+                    load.remove();
+                    addMessage(`Erro: ${e.message}`, 'system');
+                    setTimeout(() => startConversation(), 1500);
+                }
+            },
+            () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                addMessage('OK, cancelado.');
+                setTimeout(() => startConversation(), 1000);
+            }
+        );
+    });
+    msg.appendChild(options);
+}
+
+async function iniciarOutro() {
+    state.passo = 'await_outro';
+    setInputEnabled(true);
+    addMessage('Pode perguntar! Tento ajudar com o que precisar. 😊<br><small>Ex: "liste as matérias", "quais conteúdos têm", etc.</small>');
 }
 
 function resetState() {
@@ -755,10 +1083,15 @@ async function uploadFinalizarMateria(texto) {
         setTimeout(() => uploadPerguntarConteudo(), 500);
     } else {
         const userId = getUserId();
-        const { data: todasMaterias } = await supabaseClient
+        const idsOcultasM = await getMateriasOcultasIds();
+        let qMaterias = supabaseClient
             .from("materia")
             .select("id_materia, nome_materia")
             .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+        if (idsOcultasM.length > 0) {
+            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
+        }
+        const { data: todasMaterias } = await qMaterias;
         const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
         if (sugestao) {
@@ -864,11 +1197,16 @@ async function uploadFinalizarConteudo(texto) {
         setTimeout(() => uploadMostrarArea(), 500);
     } else {
         const userId = getUserId();
-        const { data: todosConteudos } = await supabaseClient
+        const idsOcultosC = await getConteudosOcultosIds();
+        let qConteudos = supabaseClient
             .from("conteudo")
             .select("id_conteudo, nome_conteudo")
             .eq("id_materia", state.dados.materiaObj.id_materia)
             .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+        if (idsOcultosC.length > 0) {
+            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
+        }
+        const { data: todosConteudos } = await qConteudos;
         const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
         if (sugestao) {
@@ -1118,7 +1456,6 @@ async function extrairComGemini(html) {
             return `〖IMG_${idx}〗`;
         }
     );
-    console.log('[ChatBot] Imagens extraídas do HTML:', imagens.length, imagens.map(m => m.substring(0, 120)));
 
     const limite = 10000;
     const htmlTruncado = htmlComPlaceholders.length > limite ? htmlComPlaceholders.slice(0, limite) + "..." : htmlComPlaceholders;
@@ -1259,7 +1596,6 @@ ${textoComSeparadores}`;
         console.error('[ChatBot] JSON inválido da IA. Resposta:', text.substring(0, 300));
         const salvado = tentarSalvarJSON(text);
         if (salvado) {
-            console.log('[ChatBot] JSON recuperado parcialmente:', salvado.length, 'questões');
             return processarQuestoes(salvado);
         }
         throw new Error(`Resposta inválida da IA: ${e.message}`);
@@ -1319,7 +1655,6 @@ async function extrairImagensZip(arrayBuffer) {
             let pngUri;
             if (ext === 'wmf' || ext === 'emf') {
                 pngUri = extrairPngDeWmf(data) || null;
-                console.log('[ChatBot] WMF->PNG extração:', m.path, pngUri ? '✅' : '❌ sem PNG embutido');
             } else {
                 pngUri = await tryCanvasConversion(dataUri);
             }
@@ -1333,7 +1668,6 @@ async function extrairImagensZip(arrayBuffer) {
 }
 
 async function processarDocumentoMulti(file) {
-    console.log('[ChatBot] Processando documento multi:', file.name);
 
     if (!file.name.toLowerCase().endsWith('.docx')) {
         addMessage('Envie apenas arquivos .docx.', 'system');
@@ -1351,10 +1685,8 @@ async function processarDocumentoMulti(file) {
         const htmlResult = await window.mammoth.convertToHtml({ arrayBuffer });
         let htmlDoc = htmlResult.value.trim();
 
-        console.log('[ChatBot] Mammoth HTML (primeiros 500 chars):', htmlDoc.substring(0, 500));
         const imgMatch = htmlDoc.match(/<img[^>]*>/gi);
-        console.log('[ChatBot] Imagens encontradas por mammoth:', imgMatch ? imgMatch.length : 0, imgMatch ? imgMatch.map(m => m.substring(0, 100)) : []);
-
+        
         let imagensConvertidas = null;
 
         if (imgMatch && imgMatch.length > 0) {
@@ -1362,7 +1694,6 @@ async function processarDocumentoMulti(file) {
 
             if (typeof JSZip !== 'undefined') {
                 imagensConvertidas = await extrairImagensZip(arrayBuffer);
-                console.log('[ChatBot] JSZip retornou', imagensConvertidas.length, 'imagens');
             }
 
             if (imagensConvertidas) {
@@ -1373,7 +1704,6 @@ async function processarDocumentoMulti(file) {
                     const src = srcMatch[0];
                     htmlDoc = htmlDoc.replace(tag, tag.replace(src, `src="${imagensConvertidas[i].pngUri}"`));
                 });
-                console.log('[ChatBot] HTML após substituir imagens:', (htmlDoc.match(/<img[^>]*>/gi) || []).length, 'imagens');
             }
         }
 
@@ -1396,10 +1726,8 @@ async function processarDocumentoMulti(file) {
         }
 
         analiseEl.remove();
-        console.log('[ChatBot] Questões extraídas:', state.questoes.length);
         state.questoes.forEach((q, i) => {
             const imgCount = (q.enunciado.match(/<img[^>]*>/gi) || []).length;
-            console.log(`[ChatBot] Questão ${i + 1}: ${imgCount} imagem(ns) no enunciado`);
         });
 
         if (!Array.isArray(state.questoes) || state.questoes.length === 0) {

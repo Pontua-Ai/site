@@ -261,7 +261,6 @@ export async function exibirPergunta() {
         .select("*")
         .eq("id_pergunta", idPergunta)
         .order("id_alternativa", { ascending: true });
-    console.log("Alternativas:", alternativas, "Erro:", error);
     const container = document.getElementById("alternativas");
     container.innerHTML = "";
     
