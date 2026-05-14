@@ -72,16 +72,12 @@ function aplicarFiltro() {
     const materia = document.getElementById("materia").value;
     const conteudo = document.getElementById("conteudo").value;
 
-    console.log("Filtrar - materia:", materia, "conteudo:", conteudo);
-    console.log("Total perguntas:", todasPerguntas.length);
-
     const filtradas = todasPerguntas.filter(p => {
         if (materia && String(p.id_materia) !== materia) return false;
         if (conteudo && String(p.id_conteudo) !== conteudo) return false;
         return true;
     });
 
-    console.log("Perguntas filtradas:", filtradas.length);
     renderizarPerguntas(filtradas);
 }
 

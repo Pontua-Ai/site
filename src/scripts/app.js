@@ -316,9 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 toast("Selecione o conteúdo e a pergunta!", "error");
                 return;
             }
-
-            console.log("idMateria:", idMateria, "idConteudo:", idConteudo);
-
             
             const alternativas = document.querySelectorAll('.textAlternativa');
             const alternativasValores = Array.from(alternativas).map(el => (el.innerHTML ?? '').trim());
@@ -355,15 +352,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     ])
                     .select();
 
-                console.log("perguntaCriada:", perguntaCriada, "erro:", erroPergunta);
-
                 if (!perguntaCriada || perguntaCriada.length === 0) {
                     toast("Erro ao criar pergunta: " + (erroPergunta?.message || "Erro desconhecido"), "error");
                     return;
                 }
 
                 const idPergunta = perguntaCriada[0].id_pergunta || perguntaCriada[0].id;
-                console.log("ID da pergunta criada:", idPergunta);
 
                 for (let i = 0; i < alternativasValores.length; i++) {
                     const { data, error } = await supabaseClient
@@ -375,7 +369,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                 correta: (i + 1).toString() === correta
                             }
                         ]);
-                    console.log("Alternativa inserida:", alternativasValores[i], "Erro:", error);
                 }
 
                 toast("Pergunta cadastrada com sucesso!", "success");

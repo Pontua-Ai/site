@@ -20,6 +20,14 @@ export async function carregarMaterias() {
     
     if (isProfessor()) {
         query = query.or(`id_usuario.is.null,id_usuario.eq.${getUserId()}`);
+        const { data: ocultas } = await supabaseClient
+            .from("materia_oculta")
+            .select("id_materia")
+            .eq("id_usuario", getUserId());
+        const idsOcultas = (ocultas || []).map(o => o.id_materia);
+        if (idsOcultas.length > 0) {
+            query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+        }
     }
     
     const { data, error } = await query;
@@ -80,6 +88,33 @@ export async function carregarConteudos() {
     
     if (isProfessor()) {
         query = query.or(`id_usuario.is.null,id_usuario.eq.${getUserId()}`);
+        const userId = getUserId();
+        const { data: ocultos } = await supabaseClient
+            .from("conteudo_oculto")
+            .select("id_conteudo")
+            .eq("id_usuario", userId);
+        const idsOcultos = (ocultos || []).map(o => o.id_conteudo);
+        const { data: materiasOcultas } = await supabaseClient
+            .from("materia_oculta")
+            .select("id_materia")
+            .eq("id_usuario", userId);
+        const idsMateriasOcultas = (materiasOcultas || []).map(m => m.id_materia);
+        if (idsMateriasOcultas.length > 0) {
+            const { data: conteudosDasMaterias } = await supabaseClient
+                .from("conteudo")
+                .select("id_conteudo")
+                .in("id_materia", idsMateriasOcultas);
+            if (conteudosDasMaterias) {
+                conteudosDasMaterias.forEach(c => {
+                    if (!idsOcultos.includes(c.id_conteudo)) {
+                        idsOcultos.push(c.id_conteudo);
+                    }
+                });
+            }
+        }
+        if (idsOcultos.length > 0) {
+            query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+        }
     }
     
     const { data, error } = await query;
