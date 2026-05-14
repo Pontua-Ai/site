@@ -188,18 +188,27 @@ function sendMessage(text) {
     processUserInput(text.trim());
 }
 
+function getUserId() {
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    return user?.id_usuario || null;
+}
+
 async function buscarMateria(nome) {
+    const userId = getUserId();
+    if (!userId) return null;
     const nomes = nome.trim();
     const { data: exato } = await supabaseClient
         .from("materia")
         .select("id_materia, nome_materia")
+        .eq("id_usuario", userId)
         .ilike("nome_materia", nomes)
         .maybeSingle();
     if (exato) return exato;
 
     const { data: todas } = await supabaseClient
         .from("materia")
-        .select("id_materia, nome_materia");
+        .select("id_materia, nome_materia")
+        .eq("id_usuario", userId);
 
     if (!todas) return null;
 
@@ -208,11 +217,13 @@ async function buscarMateria(nome) {
 }
 
 async function buscarConteudo(nome, idMateria) {
+    const userId = getUserId();
     const nomes = nome.trim();
     const { data: exato } = await supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria)
+        .eq("id_usuario", userId)
         .ilike("nome_conteudo", nomes)
         .maybeSingle();
     if (exato) return exato;
@@ -220,7 +231,8 @@ async function buscarConteudo(nome, idMateria) {
     const { data: todos } = await supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria);
+        .eq("id_materia", idMateria)
+        .eq("id_usuario", userId);
 
     if (!todos) return null;
 
@@ -229,9 +241,10 @@ async function buscarConteudo(nome, idMateria) {
 }
 
 async function criarMateria(nome) {
+    const userId = getUserId();
     const { data, error } = await supabaseClient
         .from("materia")
-        .insert([{ nome_materia: nome.trim() }])
+        .insert([{ nome_materia: nome.trim(), id_usuario: userId }])
         .select()
         .single();
     if (error) throw error;
@@ -239,9 +252,10 @@ async function criarMateria(nome) {
 }
 
 async function criarConteudo(nome, idMateria) {
+    const userId = getUserId();
     const { data, error } = await supabaseClient
         .from("conteudo")
-        .insert([{ nome_conteudo: nome.trim(), id_materia: idMateria }])
+        .insert([{ nome_conteudo: nome.trim(), id_materia: idMateria, id_usuario: userId }])
         .select()
         .single();
     if (error) throw error;
@@ -311,9 +325,11 @@ async function processUserInput(texto) {
                 addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>! ✅`);
                 setTimeout(() => perguntarConteudo(), 600);
             } else {
+                const userId = getUserId();
                 const { data: todasMaterias } = await supabaseClient
                     .from("materia")
-                    .select("id_materia, nome_materia");
+                    .select("id_materia, nome_materia")
+                    .eq("id_usuario", userId);
                 const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
                 if (sugestao) {
@@ -394,10 +410,12 @@ async function processUserInput(texto) {
                 addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>! ✅`);
                 setTimeout(() => perguntarEnunciado(), 600);
             } else {
+                const userId = getUserId();
                 const { data: todosConteudos } = await supabaseClient
                     .from("conteudo")
                     .select("id_conteudo, nome_conteudo")
-                    .eq("id_materia", state.dados.materiaObj.id_materia);
+                    .eq("id_materia", state.dados.materiaObj.id_materia)
+                    .eq("id_usuario", userId);
                 const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
                 if (sugestao) {
@@ -717,9 +735,11 @@ async function uploadFinalizarMateria(texto) {
         addMessage(`Matéria: <strong>${escapeHtml(materia.nome_materia)}</strong> ✅`);
         setTimeout(() => uploadPerguntarConteudo(), 500);
     } else {
+        const userId = getUserId();
         const { data: todasMaterias } = await supabaseClient
             .from("materia")
-            .select("id_materia, nome_materia");
+            .select("id_materia, nome_materia")
+            .eq("id_usuario", userId);
         const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
         if (sugestao) {
@@ -805,10 +825,12 @@ async function uploadFinalizarConteudo(texto) {
         addMessage(`Conteúdo: <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ✅`);
         setTimeout(() => uploadMostrarArea(), 500);
     } else {
+        const userId = getUserId();
         const { data: todosConteudos } = await supabaseClient
             .from("conteudo")
             .select("id_conteudo, nome_conteudo")
-            .eq("id_materia", state.dados.materiaObj.id_materia);
+            .eq("id_materia", state.dados.materiaObj.id_materia)
+            .eq("id_usuario", userId);
         const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
         if (sugestao) {

@@ -6,9 +6,11 @@ let ultimasProvasGeradas = null;
 
 async function carregarMaterias() {
     const select = document.getElementById("materia");
+    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     const { data, error } = await supabaseClient
         .from("materia")
-        .select("id_materia, nome_materia");
+        .select("id_materia, nome_materia")
+        .eq("id_usuario", userLogado?.id_usuario);
     if (error) {
         console.error("Erro ao carregar matérias:", error);
         return;
@@ -299,10 +301,12 @@ $('#materia').on('select2:select', async function (e) {
 
     const idMateria = e.params.data.id;
     if (idMateria) {
+        const userLogado = JSON.parse(localStorage.getItem("userLogado"));
         const { data, error } = await supabaseClient
             .from("conteudo")
             .select("id_conteudo, nome_conteudo")
-            .eq("id_materia", idMateria);
+            .eq("id_materia", idMateria)
+            .eq("id_usuario", userLogado?.id_usuario);
         if (!error && data) {
             let html = '<option value="" selected>Todos os conteúdos</option>';
             data.forEach(c => {

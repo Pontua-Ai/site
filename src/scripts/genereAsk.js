@@ -1,12 +1,28 @@
 import supabaseClient from "./supabase.js";
 
+function getUserId() {
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    return user?.id_usuario || null;
+}
+
+function isProfessor() {
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    return user?.tipo_conta === 'professor';
+}
+
 export async function carregarMaterias() {
     const select = document.getElementById("materia");
     if (select.dataset.loaded === "true") return;
     
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
         .from("materia")
         .select("id_materia, nome_materia");
+    
+    if (isProfessor()) {
+        query = query.eq("id_usuario", getUserId());
+    }
+    
+    const { data, error } = await query;
     if (error) {
         console.error("Erro:", error);
         return;
@@ -57,10 +73,16 @@ export async function carregarConteudos() {
     const idMateria = document.getElementById("materia").value;
     if (!idMateria) return;
 
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria);
+    
+    if (isProfessor()) {
+        query = query.eq("id_usuario", getUserId());
+    }
+    
+    const { data, error } = await query;
     if (error) {
         console.error("Erro:", error);
         return;
