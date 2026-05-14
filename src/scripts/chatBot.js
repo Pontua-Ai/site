@@ -869,8 +869,8 @@ function startConversation() {
 
     const options = addBotOptions([
         { label: '📝 Cadastrar pergunta', value: 'cadastrar' },
-        { label: '🙈 Ocultar conteúdo', value: 'ocultar_conteudo' },
-        { label: '🙈 Ocultar matéria', value: 'ocultar_materia' },
+        { label: '🙈 Ocultar', value: 'ocultar' },
+        { label: '👁️ Visualizar', value: 'visualizar' },
         { label: '💬 Outro', value: 'outro' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
@@ -878,11 +878,11 @@ function startConversation() {
             case 'cadastrar':
                 mostrarOpcoesCadastro();
                 break;
-            case 'ocultar_conteudo':
-                iniciarOcultarConteudo();
+            case 'ocultar':
+                mostrarOpcoesOcultar();
                 break;
-            case 'ocultar_materia':
-                iniciarOcultarMateria();
+            case 'visualizar':
+                mostrarOpcoesVisualizar();
                 break;
             case 'outro':
                 iniciarOutro();
@@ -907,6 +907,179 @@ function mostrarOpcoesCadastro() {
         } else {
             setTimeout(() => perguntarMateria(), 400);
         }
+    });
+    msg.appendChild(options);
+}
+
+function mostrarOpcoesOcultar() {
+    const msg = addMessage('O que você quer ocultar?');
+    const options = addBotOptions([
+        { label: '🙈 Ocultar matéria', value: 'materia' },
+        { label: '🙈 Ocultar conteúdo', value: 'conteudo' },
+        { label: '⬅️ Voltar', value: 'voltar' },
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => startConversation(), 300);
+        } else if (value === 'materia') {
+            iniciarOcultarMateria();
+        } else {
+            iniciarOcultarConteudo();
+        }
+    });
+    msg.appendChild(options);
+}
+
+function mostrarOpcoesVisualizar() {
+    const msg = addMessage('O que você quer visualizar?');
+    const options = addBotOptions([
+        { label: '👁️ Matérias ocultas', value: 'materias' },
+        { label: '👁️ Conteúdos ocultos', value: 'conteudos' },
+        { label: '⬅️ Voltar', value: 'voltar' },
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => startConversation(), 300);
+        } else if (value === 'materias') {
+            visualizarMateriasOcultas();
+        } else {
+            visualizarConteudosOcultos();
+        }
+    });
+    msg.appendChild(options);
+}
+
+async function visualizarMateriasOcultas() {
+    const userId = getUserId();
+    const { data: ocultas } = await supabaseClient
+        .from("materia_oculta")
+        .select("id_materia, id_usuario")
+        .eq("id_usuario", userId);
+    if (!ocultas || ocultas.length === 0) {
+        addMessage('Nenhuma matéria oculta.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+    const ids = ocultas.map(o => o.id_materia);
+    const { data: materias } = await supabaseClient
+        .from("materia")
+        .select("id_materia, nome_materia")
+        .in("id_materia", ids);
+    if (!materias || materias.length === 0) {
+        addMessage('Nenhuma matéria oculta.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+    const msg = addMessage('Matérias ocultas — clique para reexibir:');
+    const options = addBotOptions([
+        ...materias.map(m => ({ label: m.nome_materia, value: String(m.id_materia) })),
+        { label: '⬅️ Voltar', value: 'voltar' }
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => mostrarOpcoesVisualizar(), 300);
+            return;
+        }
+        const materia = materias.find(m => String(m.id_materia) === value);
+        const conf = addMessage(`Reexibir <strong>${escapeHtml(materia.nome_materia)}</strong>?`);
+        addConfirmButtons(conf,
+            async () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                const load = addMessage('Reexibindo...', 'loading');
+                try {
+                    await supabaseClient.from("materia_oculta").delete().eq("id_materia", materia.id_materia).eq("id_usuario", userId);
+                    const { data: conteudos } = await supabaseClient
+                        .from("conteudo")
+                        .select("id_conteudo")
+                        .eq("id_materia", materia.id_materia);
+                    if (conteudos && conteudos.length > 0) {
+                        const idsC = conteudos.map(c => c.id_conteudo);
+                        await supabaseClient.from("conteudo_oculto").delete().in("id_conteudo", idsC).eq("id_usuario", userId);
+                    }
+                    load.remove();
+                    addMessage(`👁️ <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos reexibidos!`);
+                    toast("Matéria reexibida!", "success");
+                    setTimeout(() => startConversation(), 1500);
+                } catch (e) {
+                    load.remove();
+                    addMessage(`Erro: ${e.message}`, 'system');
+                    setTimeout(() => startConversation(), 1500);
+                }
+            },
+            () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                addMessage('OK, cancelado.');
+                setTimeout(() => visualizarMateriasOcultas(), 500);
+            }
+        );
+    });
+    msg.appendChild(options);
+}
+
+async function visualizarConteudosOcultos() {
+    const userId = getUserId();
+    const { data: ocultos } = await supabaseClient
+        .from("conteudo_oculto")
+        .select("id_conteudo")
+        .eq("id_usuario", userId);
+    if (!ocultos || ocultos.length === 0) {
+        addMessage('Nenhum conteúdo oculto.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+    const ids = ocultos.map(o => o.id_conteudo);
+    const { data: conteudos } = await supabaseClient
+        .from("conteudo")
+        .select("id_conteudo, nome_conteudo, id_materia")
+        .in("id_conteudo", ids);
+    if (!conteudos || conteudos.length === 0) {
+        addMessage('Nenhum conteúdo oculto.');
+        setTimeout(() => startConversation(), 1500);
+        return;
+    }
+    const { data: materias } = await supabaseClient
+        .from("materia")
+        .select("id_materia, nome_materia");
+    const mapMaterias = {};
+    if (materias) materias.forEach(m => mapMaterias[m.id_materia] = m.nome_materia);
+
+    const msg = addMessage('Conteúdos ocultos — clique para reexibir:');
+    const options = addBotOptions([
+        ...conteudos.map(c => ({
+            label: `${c.nome_conteudo} (${mapMaterias[c.id_materia] || '?'})`,
+            value: String(c.id_conteudo)
+        })),
+        { label: '⬅️ Voltar', value: 'voltar' }
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'voltar') {
+            setTimeout(() => mostrarOpcoesVisualizar(), 300);
+            return;
+        }
+        const conteudo = conteudos.find(c => String(c.id_conteudo) === value);
+        const conf = addMessage(`Reexibir <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>?`);
+        addConfirmButtons(conf,
+            async () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                const load = addMessage('Reexibindo...', 'loading');
+                try {
+                    await supabaseClient.from("conteudo_oculto").delete().eq("id_conteudo", conteudo.id_conteudo).eq("id_usuario", userId);
+                    load.remove();
+                    addMessage(`👁️ <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> reexibido!`);
+                    toast("Conteúdo reexibido!", "success");
+                    setTimeout(() => startConversation(), 1500);
+                } catch (e) {
+                    load.remove();
+                    addMessage(`Erro: ${e.message}`, 'system');
+                    setTimeout(() => startConversation(), 1500);
+                }
+            },
+            () => {
+                conf.querySelector('.chatbot-confirm')?.remove();
+                addMessage('OK, cancelado.');
+                setTimeout(() => visualizarConteudosOcultos(), 500);
+            }
+        );
     });
     msg.appendChild(options);
 }
