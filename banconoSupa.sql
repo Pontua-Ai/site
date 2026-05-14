@@ -15,8 +15,8 @@ CREATE TABLE public.conteudo (
   id_materia integer,
   id_usuario integer,
   CONSTRAINT conteudo_pkey PRIMARY KEY (id_conteudo),
-  CONSTRAINT conteudo_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
-  CONSTRAINT conteudo_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+  CONSTRAINT conteudo_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
+  CONSTRAINT conteudo_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia)
 );
 CREATE TABLE public.materia (
   id_materia integer NOT NULL DEFAULT nextval('materia_id_materia_seq'::regclass),
@@ -34,9 +34,9 @@ CREATE TABLE public.perguntas (
   visibilidade character varying DEFAULT 'publico'::character varying,
   data_pergunta timestamp without time zone DEFAULT now(),
   CONSTRAINT perguntas_pkey PRIMARY KEY (id_pergunta),
-  CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo),
+  CONSTRAINT perguntas_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
   CONSTRAINT perguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
-  CONSTRAINT perguntas_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+  CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo)
 );
 CREATE TABLE public.pontuacao_atividade (
   id_pontuacao_atividade integer NOT NULL DEFAULT nextval('pontuacao_atividade_id_pontuacao_atividade_seq'::regclass),

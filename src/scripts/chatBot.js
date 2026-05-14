@@ -14,7 +14,8 @@ const state = {
         correta: null,
         visibilidade: null,
     },
-    questoes: []
+    questoes: [],
+    materiaNova: false
 };
 
 let chatContainer = null;
@@ -350,11 +351,12 @@ async function processUserInput(texto) {
                                 async () => {
                                     m2.querySelector('.chatbot-confirm')?.remove();
                                     const loading = addMessage('Criando matéria...', 'loading');
-                                    try {
+                                        try {
                                         const nova = await criarMateria(texto);
                                         loading.remove();
                                         state.dados.materia = nova.nome_materia;
                                         state.dados.materiaObj = nova;
+                                        state.materiaNova = true;
                                         addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
                                         setTimeout(() => perguntarConteudo(), 600);
                                     } catch (e) {
@@ -381,6 +383,7 @@ async function processUserInput(texto) {
                                 loading.remove();
                                 state.dados.materia = nova.nome_materia;
                                 state.dados.materiaObj = nova;
+                                state.materiaNova = true;
                                 addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
                                 setTimeout(() => perguntarConteudo(), 600);
                             } catch (e) {
@@ -400,6 +403,23 @@ async function processUserInput(texto) {
         }
 
         case 'await_conteudo': {
+            if (state.materiaNova) {
+                state.materiaNova = false;
+                const loading = addMessage('Criando conteúdo...', 'loading');
+                try {
+                    const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                    loading.remove();
+                    state.dados.conteudo = novo.nome_conteudo;
+                    state.dados.conteudoObj = novo;
+                    addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
+                    setTimeout(() => perguntarEnunciado(), 600);
+                } catch (e) {
+                    loading.remove();
+                    addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
+                    setTimeout(() => perguntarConteudo(), 600);
+                }
+                break;
+            }
             const msg = addMessage('Verificando conteúdo...', 'loading');
             const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
             msg.remove();
@@ -761,12 +781,13 @@ async function uploadFinalizarMateria(texto) {
                             m2.querySelector('.chatbot-confirm')?.remove();
                             const loading = addMessage('Criando matéria...', 'loading');
                             try {
-                                const nova = await criarMateria(texto);
-                                loading.remove();
-                                state.dados.materia = nova.nome_materia;
-                                state.dados.materiaObj = nova;
-                                addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
-                                setTimeout(() => uploadPerguntarConteudo(), 500);
+                                        const nova = await criarMateria(texto);
+                                        loading.remove();
+                                        state.dados.materia = nova.nome_materia;
+                                        state.dados.materiaObj = nova;
+                                        state.materiaNova = true;
+                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
+                                        setTimeout(() => uploadPerguntarConteudo(), 500);
                             } catch (e) {
                                 loading.remove();
                                 addMessage(`Erro: ${e.message}`, 'system');
@@ -791,6 +812,7 @@ async function uploadFinalizarMateria(texto) {
                         loading.remove();
                         state.dados.materia = nova.nome_materia;
                         state.dados.materiaObj = nova;
+                        state.materiaNova = true;
                         addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
                         setTimeout(() => uploadPerguntarConteudo(), 500);
                     } catch (e) {
@@ -815,6 +837,23 @@ function uploadPerguntarConteudo() {
 }
 
 async function uploadFinalizarConteudo(texto) {
+    if (state.materiaNova) {
+        state.materiaNova = false;
+        const loading = addMessage('Criando conteúdo...', 'loading');
+        try {
+            const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+            loading.remove();
+            state.dados.conteudo = novo.nome_conteudo;
+            state.dados.conteudoObj = novo;
+            addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
+            setTimeout(() => uploadMostrarArea(), 500);
+        } catch (e) {
+            loading.remove();
+            addMessage(`Erro: ${e.message}`, 'system');
+            setTimeout(() => uploadPerguntarConteudo(), 600);
+        }
+        return;
+    }
     const msg = addMessage('Verificando conteúdo...', 'loading');
     const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
     msg.remove();
