@@ -19,7 +19,7 @@ export async function carregarMaterias() {
         .select("id_materia, nome_materia");
     
     if (isProfessor()) {
-        query = query.eq("id_usuario", getUserId());
+        query = query.or(`id_usuario.is.null,id_usuario.eq.${getUserId()}`);
     }
     
     const { data, error } = await query;
@@ -79,7 +79,7 @@ export async function carregarConteudos() {
         .eq("id_materia", idMateria);
     
     if (isProfessor()) {
-        query = query.eq("id_usuario", getUserId());
+        query = query.or(`id_usuario.is.null,id_usuario.eq.${getUserId()}`);
     }
     
     const { data, error } = await query;
