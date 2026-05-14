@@ -1175,7 +1175,7 @@ ${textoComSeparadores}`;
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
+            model: "openrouter/free",
             messages: [
                 { role: "user", content: prompt }
             ],
