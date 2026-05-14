@@ -196,12 +196,11 @@ function getUserId() {
 
 async function buscarMateria(nome) {
     const userId = getUserId();
-    if (!userId) return null;
     const nomes = nome.trim();
     const { data: exato } = await supabaseClient
         .from("materia")
         .select("id_materia, nome_materia")
-        .eq("id_usuario", userId)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
         .ilike("nome_materia", nomes)
         .maybeSingle();
     if (exato) return exato;
@@ -209,7 +208,7 @@ async function buscarMateria(nome) {
     const { data: todas } = await supabaseClient
         .from("materia")
         .select("id_materia, nome_materia")
-        .eq("id_usuario", userId);
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
 
     if (!todas) return null;
 
@@ -224,7 +223,7 @@ async function buscarConteudo(nome, idMateria) {
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria)
-        .eq("id_usuario", userId)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
         .ilike("nome_conteudo", nomes)
         .maybeSingle();
     if (exato) return exato;
@@ -233,7 +232,7 @@ async function buscarConteudo(nome, idMateria) {
         .from("conteudo")
         .select("id_conteudo, nome_conteudo")
         .eq("id_materia", idMateria)
-        .eq("id_usuario", userId);
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
 
     if (!todos) return null;
 
@@ -330,7 +329,7 @@ async function processUserInput(texto) {
                 const { data: todasMaterias } = await supabaseClient
                     .from("materia")
                     .select("id_materia, nome_materia")
-                    .eq("id_usuario", userId);
+                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
                 const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
                 if (sugestao) {
@@ -435,7 +434,7 @@ async function processUserInput(texto) {
                     .from("conteudo")
                     .select("id_conteudo, nome_conteudo")
                     .eq("id_materia", state.dados.materiaObj.id_materia)
-                    .eq("id_usuario", userId);
+                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
                 const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
                 if (sugestao) {
@@ -759,7 +758,7 @@ async function uploadFinalizarMateria(texto) {
         const { data: todasMaterias } = await supabaseClient
             .from("materia")
             .select("id_materia, nome_materia")
-            .eq("id_usuario", userId);
+            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
         const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
 
         if (sugestao) {
@@ -869,7 +868,7 @@ async function uploadFinalizarConteudo(texto) {
             .from("conteudo")
             .select("id_conteudo, nome_conteudo")
             .eq("id_materia", state.dados.materiaObj.id_materia)
-            .eq("id_usuario", userId);
+            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
         const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
 
         if (sugestao) {
