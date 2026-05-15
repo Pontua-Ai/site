@@ -782,6 +782,26 @@ async function processarOutro(texto) {
     const idsOcultasM = await getMateriasOcultasIds();
     const idsOcultosC = await getConteudosOcultosIds();
 
+    if (lower.includes('ocultar materia') || lower === 'ocultar') {
+        iniciarOcultarMateria();
+        return;
+    }
+
+    if (lower.includes('ocultar conteudo') || lower.includes('ocultar conteúdo')) {
+        iniciarOcultarConteudo();
+        return;
+    }
+
+    if (lower.includes('materias ocultas') || lower.includes('materia oculta') || lower.includes('ver materia oculta')) {
+        visualizarMateriasOcultas();
+        return;
+    }
+
+    if (lower.includes('conteudos ocultos') || lower.includes('conteudo oculto') || lower.includes('ver conteudo oculto')) {
+        visualizarConteudosOcultos();
+        return;
+    }
+
     if (lower.includes('conteudo')) {
         let qConteudos = supabaseClient
             .from("conteudo")
