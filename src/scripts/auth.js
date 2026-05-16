@@ -67,9 +67,7 @@ export async function signup(username, email, senha) {
         const data = await response.json();
         if (!data.success) {
             console.error("Edge Function retornou erro:", data.error);
-        } else {
-            console.log("Email de confirmação enviado com sucesso");
-        }
+        } 
     } catch (e) {
         console.error("Erro ao chamar Edge Function:", e);
     }
@@ -94,7 +92,6 @@ export async function loginUsuario(login, senha) {
     if (data.senha !== hashInput) {
         return { success: false, error: "Senha incorreta" };
     }
-    console.log("Usuario logado:", data);
     return { success: true, user: data };
 }
 

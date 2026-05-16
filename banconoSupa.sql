@@ -13,13 +13,17 @@ CREATE TABLE public.conteudo (
   id_conteudo integer NOT NULL DEFAULT nextval('conteudo_id_conteudo_seq'::regclass),
   nome_conteudo character varying NOT NULL,
   id_materia integer,
+  id_usuario integer,
   CONSTRAINT conteudo_pkey PRIMARY KEY (id_conteudo),
+  CONSTRAINT conteudo_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
   CONSTRAINT conteudo_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia)
 );
 CREATE TABLE public.materia (
   id_materia integer NOT NULL DEFAULT nextval('materia_id_materia_seq'::regclass),
   nome_materia character varying NOT NULL,
-  CONSTRAINT materia_pkey PRIMARY KEY (id_materia)
+  id_usuario integer,
+  CONSTRAINT materia_pkey PRIMARY KEY (id_materia),
+  CONSTRAINT materia_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
 );
 CREATE TABLE public.perguntas (
   id_pergunta integer NOT NULL DEFAULT nextval('perguntas_id_pergunta_seq'::regclass),
@@ -28,10 +32,11 @@ CREATE TABLE public.perguntas (
   id_materia integer,
   id_usuario integer,
   visibilidade character varying DEFAULT 'publico'::character varying,
+  data_pergunta timestamp without time zone DEFAULT now(),
   CONSTRAINT perguntas_pkey PRIMARY KEY (id_pergunta),
-  CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo),
+  CONSTRAINT perguntas_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
   CONSTRAINT perguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
-  CONSTRAINT perguntas_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+  CONSTRAINT perguntas_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo)
 );
 CREATE TABLE public.pontuacao_atividade (
   id_pontuacao_atividade integer NOT NULL DEFAULT nextval('pontuacao_atividade_id_pontuacao_atividade_seq'::regclass),
@@ -64,8 +69,8 @@ CREATE TABLE public.users (
   foto_url text,
   data_criacao timestamp without time zone DEFAULT now(),
   token_confirmacao text,
-  token_recuperacao text,
   confirmado boolean DEFAULT false,
   auth_id uuid UNIQUE,
+  token_recuperacao text,
   CONSTRAINT users_pkey PRIMARY KEY (id_usuario)
 );

@@ -33,11 +33,11 @@ document.querySelectorAll('.subjects-button.checkbox').forEach(btn => {
         const nomeMateria = materiaMap[btn.id];
         if (!nomeMateria) return;
 
-        const { data: materia } = await supabaseClient
+        const { data: materias } = await supabaseClient
             .from("materia")
             .select("id_materia")
-            .ilike("nome_materia", nomeMateria)
-            .single();
+            .ilike("nome_materia", nomeMateria);
+        const materia = materias?.[0] || null;
 
         if (!materia) {
             toast("Matéria não encontrada", "error");
