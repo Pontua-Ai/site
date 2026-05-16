@@ -24,10 +24,6 @@ window.corrigir = async function () {
   estaCorrigindo = true;
   botao.disabled = true;
   botao.textContent = "Carregando...";
-  console.log("[DEBUG] Iniciando correção da redação...");
-  console.log("[DEBUG] Titulo capturado:", titulo);
-  console.log("[DEBUG] Texto capturado, tamanho:", texto.length, "caracteres");
-  console.log("[DEBUG] Vestibular selecionado:", vestibular);
 
   const prompts = {
     enem: `
@@ -388,8 +384,6 @@ ${texto}
 
   const prompt = prompts[vestibular];
 
-  console.log("[DEBUG] Enviando requisição para a API Gemini...");
-
   async function fazerRequisicao(retentativas = 3) {
     for (let i = 0; i < retentativas; i++) {
       try {
@@ -428,12 +422,8 @@ ${texto}
 
   try {
     const response = await fazerRequisicao();
-    console.log("[DEBUG] Resposta recebida da API!");
-    console.log("[DEBUG] Response text:", response.text);
 
     const data = JSON.parse(response.text);
-
-    console.log("[DEBUG] Exibindo resultado na tela...");
 
     let resultadoHtml = "";
     if (vestibular === "enem") {

@@ -12,11 +12,11 @@ export async function carregarConteudo() {
     const titleElement = document.getElementById("titleMateria");
     if (!titleElement) return;
 
-    const { data: materia } = await supabaseClient
+    const { data: materias } = await supabaseClient
         .from("materia")
         .select("id_materia")
-        .ilike("nome_materia", nome_materia)
-        .single();
+        .ilike("nome_materia", nome_materia);
+    const materia = materias?.[0] || null;
 
     let data, error;
 
