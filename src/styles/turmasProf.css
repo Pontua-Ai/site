@@ -1,0 +1,298 @@
+main {
+    width: 80%;
+    margin: 40px auto;
+}
+
+.turmas-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.turmas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.turmas-header h1 {
+    color: var(--primary-color);
+    font-size: 1.6rem;
+    margin: 0;
+}
+
+.turmas-header .subjects-button {
+    width: auto;
+    padding: 0 25px;
+    height: 45px;
+    font-size: 15px;
+}
+
+#turmasList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.turma-card {
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 25px;
+    transition: all 0.2s ease;
+}
+
+.turma-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.turma-card-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.turma-card-header .turma-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.turma-card-header .turma-actions button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--secondary-color);
+}
+
+.btn-delete {
+    background: var(--error-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    opacity: 0.85;
+}
+
+.turma-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.turma-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.turma-info-item i {
+    color: var(--primary-color);
+    width: 18px;
+}
+
+.turma-info-item .codigo-valor {
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--primary-color);
+    background: rgba(11, 147, 149, 0.08);
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.turma-materias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.turma-materia-tag {
+    background: rgba(11, 147, 149, 0.1);
+    color: var(--primary-color);
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.turma-alunos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.turma-aluno-tag {
+    background: var(--gray);
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.turma-vazia {
+    color: var(--text-gray);
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.turma-modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+.turma-modal-content h2 {
+    color: var(--primary-color);
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+}
+
+#formTurma label {
+    display: block;
+    margin: 15px 0 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+#formTurma input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--background);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+#formTurma input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+#formTurma select {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--background);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+#formTurma select option {
+    padding: 6px;
+}
+
+.codigo-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.codigo-input-group input {
+    flex: 1;
+}
+
+.codigo-input-group .subjects-button.small {
+    width: auto;
+    padding: 0 18px;
+    height: 40px;
+    font-size: 13px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.modal-botoes .subjects-button {
+    width: auto;
+    padding: 0 25px;
+    height: 42px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+.modal-botoes .subjects-button.secondary {
+    background: var(--gray);
+    color: var(--text-primary);
+}
+
+.modal-botoes .subjects-button.secondary:hover {
+    background: var(--border-color);
+}
+
+/* Select2 customizations */
+body.dark .select2-container--default .select2-selection--multiple {
+    background-color: var(--input) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none !important;
+}
+
+body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: white !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+}
