@@ -1,4 +1,5 @@
 import supabaseClient from "./supabase.js";
+import { toast } from "./utils.js";
 
 const imagemParaMateria = {
     matematica: "matematica.png",
@@ -45,6 +46,9 @@ const ORDEM_ORIGINAL = [
     "sociologia",
 ];
 
+const SVG_EYE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const SVG_EYE_OFF = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
 function normalizar(texto) {
     return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -71,22 +75,116 @@ function getUserId() {
     return user?.id_usuario || null;
 }
 
+function criarCard(materia, isHidden) {
+    const card = document.createElement("a");
+    if (!isHidden) {
+        card.href = `conteudo.html?nome_conteudo=${encodeURIComponent(materia.nome_materia)}`;
+    }
+    card.className = "card";
+    if (isHidden) card.classList.add("card-hidden");
+
+    const divider = document.createElement("div");
+    divider.className = "divider-line";
+    card.appendChild(divider);
+
+    const img = document.createElement("img");
+    img.src = obterImagem(materia.nome_materia);
+    img.alt = materia.nome_materia;
+    img.title = materia.nome_materia;
+    card.appendChild(img);
+
+    const btn = document.createElement("button");
+    btn.className = "subjects-button";
+    btn.textContent = materia.nome_materia;
+    card.appendChild(btn);
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.className = "card-toggle-btn";
+    toggleBtn.innerHTML = isHidden ? SVG_EYE : SVG_EYE_OFF;
+    toggleBtn.title = isHidden ? "Reexibir matéria" : "Ocultar matéria";
+    toggleBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isHidden) {
+            await reexibirMateria(materia);
+        } else {
+            await ocultarMateria(materia);
+        }
+    });
+    card.appendChild(toggleBtn);
+
+    return card;
+}
+
+async function ocultarMateria(materia) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    const { error } = await supabaseClient
+        .from("materia_oculta")
+        .insert({ id_materia: materia.id_materia, id_usuario: userId });
+    if (error) {
+        toast("Erro ao ocultar matéria", "error");
+        return;
+    }
+
+    const { data: conteudos } = await supabaseClient
+        .from("conteudo")
+        .select("id_conteudo")
+        .eq("id_materia", materia.id_materia);
+    if (conteudos && conteudos.length > 0) {
+        await supabaseClient.from("conteudo_oculto").insert(
+            conteudos.map(c => ({ id_conteudo: c.id_conteudo, id_usuario: userId }))
+        );
+    }
+
+    toast(`"${materia.nome_materia}" ocultada`, "success");
+    carregarMaterias();
+}
+
+async function reexibirMateria(materia) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    await supabaseClient
+        .from("materia_oculta")
+        .delete()
+        .eq("id_materia", materia.id_materia)
+        .eq("id_usuario", userId);
+
+    const { data: conteudos } = await supabaseClient
+        .from("conteudo")
+        .select("id_conteudo")
+        .eq("id_materia", materia.id_materia);
+    if (conteudos && conteudos.length > 0) {
+        await supabaseClient
+            .from("conteudo_oculto")
+            .delete()
+            .in("id_conteudo", conteudos.map(c => c.id_conteudo))
+            .eq("id_usuario", userId);
+    }
+
+    toast(`"${materia.nome_materia}" reexibida`, "success");
+    carregarMaterias();
+}
+
 async function carregarMaterias() {
     const container = document.getElementById("materiasContainer");
+    const hiddenContainer = document.getElementById("hiddenMateriasContainer");
+    const hiddenSection = document.getElementById("hiddenSubjectsSection");
     if (!container) return;
 
     const userId = getUserId();
 
-    const { data: materias, error } = await supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia, id_usuario");
+    const [materiasRes, ocultasRes] = await Promise.all([
+        supabaseClient.from("materia").select("id_materia, nome_materia, id_usuario"),
+        userId ? supabaseClient.from("materia_oculta").select("id_materia").eq("id_usuario", userId) : Promise.resolve({ data: [] })
+    ]);
 
-    if (error) {
-        container.innerHTML = "<p>Erro ao carregar matérias.</p>";
-        return;
-    }
+    const materias = materiasRes.data || [];
+    const materiasOcultas = new Set((ocultasRes.data || []).map(o => o.id_materia));
 
-    if (!materias || materias.length === 0) {
+    if (materias.length === 0) {
         container.innerHTML = "<p>Nenhuma matéria encontrada.</p>";
         return;
     }
@@ -113,55 +211,78 @@ async function carregarMaterias() {
         }
     }
 
-    const filtradas = materias.filter(m => {
-        if (m.id_usuario === null) return true;
-        return idsMateriasLiberadas.has(m.id_materia);
-    });
+    const visiveis = [];
+    const ocultas = [];
 
-    const unicas = [];
-    const nomesVistos = new Set();
-    for (const m of filtradas) {
-        const chave = normalizar(m.nome_materia);
-        if (!nomesVistos.has(chave)) {
-            nomesVistos.add(chave);
-            unicas.push(m);
+    for (const m of materias) {
+        const podeVer = m.id_usuario === null || idsMateriasLiberadas.has(m.id_materia);
+        if (!podeVer) continue;
+
+        if (materiasOcultas.has(m.id_materia)) {
+            ocultas.push(m);
+        } else {
+            visiveis.push(m);
         }
     }
 
-    unicas.sort((a, b) => {
-        const idxA = indiceOrdem(a.nome_materia);
-        const idxB = indiceOrdem(b.nome_materia);
-        if (idxA !== idxB) return idxA - idxB;
-        return a.nome_materia.localeCompare(b.nome_materia, 'pt-BR');
-    });
+    function deduplicar(lista) {
+        const unicas = [];
+        const nomesVistos = new Set();
+        for (const m of lista) {
+            const chave = normalizar(m.nome_materia);
+            if (!nomesVistos.has(chave)) {
+                nomesVistos.add(chave);
+                unicas.push(m);
+            }
+        }
+        return unicas;
+    }
 
-    if (unicas.length === 0) {
+    function ordenar(lista) {
+        return lista.sort((a, b) => {
+            const idxA = indiceOrdem(a.nome_materia);
+            const idxB = indiceOrdem(b.nome_materia);
+            if (idxA !== idxB) return idxA - idxB;
+            return a.nome_materia.localeCompare(b.nome_materia, 'pt-BR');
+        });
+    }
+
+    const visiveisOrdenadas = ordenar(deduplicar(visiveis));
+    const ocultasOrdenadas = ordenar(deduplicar(ocultas));
+
+    container.innerHTML = "";
+    if (visiveisOrdenadas.length === 0 && ocultasOrdenadas.length === 0) {
         container.innerHTML = "<p>Nenhuma matéria disponível para você.</p>";
         return;
     }
 
-    unicas.forEach(materia => {
-        const card = document.createElement("a");
-        card.href = `conteudo.html?nome_conteudo=${encodeURIComponent(materia.nome_materia)}`;
-        card.className = "card";
+    visiveisOrdenadas.forEach(m => container.appendChild(criarCard(m, false)));
 
-        const divider = document.createElement("div");
-        divider.className = "divider-line";
-        card.appendChild(divider);
-
-        const img = document.createElement("img");
-        img.src = obterImagem(materia.nome_materia);
-        img.alt = materia.nome_materia;
-        img.title = materia.nome_materia;
-        card.appendChild(img);
-
-        const btn = document.createElement("button");
-        btn.className = "subjects-button";
-        btn.textContent = materia.nome_materia;
-        card.appendChild(btn);
-
-        container.appendChild(card);
-    });
+    if (hiddenSection && hiddenContainer) {
+        if (ocultasOrdenadas.length > 0) {
+            hiddenSection.style.display = "block";
+            hiddenContainer.innerHTML = "";
+            ocultasOrdenadas.forEach(m => hiddenContainer.appendChild(criarCard(m, true)));
+        } else {
+            hiddenSection.style.display = "none";
+        }
+    }
 }
+
+function toggleHiddenSection() {
+    const container = document.getElementById("hiddenMateriasContainer");
+    const arrow = document.querySelector(".hidden-arrow");
+    if (!container || !arrow) return;
+    const fechado = container.style.display !== "flex";
+    container.style.display = fechado ? "flex" : "none";
+    arrow.classList.toggle("open", fechado);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("hiddenToggle");
+    if (toggle) {
+        toggle.addEventListener("click", toggleHiddenSection);
+    }
+});
 
 carregarMaterias();

@@ -1,7 +1,6 @@
 .subjects-container{
     width: 85%;
-    margin: 30px auto;
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
     border-radius: 20px;
 }
@@ -61,8 +60,10 @@
     border-radius: 15px;
 }
 
-h1, #titleMateria{
-    text-align: center;
+#titleMateria{
+    width: 80%;
+    margin: 20px auto 30px;
+    color: var(--primary-color);
 }
 
 #conteudos{
@@ -120,6 +121,3 @@ h1, #titleMateria{
     background-color: var(--secondary-color);
 }
 
-#titleMateria {
-    color: var(--text-primary);
-}
