@@ -1,6 +1,98 @@
 import supabaseClient from "./supabase.js";
 import { toast } from "./utils.js";
 
+function getUserId() {
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    return user?.id_usuario || null;
+}
+
+async function entrarTurma() {
+    const input = document.getElementById("codigoTurmaInput");
+    const codigo = input?.value.trim().toUpperCase();
+    if (!codigo) {
+        toast("Digite um código de acesso", "error");
+        return;
+    }
+
+    const userId = getUserId();
+    if (!userId) {
+        toast("Usuário não logado", "error");
+        return;
+    }
+
+    const { data: turma, error } = await supabaseClient
+        .from("turma")
+        .select("id_turma, nome_turma")
+        .eq("codigo_acesso", codigo)
+        .maybeSingle();
+
+    if (error || !turma) {
+        toast("Código inválido!", "error");
+        return;
+    }
+
+    const { data: jaExiste } = await supabaseClient
+        .from("turma_aluno")
+        .select("id_turma")
+        .eq("id_turma", turma.id_turma)
+        .eq("id_aluno", userId)
+        .maybeSingle();
+
+    if (jaExiste) {
+        toast(`Você já está na turma "${turma.nome_turma}"`, "success");
+        input.value = "";
+        document.getElementById("modalTurma").style.display = "none";
+        return;
+    }
+
+    const { error: errInsert } = await supabaseClient
+        .from("turma_aluno")
+        .insert({ id_turma: turma.id_turma, id_aluno: userId });
+
+    if (errInsert) {
+        toast("Erro ao entrar na turma", "error");
+        return;
+    }
+
+    toast(`Bem-vindo à turma "${turma.nome_turma}"!`, "success");
+    input.value = "";
+    document.getElementById("modalTurma").style.display = "none";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnEntrar = document.getElementById("btnEntrarTurma");
+    const modal = document.getElementById("modalTurma");
+    const confirmar = document.getElementById("btnConfirmarTurma");
+    const cancelar = document.getElementById("btnCancelarTurma");
+    const inputCodigo = document.getElementById("codigoTurmaInput");
+
+    if (btnEntrar && modal) {
+        btnEntrar.addEventListener("click", () => {
+            modal.style.display = "flex";
+            if (inputCodigo) {
+                inputCodigo.value = "";
+                setTimeout(() => inputCodigo.focus(), 100);
+            }
+        });
+    }
+
+    if (confirmar) {
+        confirmar.addEventListener("click", entrarTurma);
+    }
+
+    if (cancelar && modal) {
+        cancelar.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    if (inputCodigo) {
+        inputCodigo.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") entrarTurma();
+        });
+    }
+});
+
 export async function carregarEstatisticasAluno(idUsuario) {
     const { data: redacoes, error: erroRedacoes } = await supabaseClient
         .from("redacao")

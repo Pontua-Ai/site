@@ -51,6 +51,28 @@ CREATE TABLE public.pontuacao_atividade (
   CONSTRAINT pontuacao_atividade_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
   CONSTRAINT pontuacao_atividade_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo)
 );
+CREATE TABLE public.turma (
+  id_turma integer NOT NULL DEFAULT nextval('turma_id_turma_seq'::regclass),
+  nome_turma character varying NOT NULL,
+  id_professor integer NOT NULL,
+  codigo_acesso character varying UNIQUE,
+  CONSTRAINT turma_pkey PRIMARY KEY (id_turma),
+  CONSTRAINT turma_id_professor_fkey FOREIGN KEY (id_professor) REFERENCES public.users(id_usuario)
+);
+CREATE TABLE public.turma_aluno (
+  id_turma integer NOT NULL,
+  id_aluno integer NOT NULL,
+  CONSTRAINT turma_aluno_pkey PRIMARY KEY (id_turma, id_aluno),
+  CONSTRAINT turma_aluno_id_turma_fkey FOREIGN KEY (id_turma) REFERENCES public.turma(id_turma) ON DELETE CASCADE,
+  CONSTRAINT turma_aluno_id_aluno_fkey FOREIGN KEY (id_aluno) REFERENCES public.users(id_usuario) ON DELETE CASCADE
+);
+CREATE TABLE public.materia_turma (
+  id_materia integer NOT NULL,
+  id_turma integer NOT NULL,
+  CONSTRAINT materia_turma_pkey PRIMARY KEY (id_materia, id_turma),
+  CONSTRAINT materia_turma_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia) ON DELETE CASCADE,
+  CONSTRAINT materia_turma_id_turma_fkey FOREIGN KEY (id_turma) REFERENCES public.turma(id_turma) ON DELETE CASCADE
+);
 CREATE TABLE public.redacao (
   id_redacao integer NOT NULL DEFAULT nextval('redacao_id_redacao_seq'::regclass),
   id_usuario integer,

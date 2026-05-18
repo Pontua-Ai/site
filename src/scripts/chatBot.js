@@ -364,6 +364,7 @@ async function processUserInput(texto) {
     if (lower === 'cancelar' || lower === 'voltar' || lower === 'menu') {
         state.passo = 'start';
         state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+        state.uploadFlow = false;
         setTimeout(() => startConversation(), 300);
         return;
     }
@@ -417,7 +418,7 @@ async function processUserInput(texto) {
                                         state.dados.materiaObj = nova;
                                         state.materiaNova = true;
                                         addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
-                                        setTimeout(() => perguntarConteudo(), 600);
+                                        setTimeout(() => perguntarVinculoTurma(), 600);
                                     } catch (e) {
                                         loading.remove();
                                         addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
@@ -444,7 +445,7 @@ async function processUserInput(texto) {
                                 state.dados.materiaObj = nova;
                                 state.materiaNova = true;
                                 addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
-                                setTimeout(() => perguntarConteudo(), 600);
+                                setTimeout(() => perguntarVinculoTurma(), 600);
                             } catch (e) {
                                 loading.remove();
                                 addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
@@ -628,6 +629,10 @@ async function processUserInput(texto) {
             break;
         }
 
+        case 'await_vinculo_turma':
+            await processarVinculoTurma(texto);
+            break;
+
         case 'await_outro':
             await processarOutro(texto);
             break;
@@ -654,6 +659,7 @@ async function processUserInput(texto) {
 }
 
 function perguntarMateria() {
+    state.uploadFlow = false;
     if (state.dados.materiaObj) {
         setTimeout(() => perguntarConteudo(), 200);
         return;
@@ -671,6 +677,95 @@ function perguntarConteudo() {
     state.passo = 'await_conteudo';
     setInputEnabled(true);
     addMessage(`📖 Qual o <strong>conteúdo</strong> dentro de <strong>${escapeHtml(state.dados.materia)}</strong>? (ex: Álgebra, Fonética...)`);
+}
+
+function proximoAposVinculo() {
+    if (state.uploadFlow) {
+        uploadPerguntarConteudo();
+    } else {
+        perguntarConteudo();
+    }
+}
+
+async function perguntarVinculoTurma() {
+    const userId = getUserId();
+    if (!userId) {
+        setTimeout(() => proximoAposVinculo(), 200);
+        return;
+    }
+
+    const { data: turmas } = await supabaseClient
+        .from("turma")
+        .select("id_turma, nome_turma")
+        .eq("id_professor", userId)
+        .order("nome_turma");
+
+    if (!turmas || turmas.length === 0) {
+        setTimeout(() => proximoAposVinculo(), 200);
+        return;
+    }
+
+    state.passo = 'await_vinculo_turma';
+    setInputEnabled(true);
+
+    const msg = addMessage(`Deseja vincular <strong>${escapeHtml(state.dados.materia)}</strong> a alguma turma?<br><small>Digite os números separados por vírgula ou <strong>0</strong> para pular.</small>`);
+    const options = addBotOptions([
+        ...turmas.map(t => ({ label: t.nome_turma, value: String(t.id_turma) })),
+        { label: '⏭️ Pular', value: 'pular' },
+    ], (value) => {
+        msg.querySelector('.msg-options')?.remove();
+        if (value === 'pular') {
+            setTimeout(() => proximoAposVinculo(), 300);
+            return;
+        }
+        vincularMateriaTurmas([parseInt(value)]);
+    });
+    msg.appendChild(options);
+}
+
+async function vincularMateriaTurmas(idsTurmas) {
+    const idMateria = state.dados.materiaObj.id_materia;
+    const loading = addMessage('Vinculando matéria às turmas...', 'loading');
+    try {
+        await supabaseClient.from("materia_turma").insert(
+            idsTurmas.map(id => ({ id_materia: idMateria, id_turma: id }))
+        );
+        loading.remove();
+        addMessage(`✅ Matéria vinculada a ${idsTurmas.length} turma(s)!`);
+        toast("Matéria vinculada às turmas!", "success");
+    } catch (e) {
+        loading.remove();
+        addMessage(`Erro ao vincular: ${e.message}`, 'system');
+    }
+    setTimeout(() => proximoAposVinculo(), 600);
+}
+
+async function processarVinculoTurma(texto) {
+    const userId = getUserId();
+    const numeros = texto.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
+
+    if (numeros.length === 0) {
+        const lower = texto.toLowerCase();
+        if (lower.includes('pular') || lower.includes('0') || lower.includes('não') || lower.includes('nao')) {
+            setTimeout(() => proximoAposVinculo(), 300);
+            return;
+        }
+        addMessage('Digite os números das turmas separados por vírgula, ou <strong>0</strong> para pular:');
+        return;
+    }
+
+    const { data: turmas } = await supabaseClient
+        .from("turma")
+        .select("id_turma")
+        .eq("id_professor", userId)
+        .in("id_turma", numeros);
+
+    if (!turmas || turmas.length === 0) {
+        addMessage('Nenhuma turma encontrada com esses números. Tente novamente:');
+        return;
+    }
+
+    await vincularMateriaTurmas(turmas.map(t => t.id_turma));
 }
 
 function perguntarEnunciado() {
@@ -1408,10 +1503,12 @@ function resetState() {
     state.passo = 'start';
     state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
     state.questoes = [];
+    state.uploadFlow = false;
 }
 
 function startUploadFlow() {
     state.questoes = [];
+    state.uploadFlow = true;
     addMessage('📄 Ótimo! Primeiro, me diga a <strong>matéria</strong> dessas questões:');
     state.passo = 'upload_await_materia';
     setInputEnabled(true);
@@ -1465,7 +1562,7 @@ async function uploadFinalizarMateria(texto) {
                                         state.dados.materiaObj = nova;
                                         state.materiaNova = true;
                                         addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
-                                        setTimeout(() => uploadPerguntarConteudo(), 500);
+                                        setTimeout(() => perguntarVinculoTurma(), 500);
                             } catch (e) {
                                 loading.remove();
                                 addMessage(`Erro: ${e.message}`, 'system');
@@ -1492,7 +1589,7 @@ async function uploadFinalizarMateria(texto) {
                         state.dados.materiaObj = nova;
                         state.materiaNova = true;
                         addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
-                        setTimeout(() => uploadPerguntarConteudo(), 500);
+                        setTimeout(() => perguntarVinculoTurma(), 500);
                     } catch (e) {
                         loading.remove();
                         addMessage(`Erro: ${e.message}`, 'system');
