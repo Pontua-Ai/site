@@ -334,11 +334,6 @@ body.dark .sobre-pont .text p {
     background: #FF6B6B;
 }
 
-.boxObjetivos:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-}
-
 .boxObjetivos:nth-child(1):hover {
     border-color: var(--primary-color);
 }
@@ -413,11 +408,6 @@ body.dark .sobre-pont .text p {
 
 .feature-card:nth-child(4) {
     border-top-color: #9B59B6;
-}
-
-.feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card i {
