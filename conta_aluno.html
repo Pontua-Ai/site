@@ -96,6 +96,11 @@
                     </label>
                 </div>
 
+                <div class="cardConfi" id="btnEntrarTurma" style="cursor: pointer;">
+                    <i class="fa-solid fa-users"></i>
+                    <p>Entrar em turma</p>
+                </div>
+
                 <div class="cardConfi" id="btn-logout" style="cursor: pointer;">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <p>Sair da conta</p>
@@ -109,6 +114,17 @@
         </div>
 
     </main>
+
+    <div id="modalTurma" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p style="margin-bottom:15px;font-size:16px;">Digite o código da turma:</p>
+            <input type="text" id="codigoTurmaInput" placeholder="Ex: A3B7K9" maxlength="10" style="width:100%;padding:12px;border:1px solid var(--primary-color);border-radius:8px;background:var(--bg-color);color:var(--text-color);font-size:16px;text-transform:uppercase;letter-spacing:2px;box-sizing:border-box;">
+            <div class="modal-botoes" style="margin-top:20px;">
+                <button id="btnCancelarTurma" class="btn-modal">Cancelar</button>
+                <button id="btnConfirmarTurma" class="btn-modal" style="background:var(--primary-color);color:white;">Entrar</button>
+            </div>
+        </div>
+    </div>
 
     <div id="modalExcluir" class="modal" style="display: none;">
         <div class="modal-content">

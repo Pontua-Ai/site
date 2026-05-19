@@ -8,9 +8,16 @@ function irParaConteudos(nome_materia) {
     window.location.href = `conteudo.html?nome_conteudo=${nome_materia}`;
 }
 
+function getUserId() {
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    return user?.id_usuario || null;
+}
+
 export async function carregarConteudo() {
     const titleElement = document.getElementById("titleMateria");
     if (!titleElement) return;
+
+    const userId = getUserId();
 
     const { data: materias } = await supabaseClient
         .from("materia")
@@ -58,14 +65,27 @@ export async function carregarConteudo() {
         return;
     }
 
+    let conteudosOcultos = new Set();
+    if (userId && data && data.length > 0) {
+        const { data: ocultos } = await supabaseClient
+            .from("conteudo_oculto")
+            .select("id_conteudo")
+            .eq("id_usuario", userId);
+        if (ocultos) {
+            conteudosOcultos = new Set(ocultos.map(o => o.id_conteudo));
+        }
+    }
+
+    const filtrados = data.filter(c => !conteudosOcultos.has(c.id_conteudo));
+
     const container = document.getElementById("conteudos");
 
-    if (data.length === 0) {
+    if (filtrados.length === 0) {
         container.innerHTML = "<p>Nenhum conteúdo encontrado</p>";
         return;
     }
 
-    data.forEach(conteudo => {
+    filtrados.forEach(conteudo => {
         const div = document.createElement("div");
         div.className = "conteudo-item";
         div.dataset.nome = conteudo.nome_conteudo.toLowerCase();
