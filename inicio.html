@@ -102,10 +102,12 @@
         document.getElementById('goToRegister').addEventListener('click', function(e) {
             e.preventDefault();
             track.classList.add('register-mode');
+            history.pushState(null, '', '?mode=cadastrar');
         });
         document.getElementById('goToLogin').addEventListener('click', function(e) {
             e.preventDefault();
             track.classList.remove('register-mode');
+            history.pushState(null, '', 'inicio.html');
         });
 
         if (window.location.search.includes('mode=cadastrar')) {
