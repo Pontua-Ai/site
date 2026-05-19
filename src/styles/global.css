@@ -15,16 +15,18 @@
     --gray: #EDEDED;
     --card-bg: #fff;
     --border-color: #ddd;
+    --footer-bg: #f0f0f0;
+    --hero-gradient: linear-gradient(135deg, #0B9395 0%, #076b6d 100%);
 }
 
 body.dark{
-    --background: #121212;
+    --background:  #102020 ;
     --primary-color: #4ECDC4;
     --secondary-color: #359e97;
     --terceary-color: #45b86e;
     --success-color: #4CAF50;
     --error-color: #f44336;
-    --header: #2d5a5a;
+    --header: #264653;
     --input: #333;
 
     --text-gray: #aaa;
@@ -34,6 +36,8 @@ body.dark{
     --gray: #333;
     --card-bg: #1e1e1e;
     --border-color: #333;
+    --footer-bg: #0d0d0d;
+    --hero-gradient: linear-gradient(135deg, #1a4a4a 0%, #0d2e2e 100%);
 }
 
 body {
