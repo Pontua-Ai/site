@@ -9,8 +9,7 @@ const visibilidadeInput = document.getElementById("visibilidade");
 
 btnVisibilidade.addEventListener("click", () => {
     if (visibilidadeInput.value === "publico") {
-        visibilidadeInput.value = "privado";
-        btnVisibilidade.textContent = "Privado";
+        visibilidaade.textContent = "Privado";
         btnVisibilidade.classList.remove("publico");
         bt else {
         visibilidadeInput.value = "publico";
