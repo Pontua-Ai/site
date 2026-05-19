@@ -51,12 +51,16 @@
     });
 
     let touchStartX = 0;
-    track.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+    let touchStartIndex = 0;
+    track.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        syncIndexFromScroll();
+        touchStartIndex = index;
+    });
     track.addEventListener('touchend', e => {
         const diff = touchStartX - e.changedTouches[0].screenX;
         if (Math.abs(diff) > 50) {
-            syncIndexFromScroll();
-            const target = diff > 0 ? index + 1 : index - 1;
+            const target = diff > 0 ? touchStartIndex + 1 : touchStartIndex - 1;
             if (target >= 0 && target < cards.length) goTo(target);
         }
     });
