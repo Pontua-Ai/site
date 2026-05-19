@@ -109,6 +109,9 @@ document.addEventListener("DOMContentLoaded", () => {
         signupForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            const btn = signupForm.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+
             const name = document.getElementById("username").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("senha").value;
@@ -119,12 +122,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const result = await signup(name, email, password);
+            btn.disabled = true;
+            btn.textContent = "Cadastrando...";
 
-            if (result && result.success) {
-                window.location.href = "callback.html?email=" + encodeURIComponent(email);
-            } else {
-                toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
+            try {
+                const result = await signup(name, email, password);
+
+                if (result && result.success) {
+                    window.location.href = "callback.html?email=" + encodeURIComponent(email);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    toast("Erro ao realizar cadastro: " + (result?.error || "Erro desconhecido"), "error");
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                toast("Erro ao realizar cadastro", "error");
             }
         });
     }
@@ -133,24 +147,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginForm) {
         loginForm.addEventListener("submit", async (event) => {
             event.preventDefault();
+
+            const btn = loginForm.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+
             const loginInput = document.getElementById("loginEmail");
             const passwordInput = document.getElementById("loginPassword");
 
             if (!loginInput || !passwordInput) return;
 
-            const result = await loginUsuario(loginInput.value, passwordInput.value);
+            btn.disabled = true;
+            btn.textContent = "Entrando...";
 
-            if (result && result.success) {
-                localStorage.setItem("userLogado", JSON.stringify(result.user));
-                
-                const tipoConta = result.user.tipo_conta;
-                if (tipoConta === 'professor') {
-                    window.location.href = "doc_prof.html";
+            try {
+                const result = await loginUsuario(loginInput.value, passwordInput.value);
+
+                if (result && result.success) {
+                    localStorage.setItem("userLogado", JSON.stringify(result.user));
+                    
+                    const tipoConta = result.user.tipo_conta;
+                    if (tipoConta === 'professor') {
+                        window.location.href = "doc_prof.html";
+                    } else {
+                        window.location.href = "materias.html";
+                    }
                 } else {
-                    window.location.href = "materias.html";
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    toast("Erro ao realizar login: " + (result?.error || "Erro desconhecido"), "error");
                 }
-            } else {
-                toast("Erro ao realizar login: " + (result?.error || "Erro desconhecido"), "error");
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                toast("Erro ao realizar login", "error");
             }
         });
     }
