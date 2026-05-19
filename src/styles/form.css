@@ -2,8 +2,56 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     font-family:'jenkins', sans-serif;
+    background: var(--card-bg);
+    margin: 0;
+}
+
+body.dark {
+    background: var(--card-bg);
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 5%;
+    gap: 120px;
+}
+
+.login-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+.login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 48px;
+    width: 460px;
+    background: var(--footer-bg);
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+}
+
+body.dark .login {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 form{
@@ -24,22 +72,16 @@ form{
     border-bottom: 2px solid transparent;
 }
 
-.login{
+.logo {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 40px;
-    width: 500px;
+    gap: 12px;
 }
 
-img{
-    width: 350px;
-    margin-right: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.logo img {
+    max-width: 240px;
+    height: auto;
 }
 
 .logo h2{
@@ -58,7 +100,7 @@ button{
     border: none;
     border-radius: 20px;
     background-color: var(--primary-color);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -69,10 +111,10 @@ button:hover{
     border: none;
     border-radius: 20px;
     background-color: var(--secondary-color);
-    color: #fff;
+    color: var(--text-on-accent);
     font-size: 15px;
     cursor: pointer;
-    box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.432);
+    box-shadow: var(--shadow-btn);
 }
 
 .ajuda a{
@@ -94,11 +136,12 @@ button:hover{
 
 .input-container input{
     border: none;
-    width: 326px;
+    width: 100%;
     border-radius: 10px;
     background-color: var(--gray);
     border-bottom: 2px solid transparent;
-    color: #fff;
+    color: var(--text-primary);
+    box-sizing: border-box;
 }
 
 .password-icon{
@@ -107,7 +150,7 @@ button:hover{
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #777;
+    color: var(--icon-muted);
 }
 
 input{
@@ -117,11 +160,7 @@ input{
     border-radius: 10px;
     background-color: var(--gray);
     transition: all 0.7s ease;
-    color: #fff;
-}
-
-body:not(.dark) input{
-    color: #222;
+    color: var(--text-primary);
 }
 
 input:focus{
@@ -169,4 +208,20 @@ input:focus{
 .password-criteria li.valido::before {
     content: "●";
     color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        padding: 0 5%;
+        gap: 30px;
+    }
+    .login-image {
+        display: none;
+    }
+    .login {
+        width: 100%;
+        max-width: 460px;
+        padding: 32px 24px;
+    }
 }

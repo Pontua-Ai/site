@@ -11,14 +11,16 @@ body{
 }
 
 header{
-    width: 80%;
-    background-color: var(--header);
-    margin: 30px;
-    border-radius: 20px;
+    width: 100%;
+    background-color: var(--background);
+    margin: 0;
+    border-radius: 0;
     height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 header .imagemHeader{
