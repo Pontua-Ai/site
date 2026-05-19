@@ -97,14 +97,20 @@
     <script src="src/scripts/validationFom.js"></script>
     <script type="module" src="src/scripts/app.js"></script>
     <script>
+        var track = document.getElementById('splitTrack');
+
         document.getElementById('goToRegister').addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('splitTrack').classList.add('register-mode');
+            track.classList.add('register-mode');
         });
         document.getElementById('goToLogin').addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('splitTrack').classList.remove('register-mode');
+            track.classList.remove('register-mode');
         });
+
+        if (window.location.search.includes('mode=cadastrar')) {
+            setTimeout(function() { track.classList.add('register-mode'); }, 100);
+        }
     </script>
 </body>
 </html>
