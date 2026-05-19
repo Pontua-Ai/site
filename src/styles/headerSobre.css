@@ -1109,9 +1109,6 @@ body.dark .subtitle {
     color: var(--text-gray);
 }
 
-body.dark .objetivos {
-}
-
 @media (max-width: 768px) {
     .hero-content {
         grid-template-columns: 1fr;
