@@ -103,6 +103,61 @@ body.dark {
     margin-top: 6px;
 }
 
+.callback-content {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.callback-content h2 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.callback-text {
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-top: 20px;
+    opacity: 0.8;
+}
+
+.callback-subtext {
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-top: 10px;
+    opacity: 0.6;
+}
+
+.callback-box {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--gray);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.callback-box-text {
+    font-size: 14px;
+    color: var(--text-primary);
+    opacity: 0.7;
+}
+
+.callback-box-subtext {
+    font-size: 13px;
+    color: var(--text-primary);
+    opacity: 0.5;
+    margin-top: 4px;
+}
+
+.callback-link {
+    margin-top: 30px;
+}
+
+.callback-link a {
+    color: var(--terceary-color);
+    text-decoration: none;
+}
+
 form{
     display: flex;
     flex-direction: column;
