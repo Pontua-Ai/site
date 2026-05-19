@@ -893,11 +893,6 @@ body.dark .boxObjetivos:hover {
 
 body.dark .feature-card {
     background: transparent;
-    border-color: var(--border-color);
-}
-
-body.dark .feature-card:hover {
-    border-color: var(--primary-color);
 }
 
 body.dark .carousel-arrow {
