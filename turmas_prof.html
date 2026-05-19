@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turmas</title>
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/styles/header.css">
+    <link rel="stylesheet" href="src/styles/button.css">
+    <link rel="stylesheet" href="src/styles/turmasProf.css">
+    <link rel="icon" href="img/cabeca.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><img class="imagemHeader" src="img/cabeca-header.png" alt="logo"></li>
+                <li><a href="doc_prof.html">Doc</a></li>
+                <li><a href="perguntas_prof.html">Perguntas</a></li>
+                <li><a href="prova_prof.html">Prova</a></li>
+                <li><a href="turmas_prof.html" style="color: var(--primary-color); font-weight: bold;">Turmas</a></li>
+                <li><a href="historico_prof.html">Histórico</a></li>
+                <li><a href="conta_prof.html">Conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="turmas-container">
+            <div class="turmas-header">
+                <h1><i class="fa-solid fa-users"></i> Gerenciar Turmas</h1>
+                <button class="subjects-button" id="btnNovaTurma"><i class="fa-solid fa-plus"></i> Nova Turma</button>
+            </div>
+
+            <div id="turmasList"></div>
+        </div>
+    </main>
+
+    <div id="modalTurma" class="modal" style="display: none;">
+        <div class="modal-content turma-modal-content">
+            <h2 id="modalTurmaTitle">Nova Turma</h2>
+            <form id="formTurma">
+                <label>Nome da Turma</label>
+                <input type="text" id="inputNomeTurma" placeholder="Ex: 3º Ano A - Técnico" required>
+
+                <label>Alunos</label>
+                <select id="selectAlunos" multiple placeholder="Selecione os alunos..."></select>
+
+                <label>Matérias</label>
+                <select id="selectMaterias" multiple placeholder="Selecione as matérias..."></select>
+
+                <div class="codigo-acesso">
+                    <label>Código de Acesso</label>
+                    <div class="codigo-input-group">
+                        <input type="text" id="inputCodigo" placeholder="Gerar automaticamente" readonly>
+                        <button type="button" class="subjects-button small" id="btnGerarCodigo">Gerar</button>
+                    </div>
+                </div>
+
+                <div class="modal-botoes">
+                    <button type="button" class="subjects-button secondary" id="btnCancelarTurma">Cancelar</button>
+                    <button type="submit" class="subjects-button" id="btnSalvarTurma">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="src/scripts/turmasProf.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
+</body>
+</html>

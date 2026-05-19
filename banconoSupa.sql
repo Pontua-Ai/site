@@ -18,12 +18,33 @@ CREATE TABLE public.conteudo (
   CONSTRAINT conteudo_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario),
   CONSTRAINT conteudo_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia)
 );
+CREATE TABLE public.conteudo_oculto (
+  id_conteudo integer NOT NULL,
+  id_usuario integer NOT NULL,
+  CONSTRAINT conteudo_oculto_pkey PRIMARY KEY (id_conteudo, id_usuario),
+  CONSTRAINT conteudo_oculto_id_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES public.conteudo(id_conteudo),
+  CONSTRAINT conteudo_oculto_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+);
 CREATE TABLE public.materia (
   id_materia integer NOT NULL DEFAULT nextval('materia_id_materia_seq'::regclass),
   nome_materia character varying NOT NULL,
   id_usuario integer,
   CONSTRAINT materia_pkey PRIMARY KEY (id_materia),
   CONSTRAINT materia_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+);
+CREATE TABLE public.materia_oculta (
+  id_materia integer NOT NULL,
+  id_usuario integer NOT NULL,
+  CONSTRAINT materia_oculta_pkey PRIMARY KEY (id_materia, id_usuario),
+  CONSTRAINT materia_oculta_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
+  CONSTRAINT materia_oculta_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+);
+CREATE TABLE public.materia_turma (
+  id_materia integer NOT NULL,
+  id_turma integer NOT NULL,
+  CONSTRAINT materia_turma_pkey PRIMARY KEY (id_materia, id_turma),
+  CONSTRAINT materia_turma_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materia(id_materia),
+  CONSTRAINT materia_turma_id_turma_fkey FOREIGN KEY (id_turma) REFERENCES public.turma(id_turma)
 );
 CREATE TABLE public.perguntas (
   id_pergunta integer NOT NULL DEFAULT nextval('perguntas_id_pergunta_seq'::regclass),
@@ -59,6 +80,21 @@ CREATE TABLE public.redacao (
   data_redacao date DEFAULT now(),
   CONSTRAINT redacao_pkey PRIMARY KEY (id_redacao),
   CONSTRAINT redacao_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.users(id_usuario)
+);
+CREATE TABLE public.turma (
+  id_turma integer NOT NULL DEFAULT nextval('turma_id_turma_seq'::regclass),
+  nome_turma character varying NOT NULL,
+  id_professor integer NOT NULL,
+  codigo_acesso character varying UNIQUE,
+  CONSTRAINT turma_pkey PRIMARY KEY (id_turma),
+  CONSTRAINT turma_id_professor_fkey FOREIGN KEY (id_professor) REFERENCES public.users(id_usuario)
+);
+CREATE TABLE public.turma_aluno (
+  id_turma integer NOT NULL,
+  id_aluno integer NOT NULL,
+  CONSTRAINT turma_aluno_pkey PRIMARY KEY (id_turma, id_aluno),
+  CONSTRAINT turma_aluno_id_turma_fkey FOREIGN KEY (id_turma) REFERENCES public.turma(id_turma),
+  CONSTRAINT turma_aluno_id_aluno_fkey FOREIGN KEY (id_aluno) REFERENCES public.users(id_usuario)
 );
 CREATE TABLE public.users (
   id_usuario integer NOT NULL DEFAULT nextval('users_id_usuario_seq'::regclass),

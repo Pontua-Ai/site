@@ -229,31 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const materiaMap = {
-        matematica: "Matemática",
-        portugues: "Português",
-        fisica: "Física",
-        quimica: "Química",
-        biologia: "Biologia",
-        historia: "História",
-        geografia: "Geografia",
-        ingles: "Inglês",
-        artes: "Artes",
-        espanhol: "Espanhol",
-        filosofia: "Filosofia",
-        sociologia: "Sociologia"
-    };
-
-    document.querySelectorAll('.card[data-materia]').forEach(card => {
-        card.addEventListener('click', (e) => {
-            e.preventDefault();
-            const materia = card.dataset.materia;
-            if (!materiaMap[materia]) return;
-            const nomeMateria = materiaMap[materia];
-            window.location.href = `conteudo.html?nome_conteudo=${encodeURIComponent(nomeMateria)}`;
-        });
-    });
-
     const formPergunta = document.getElementById("formPergunta");
     const btnPreview = document.getElementById("btnPreview");
     const previewContainer = document.getElementById("previewContainer");
