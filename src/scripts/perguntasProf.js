@@ -12,8 +12,7 @@ btnVisibilidade.addEventListener("click", () => {
         visibilidadeInput.value = "privado";
         btnVisibilidade.textContent = "Privado";
         btnVisibilidade.classList.remove("publico");
-        btnVisibilidade.classList.add("privado");
-    } else {
+        bt else {
         visibilidadeInput.value = "publico";
         btnVisibilidade.textContent = "Público";
         btnVisibilidade.classList.remove("privado");
