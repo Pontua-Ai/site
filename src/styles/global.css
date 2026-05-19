@@ -46,30 +46,31 @@
 }
 
 body.dark{
-    --background:  #102020 ;
+    --background: #0d0d0d;
     --primary-color: #4ECDC4;
     --secondary-color: #359e97;
     --terceary-color: #45b86e;
     --success-color: #4CAF50;
     --error-color: #f44336;
-    --header: #264653;
-    --input: #333;
+    --header: rgba(10, 10, 10, 0.95);
+    --input: #1a1a1a;
 
     --text-gray: #aaa;
     --text-primary: #e0e0e0;
-    --text-secundary: #121212;
+    --text-secundary: #0d0d0d;
 
-    --gray: #333;
-    --card-bg: #1e1e1e;
-    --border-color: #333;
-    --footer-bg: #0d0d0d;
-    --hero-gradient: linear-gradient(135deg, #1a4a4a 0%, #0d1a1a 100%);
+    --gray: #1a1a1a;
+    --card-bg: #111;
+    --border-color: #222;
+    --footer-bg: #0a0a0a;
+    --hero-gradient: linear-gradient(135deg, #1a4a4a 0%, #0d0d0d 100%);
+    --faq-bg-dark: #111;
 
-    --stat-card-bg: rgba(255, 255, 255, 0.1);
-    --stat-card-border: rgba(255, 255, 255, 0.2);
-    --stat-bg: linear-gradient(135deg, #1a3333 0%, #0d1a1a 100%);
-    --cta-bg: var(--hero-gradient);
-    --slider-bg: #333;
+    --stat-card-bg: rgba(255, 255, 255, 0.05);
+    --stat-card-border: rgba(255, 255, 255, 0.08);
+    --stat-bg: linear-gradient(135deg, #1a3333 0%, #0d0d0d 100%);
+    --cta-bg: linear-gradient(135deg, #1a4a4a 0%, #0d0d0d 100%);
+    --slider-bg: #444;
 }
 
 body {
