@@ -41,6 +41,8 @@
     --stat-bg: linear-gradient(135deg, var(--primary-color) 0%, #f0f0f0 100%);
     --cta-bg: linear-gradient(135deg, var(--primary-color) 0%, #f0f0f0 100%);
     --slider-bg: #333;
+    --shadow-btn: 4px 4px 6px rgba(0, 0, 0, 0.432);
+    --icon-muted: #777;
 }
 
 body.dark{
