@@ -6,7 +6,8 @@ body{
     font-family:'jenkins', sans-serif;
     background: var(--card-bg);
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body.dark {
