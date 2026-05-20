@@ -6,52 +6,164 @@ body{
     font-family:'jenkins', sans-serif;
     background: var(--card-bg);
     margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body.dark {
     background: var(--card-bg);
 }
 
-.login-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
-    padding: 0 5%;
-    gap: 120px;
+.split-wrapper {
+    width: 100vw;
+    overflow: hidden;
 }
 
-.login-image {
-    flex: 1;
+.split-track {
     display: flex;
+    width: 150vw;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.split-track.register-mode {
+    transform: translateX(-50vw);
+}
+
+.split-panel {
+    width: 50vw;
+    flex-shrink: 0;
+    display: flex;
+    min-height: 100vh;
+}
+
+.split-panel:first-child,
+.split-panel:last-child {
+    flex: 1;
+}
+
+.split-panel:nth-child(2) {
     justify-content: center;
     align-items: center;
 }
 
-.login-image img {
-    max-width: 100%;
+.split-image {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 40px;
+}
+
+.split-image img {
+    max-width: 80%;
     height: auto;
-    max-height: 70vh;
+    max-height: 55vh;
     object-fit: contain;
+}
+
+.split-slogan {
+    font-size: 34px;
+    color: var(--primary-color);
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.3;
+    font-weight: 800;
 }
 
 .login{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: 20px;
-    padding: 48px;
-    width: 460px;
+    padding: 60px 48px;
+    width: 100%;
+    max-width: 480px;
     background: var(--footer-bg);
+    box-sizing: border-box;
     border-radius: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    flex-shrink: 0;
 }
 
-body.dark .login {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.split-panel .login {
+    max-width: none;
+    flex: 1;
+    border-radius: 0;
+}
+
+.split-panel:first-child .login {
+    justify-content: center;
+}
+
+.split-panel:last-child .login {
+    justify-content: flex-start;
+    padding: 40px 48px;
+    overflow-y: auto;
+}
+
+.split-panel:last-child .login form {
+    gap: 14px;
+}
+
+.split-panel:last-child .login .entrar,
+.split-panel:last-child .login .senha,
+.split-panel:last-child .login .nome,
+.split-panel:last-child .login .email {
+    margin-top: 6px;
+}
+
+.callback-content {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.callback-content h2 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.callback-text {
+    font-size: 16px;
+    color: var(--text-primary);
+    margin-top: 20px;
+    opacity: 0.8;
+}
+
+.callback-subtext {
+    font-size: 14px;
+    color: var(--text-primary);
+    margin-top: 10px;
+    opacity: 0.6;
+}
+
+.callback-box {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--gray);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.callback-box-text {
+    font-size: 14px;
+    color: var(--text-primary);
+    opacity: 0.7;
+}
+
+.callback-box-subtext {
+    font-size: 13px;
+    color: var(--text-primary);
+    opacity: 0.5;
+    margin-top: 4px;
+}
+
+.callback-link {
+    margin-top: 30px;
+}
+
+.callback-link a {
+    color: var(--terceary-color);
+    text-decoration: none;
 }
 
 form{
@@ -211,17 +323,39 @@ input:focus{
 }
 
 @media (max-width: 768px) {
-    .login-container {
-        flex-direction: column;
-        padding: 0 5%;
-        gap: 30px;
+    .split-wrapper {
+        width: 100%;
     }
-    .login-image {
+    .split-track {
+        width: 100%;
+        transform: none !important;
+        flex-direction: column;
+        transition: none;
+    }
+    .split-panel {
+        width: 100%;
+        min-height: 100dvh;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .split-panel:nth-child(2),
+    .split-panel:nth-child(3) {
+        display: none;
+    }
+    .split-track.register-mode .split-panel:nth-child(1) {
+        display: none;
+    }
+    .split-track.register-mode .split-panel:nth-child(2) {
+        display: none;
+    }
+    .split-track.register-mode .split-panel:nth-child(3) {
+        display: flex;
+    }
+    .split-image {
         display: none;
     }
     .login {
-        width: 100%;
-        max-width: 460px;
         padding: 32px 24px;
+        max-width: 100%;
     }
 }
