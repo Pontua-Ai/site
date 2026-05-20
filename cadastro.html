@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,62 +9,102 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" href="img/cabeca.png">
 </head>
-
 <body>
-    <div class="login">
-        <div class="logo">
-            <img src="img/logo-completa.png" alt="Logo da plataforma">
-            <h2>Aprender ficou mais fácil!</h2>
-        </div>
+    <div class="split-wrapper">
+        <div class="split-track register-mode" id="splitTrack">
 
-        <form id="signupForm">
-            <div class="nome">
-                <label>Nome de usuario</label>
-                <input type="name" name="nome" id="username" placeholder="Como podemos te chamar?" required>
-            </div>
-
-            <div class="email">
-                <label>E-mail</label>
-                <input type="email" name="email" id="email" placeholder="Digite seu endereço de email" required>
-            </div>
-
-            <div class="senha">
-                <label>Senha</label>
-
-                <div class="input-container">
-                    <input type="password" id="senha" placeholder="Digite sua senha" required>
-                    <i class="fa-regular fa-eye-slash password-icon"></i>
-                </div>
-                <ul class="password-criteria" id="passwordCriteria">
-                    <li id="critMinimo">Mínimo de 8 caracteres</li>
-                    <li id="critMaiuscula">Pelo menos 1 letra maiúscula</li>
-                    <li id="critMinuscula">Pelo menos 1 letra minúscula</li>
-                    <li id="critNumero">Pelo menos 1 número</li>
-                    <li id="critEspecial">Pelo menos 1 caractere especial</li>
-                </ul>
-            </div>
-
-            <div class="senha">
-                <label for="confirmPassword">Confirmar senha</label>
-
-                <div class="input-container">
-                    <input type="password" id="confirmPassword" placeholder="Confirme sua senha" required>
-                    <i class="fa-regular fa-eye-slash password-icon"></i>
+            <div class="split-panel">
+                <div class="login">
+                    <div class="logo">
+                        <img src="img/logo-completa.png" alt="Logo da plataforma">
+                        <h2>Bem vindo de volta</h2>
+                    </div>
+                    <form id="loginForm">
+                        <div class="entrar">
+                            <label>E-mail</label>
+                            <input type="email" name="email" id="loginEmail" placeholder="Digite seu E-mail" required>
+                        </div>
+                        <div class="senha">
+                            <label>Senha</label>
+                            <div class="input-container">
+                                <input type="password" id="loginPassword" placeholder="Digite sua senha" required>
+                                <i class="fa-regular fa-eye-slash password-icon"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-continue">Continue &rarr;</button>
+                    </form>
+                    <div class="ajuda">
+                        <p>Ainda não possui conta? <a href="#" id="goToRegister">Cadastre-se gratuitamente</a></p>
+                        <a href="recuperar.html">Esqueceu a senha?</a>
+                    </div>
                 </div>
             </div>
-            <button type="submit" class="btn-continue">
-                Continue &rarr;
-            </button>
 
-        </form>
+            <div class="split-panel">
+                <div class="split-image">
+                    <p class="split-slogan">Estude, pratique e evolua com o PontuaAI</p>
+                    <img src="img/meninoFundologin.png" alt="Ilustração">
+                </div>
+            </div>
 
+            <div class="split-panel">
+                <div class="login">
+                    <div class="logo">
+                        <img src="img/logo-completa.png" alt="Logo da plataforma">
+                        <h2>Aprender ficou mais fácil!</h2>
+                    </div>
+                    <form id="signupForm">
+                        <div class="nome">
+                            <label>Nome de usuario</label>
+                            <input type="name" name="nome" id="username" placeholder="Como podemos te chamar?" required>
+                        </div>
+                        <div class="email">
+                            <label>E-mail</label>
+                            <input type="email" name="email" id="email" placeholder="Digite seu endereço de email" required>
+                        </div>
+                        <div class="senha">
+                            <label>Senha</label>
+                            <div class="input-container">
+                                <input type="password" id="senha" placeholder="Digite sua senha" required>
+                                <i class="fa-regular fa-eye-slash password-icon"></i>
+                            </div>
+                            <ul class="password-criteria" id="passwordCriteria">
+                                <li id="critMinimo">Mínimo de 8 caracteres</li>
+                                <li id="critMaiuscula">Pelo menos 1 letra maiúscula</li>
+                                <li id="critMinuscula">Pelo menos 1 letra minúscula</li>
+                                <li id="critNumero">Pelo menos 1 número</li>
+                                <li id="critEspecial">Pelo menos 1 caractere especial</li>
+                            </ul>
+                        </div>
+                        <div class="senha">
+                            <label for="confirmPassword">Confirmar senha</label>
+                            <div class="input-container">
+                                <input type="password" id="confirmPassword" placeholder="Confirme sua senha" required>
+                                <i class="fa-regular fa-eye-slash password-icon"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-continue">Continue &rarr;</button>
+                    </form>
+                    <div class="ajuda">
+                        <p>Já possui conta? <a href="#" id="goToLogin">Entre aqui</a></p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="ajuda">
-            <p>Já possui conta? <a href="inicio.html">Entre aqui</a> </p>
         </div>
+    </div>
 
-        <script src="src/scripts/validationFom.js"></script>
-        <script type="module" src="src/scripts/app.js"></script>
+    <script src="src/scripts/validationFom.js"></script>
+    <script type="module" src="src/scripts/app.js"></script>
+    <script>
+        document.getElementById('goToRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('splitTrack').classList.add('register-mode');
+        });
+        document.getElementById('goToLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('splitTrack').classList.remove('register-mode');
+        });
+    </script>
 </body>
-
 </html>
