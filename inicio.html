@@ -99,20 +99,23 @@
     <script>
         var track = document.getElementById('splitTrack');
 
+        function syncModeFromUrl() {
+            track.classList.toggle('register-mode', window.location.search.includes('mode=cadastrar'));
+        }
+
         document.getElementById('goToRegister').addEventListener('click', function(e) {
             e.preventDefault();
-            track.classList.add('register-mode');
             history.pushState(null, '', '?mode=cadastrar');
+            syncModeFromUrl();
         });
         document.getElementById('goToLogin').addEventListener('click', function(e) {
             e.preventDefault();
-            track.classList.remove('register-mode');
             history.pushState(null, '', 'inicio.html');
+            syncModeFromUrl();
         });
 
-        if (window.location.search.includes('mode=cadastrar')) {
-            setTimeout(function() { track.classList.add('register-mode'); }, 100);
-        }
+        window.addEventListener('popstate', syncModeFromUrl);
+        setTimeout(syncModeFromUrl, 100);
     </script>
 </body>
 </html>
