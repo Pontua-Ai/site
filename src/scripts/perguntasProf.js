@@ -4,6 +4,7 @@ const toolbar = document.getElementById("altToolbar");
 let hideTimer = null;
 let altFocada = null;
 
+
 const btnVisibilidade = document.getElementById("btnVisibilidade");
 const visibilidadeInput = document.getElementById("visibilidade");
 
