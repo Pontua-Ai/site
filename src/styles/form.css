@@ -95,7 +95,7 @@ body.dark {
 }
 
 .split-panel:last-child .login {
-    justify-content: flex-start;
+    justify-content: center;
     padding: 40px 48px;
     overflow-y: auto;
 }
