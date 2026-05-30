@@ -289,6 +289,11 @@ export async function verificarResposta() {
         toast("Selecione uma alternativa!", "error");
         return;
     }
+
+    const btn = document.querySelector('#alternativas .subjects-button-medium');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Respondendo...";
     
     const perguntaAtual = perguntasCache[indicePergunta];
     const isCorreta = selecionada.dataset.correta == "true" || selecionada.dataset.correta === true;
@@ -319,6 +324,8 @@ export async function verificarResposta() {
     });
     
     indicePergunta++;
+    btn.disabled = false;
+    btn.textContent = originalText;
     exibirPergunta();
 }
 
