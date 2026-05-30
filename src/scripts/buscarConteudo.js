@@ -17,6 +17,9 @@ export async function carregarConteudo() {
     const titleElement = document.getElementById("titleMateria");
     if (!titleElement) return;
 
+    const container = document.getElementById("conteudos");
+    container.innerHTML = '<div class="loading-container"><span class="loading-spinner"></span> Carregando...</div>';
+
     const userId = getUserId();
 
     const { data: materias } = await supabaseClient
@@ -78,12 +81,12 @@ export async function carregarConteudo() {
 
     const filtrados = data.filter(c => !conteudosOcultos.has(c.id_conteudo));
 
-    const container = document.getElementById("conteudos");
-
     if (filtrados.length === 0) {
         container.innerHTML = "<p>Nenhum conteúdo encontrado</p>";
         return;
     }
+
+    container.innerHTML = "";
 
     filtrados.forEach(conteudo => {
         const div = document.createElement("div");

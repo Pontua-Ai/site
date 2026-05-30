@@ -174,6 +174,8 @@ async function carregarMaterias() {
     const hiddenSection = document.getElementById("hiddenSubjectsSection");
     if (!container) return;
 
+    container.innerHTML = '<div class="loading-container"><span class="loading-spinner"></span> Carregando...</div>';
+
     const userId = getUserId();
 
     const [materiasRes, ocultasRes] = await Promise.all([
