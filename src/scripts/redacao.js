@@ -394,9 +394,10 @@ ${texto}
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "openrouter/free",
+            model: "google/gemma-4-31b-it:free",
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 4000
+            max_tokens: 4000,
+            temperature: 0
           })
         });
 
@@ -405,10 +406,12 @@ ${texto}
           throw new Error(`OpenRouter ${response.status}: ${err}`);
         }
 
-        const json = await response.json();
-        let text = json.choices?.[0]?.message?.content?.trim() || "{}";
+        const raw = await response.json();
+        const finishReason = raw.choices?.[0]?.finish_reason;
+        const fullContent = raw.choices?.[0]?.message?.content || "";
+        let text = fullContent.trim() || "{}";
         text = text.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-        return { text };
+        return { text, finishReason };
       } catch (error) {
         if (i < retentativas - 1) {
           const tempo = Math.pow(2, i) * 1000;
@@ -423,105 +426,117 @@ ${texto}
   try {
     const response = await fazerRequisicao();
 
-    const data = JSON.parse(response.text);
+    let data;
+      try {
+        data = JSON.parse(response.text);
+      } catch (parseError) {
+        const jsonMatch = response.text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            data = JSON.parse(jsonMatch[0]);
+          } catch {
+            throw new Error(`Resposta inválida (motivo: ${response.finishReason}, tamanho: ${response.text.length}): ${response.text.slice(0, 500)}`);
+          }
+        } else {
+          throw new Error(`Resposta inválida (motivo: ${response.finishReason}, tamanho: ${response.text.length}): ${response.text.slice(0, 500)}`);
+        }
+      }
 
-    let resultadoHtml = "";
-    if (vestibular === "enem") {
-      resultadoHtml = `
-<span class="titulo-competencia">Competência 1 (Domínio da norma culta):</span>
-${data.C1.nota} / 200
-Motivo: ${data.C1.motivo}
-<span class="titulo-competencia">Competência 2 (Compreensão do tema):</span>
-${data.C2.nota} / 200
-Motivo: ${data.C2.motivo}
-<span class="titulo-competencia">Competência 3 (Argumentação):</span>
-${data.C3.nota} / 200
-Motivo: ${data.C3.motivo}
-<span class="titulo-competencia">Competência 4 (Coesão):</span>
-${data.C4.nota} / 200
-Motivo: ${data.C4.motivo}
-<span class="titulo-competencia">Competência 5 (Intervenção):</span>
-${data.C5.nota} / 200
-Motivo: ${data.C5.motivo}
-<br><br>
-<strong>Nota Final: ${data.nota_final} / 1000</strong>
+    const nomesVestibular = {
+      enem: "ENEM",
+      vunesp: "VUNESP",
+      fuvest: "FUVEST",
+      unicamp: "UNICAMP",
+      ita: "ITA / IME"
+    };
+
+    const competenciasLabel = {
+      enem: [
+        { key: "C1", label: "Competência 1", desc: "Domínio da norma culta", max: 200 },
+        { key: "C2", label: "Competência 2", desc: "Compreensão do tema", max: 200 },
+        { key: "C3", label: "Competência 3", desc: "Argumentação", max: 200 },
+        { key: "C4", label: "Competência 4", desc: "Coesão", max: 200 },
+        { key: "C5", label: "Competência 5", desc: "Intervenção", max: 200 }
+      ],
+      vunesp: [
+        { key: "A", label: "Critério A", desc: "Tema", max: 7 },
+        { key: "B", label: "Critério B", desc: "Estrutura", max: 7 },
+        { key: "C", label: "Critério C", desc: "Língua", max: 7 },
+        { key: "D", label: "Critério D", desc: "Coesão", max: 7 }
+      ],
+      fuvest: [
+        { key: "A", label: "Critério A", desc: "Tema e autoria", max: 12.5 },
+        { key: "B", label: "Critério B", desc: "Gênero e tipo", max: 12.5 },
+        { key: "C", label: "Critério C", desc: "Coesão e coerência", max: 12.5 },
+        { key: "D", label: "Critério D", desc: "Convenções da escrita", max: 12.5 }
+      ],
+      unicamp: [
+        { key: "A", label: "Critério 1", desc: "Proposta temática", max: 3 },
+        { key: "B", label: "Critério 2", desc: "Gênero", max: 3 },
+        { key: "C", label: "Critério 3", desc: "Leitura", max: 3 },
+        { key: "D", label: "Critério 4", desc: "Articulação escrita", max: 3 }
+      ],
+      ita: [
+        { key: "A", label: "Critério A", desc: "Tema", max: 2 },
+        { key: "B", label: "Critério B", desc: "Tipo de texto", max: 2 },
+        { key: "C", label: "Critério C", desc: "Coerência", max: 2 },
+        { key: "D", label: "Critério D", desc: "Coesão", max: 2 },
+        { key: "E", label: "Critério E", desc: "Modalidade escrita", max: 2 }
+      ]
+    };
+
+    const competencias = competenciasLabel[vestibular];
+    const totalMax = competencias.reduce((acc, c) => acc + c.max, 0);
+
+    let resultadoHtml = `
+<div class="resultado-vestibular">${nomesVestibular[vestibular]}</div>
 `;
-    } else if (vestibular === "vunesp") {
-      resultadoHtml = `
-<span class="titulo-competencia">A) Tema:</span>
-${data.A.nota} / 7
-Motivo: ${data.A.motivo}
-<span class="titulo-competencia">B) Estrutura:</span>
-${data.B.nota} / 7
-Motivo: ${data.B.motivo}
-<span class="titulo-competencia">C) Língua:</span>
-${data.C.nota} / 7
-Motivo: ${data.C.motivo}
-<span class="titulo-competencia">D) Coesão:</span>
-${data.D.nota} / 7
-Motivo: ${data.D.motivo}
-<br><br>
-<strong>Nota Final: ${data.nota_final} / 28</strong>
+
+    for (const comp of competencias) {
+      const item = data[comp.key];
+      if (!item || item.nota == null) {
+        resultadoHtml += `
+<div class="card-competencia">
+  <div class="card-header">
+    <span class="card-titulo">${comp.label}</span>
+    <span class="card-desc">${comp.desc}</span>
+  </div>
+  <div class="card-motivo" style="color:#e74c3c;">Dado não retornado pela IA</div>
+</div>
 `;
-    } else if (vestibular === "fuvest") {
-      resultadoHtml = `
-<span class="titulo-competencia">A) Tema e autoria:</span>
-${data.A.nota} / 50
-Motivo: ${data.A.motivo}
-<span class="titulo-competencia">B) Gênero e tipo:</span>
-${data.B.nota} / 50
-Motivo: ${data.B.motivo}
-<span class="titulo-competencia">C) Coesão e coerência:</span>
-${data.C.nota} / 50
-Motivo: ${data.C.motivo}
-<span class="titulo-competencia">D) Convenções da escrita:</span>
-${data.D.nota} / 50
-Motivo: ${data.D.motivo}
-<br><br>
-<strong>Nota Final: ${data.nota_final} / 50</strong>
-`;
-    } else if (vestibular === "unicamp") {
-      resultadoHtml = `
-<span class="titulo-competencia">A) Proposta temática:</span>
-${data.A.nota} / 3
-Motivo: ${data.A.motivo}
-<span class="titulo-competencia">B) Gênero:</span>
-${data.B.nota} / 3
-Motivo: ${data.B.motivo}
-<span class="titulo-competencia">C) Leitura:</span>
-${data.C.nota} / 3
-Motivo: ${data.C.motivo}
-<span class="titulo-competencia">D) Articulação escrita:</span>
-${data.D.nota} / 3
-Motivo: ${data.D.motivo}
-<br><br>
-<strong>Nota Final: ${data.nota_final} / 12</strong>
-`;
-    } else if (vestibular === "ita") {
-      resultadoHtml = `
-<span class="titulo-competencia">A) Tema:</span>
-${data.A.nota} / 2
-Motivo: ${data.A.motivo}
-<span class="titulo-competencia">B) Tipo de texto:</span>
-${data.B.nota} / 2
-Motivo: ${data.B.motivo}
-<span class="titulo-competencia">C) Coerência:</span>
-${data.C.nota} / 2
-Motivo: ${data.C.motivo}
-<span class="titulo-competencia">D) Coesão:</span>
-${data.D.nota} / 2
-Motivo: ${data.D.motivo}
-<span class="titulo-competencia">E) Modalidade escrita:</span>
-${data.E.nota} / 2
-Motivo: ${data.E.motivo}
-<br><br>
-<strong>Nota Final: ${data.nota_final} / 10</strong>
+        continue;
+      }
+      resultadoHtml += `
+<div class="card-competencia">
+  <div class="card-header">
+    <span class="card-titulo">${comp.label}</span>
+    <span class="card-desc">${comp.desc}</span>
+  </div>
+  <div class="card-nota">
+    <span class="nota-valor">${item.nota}</span>
+    <span class="nota-divisor">/</span>
+    <span class="nota-max">${comp.max}</span>
+  </div>
+  <div class="card-motivo">${item.motivo || ""}</div>
+</div>
 `;
     }
 
+    const somaManual = competencias.reduce((acc, comp) => acc + (Number(data[comp.key]?.nota) || 0), 0);
+    resultadoHtml += `
+<div class="card-nota-final">
+  <span class="nota-final-label">Nota Final</span>
+  <span class="nota-final-valor">${somaManual} / ${totalMax}</span>
+</div>
+`;
+
     document.getElementById("resultado").innerHTML = resultadoHtml;
   } catch (error) {
-    document.getElementById("resultado").textContent = "Erro ao corrigir redação. Tente novamente mais tarde.";
+    document.getElementById("resultado").innerHTML = `
+<div style="color:#e74c3c; padding:12px;">
+  <strong>Erro ao corrigir redação</strong><br>
+  <span style="font-size:13px;">${error.message}</span>
+</div>`;
   } finally {
     estaCorrigindo = false;
     botao.disabled = false;

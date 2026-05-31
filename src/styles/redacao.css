@@ -91,22 +91,104 @@ h1{
 
 .resultado-conteudo {
     padding: 16px;
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
-    white-space: pre-wrap;
-    line-height: 1.5;
     font-size: 14px;
 }
 
 #resultado {
-    white-space: pre-wrap;
-    line-height: 1.6;
-    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.titulo-competencia {
+.resultado-vestibular {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--primary-color);
+    padding: 12px;
+    background: var(--gray);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    letter-spacing: 1px;
+}
+
+.card-competencia {
+    background: var(--gray);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.card-titulo {
     font-weight: bold;
     font-size: 16px;
-    margin-top: 12px;
-    display: block;
+    color: var(--primary-color);
+}
+
+.card-desc {
+    font-size: 13px;
+    color: var(--text-gray);
+}
+
+.card-nota {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.nota-valor {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.nota-divisor {
+    font-size: 20px;
+    color: var(--text-gray);
+}
+
+.nota-max {
+    font-size: 20px;
+    color: var(--text-gray);
+}
+
+.card-motivo {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    margin-top: 2px;
+}
+
+.card-nota-final {
+    text-align: center;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nota-final-label {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.85;
+}
+
+.nota-final-valor {
+    font-size: 32px;
+    font-weight: bold;
 }
