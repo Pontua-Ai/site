@@ -16,8 +16,8 @@ window.corrigir = async function () {
     return;
   }
 
-  if (texto.length < 2500) {
-    toast("Sua redação precisa ter pelo menos 2500 caracteres!", "error");
+  if (texto.length < 1500) {
+    toast("Sua redação precisa ter pelo menos 1500 caracteres!", "error");
     return;
   }
 
@@ -554,7 +554,7 @@ const contadorDiv = document.querySelector(".contador-caracteres");
 textoTextarea.addEventListener("input", () => {
   const len = textoTextarea.value.length;
   contadorSpan.textContent = len;
-  if (len < 2500) {
+  if (len < 1500) {
     contadorDiv.classList.add("aviso");
   } else {
     contadorDiv.classList.remove("aviso");
