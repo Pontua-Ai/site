@@ -55,13 +55,23 @@ async function carregarPerguntas() {
         return;
     }
 
+    const ids = perguntas.map(p => p.id_pergunta);
+    const { data: todasAlternativas } = await supabaseClient
+        .from("alternativa")
+        .select("*")
+        .in("id_pergunta", ids)
+        .order("id_alternativa");
+
+    const alternativasPorPergunta = {};
+    for (const alt of (todasAlternativas || [])) {
+        if (!alternativasPorPergunta[alt.id_pergunta]) {
+            alternativasPorPergunta[alt.id_pergunta] = [];
+        }
+        alternativasPorPergunta[alt.id_pergunta].push(alt);
+    }
+
     for (const p of perguntas) {
-        const { data: alternativas } = await supabaseClient
-            .from("alternativa")
-            .select("*")
-            .eq("id_pergunta", p.id_pergunta)
-            .order("id_alternativa");
-        p.alternativas = alternativas || [];
+        p.alternativas = alternativasPorPergunta[p.id_pergunta] || [];
     }
 
     todasPerguntas = perguntas;
