@@ -1,5 +1,6 @@
 import { toast } from "./utils.js";
 import { config } from "./config.js";
+import supabaseClient from "./supabase.js";
 
 let estaCorrigindo = false;
 
@@ -397,7 +398,7 @@ ${texto}
             model: "google/gemma-4-31b-it:free",
             messages: [{ role: "user", content: prompt }],
             max_tokens: 4000,
-            temperature: 0
+            temperature: 0.7
           })
         });
 
@@ -531,6 +532,18 @@ ${texto}
 `;
 
     document.getElementById("resultado").innerHTML = resultadoHtml;
+
+    const user = JSON.parse(localStorage.getItem("userLogado"));
+    if (user?.id_usuario) {
+      const { error: insertError } = await supabaseClient.from("redacao").insert({
+        id_usuario: user.id_usuario,
+        texto_redacao: `Título: ${titulo}\n\n${texto}`,
+        pontos_redacao: somaManual
+      });
+      if (insertError) {
+        console.error("Erro ao salvar redação:", insertError);
+      }
+    }
   } catch (error) {
     document.getElementById("resultado").innerHTML = `
 <div style="color:#e74c3c; padding:12px;">
