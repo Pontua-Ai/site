@@ -564,6 +564,14 @@ const textoTextarea = document.getElementById("texto");
 const contadorSpan = document.getElementById("contador");
 const contadorDiv = document.querySelector(".contador-caracteres");
 
+const resultadoDiv = document.getElementById("resultado");
+
+function limparResultado() {
+  if (resultadoDiv && resultadoDiv.innerHTML.trim() !== "") {
+    resultadoDiv.innerHTML = "";
+  }
+}
+
 textoTextarea.addEventListener("input", () => {
   const len = textoTextarea.value.length;
   contadorSpan.textContent = len;
@@ -572,4 +580,7 @@ textoTextarea.addEventListener("input", () => {
   } else {
     contadorDiv.classList.remove("aviso");
   }
+  limparResultado();
 });
+
+document.getElementById("title")?.addEventListener("input", limparResultado);
