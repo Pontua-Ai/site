@@ -202,7 +202,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result.success) {
                 toast("Link de recuperação enviado para seu email!", "success");
-                recoveryForm.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:20px 0;">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>';
+                recoveryForm.innerHTML = '<p style="text-align:center;color:var(--text-gray);padding:20px 0;">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>'
+                    + '<p style="text-align:center;font-size:14px;color:var(--text-primary);opacity:0.7;margin-top:12px;">Não recebeu o e-mail? <a href="#" id="linkReenviarRecuperacao" style="color:var(--terceary-color);text-decoration:none;">Reenviar</a></p>';
+
+                const linkReenviar = document.getElementById("linkReenviarRecuperacao");
+                if (linkReenviar) {
+                    linkReenviar.addEventListener("click", async (e) => {
+                        e.preventDefault();
+                        linkReenviar.textContent = "Enviando...";
+                        linkReenviar.style.pointerEvents = "none";
+                        const res = await enviarRecuperacao(email);
+                        if (res.success) {
+                            toast("Email reenviado com sucesso!", "success");
+                        } else {
+                            toast(res.error, "error");
+                        }
+                        linkReenviar.textContent = "Reenviar";
+                        linkReenviar.style.pointerEvents = "auto";
+                    });
+                }
             } else {
                 btn.disabled = false;
                 btn.innerHTML = textoOriginal;
