@@ -1,6 +1,9 @@
+import { initTheme } from "./theme.js";
 import supabaseClient from "./supabase.js";
 import { validarSenha, verificarSenha } from "./auth.js";
 import { toast } from "./utils.js";
+
+initTheme();
 
 const userLogado = JSON.parse(localStorage.getItem("userLogado"));
 
