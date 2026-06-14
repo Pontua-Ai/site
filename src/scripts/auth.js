@@ -1,5 +1,5 @@
 import supabaseClient from "./supabase.js";
-import { config } from "./config.js";
+import { SUPABASE_URL, SUPABASE_KEY } from "./supabase-config.js";
 
 export function validarSenha(senha) {
     const erros = [];
@@ -55,12 +55,12 @@ export async function signup(username, email, senha) {
     }
 
     try {
-        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
+        const functionUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
         const response = await fetch(functionUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "apikey": config.SUPABASE_KEY,
+                "apikey": SUPABASE_KEY,
             },
             body: JSON.stringify({ email, username, token, tipo_conta: tipoConta, site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "") }),
         });
@@ -116,12 +116,12 @@ export async function verificarSenha(email, senha) {
 
 export async function enviarRecuperacao(email) {
     try {
-        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-recovery";
+        const functionUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-recovery";
         const response = await fetch(functionUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "apikey": config.SUPABASE_KEY,
+                "apikey": SUPABASE_KEY,
             },
             body: JSON.stringify({ email, site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "") }),
         });
@@ -139,12 +139,12 @@ export async function enviarRecuperacao(email) {
 export async function redefinirSenha(token, novaSenha) {
     const senhaHash = await hashSenha(novaSenha);
     try {
-        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/reset-password";
+        const functionUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/reset-password";
         const response = await fetch(functionUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "apikey": config.SUPABASE_KEY,
+                "apikey": SUPABASE_KEY,
             },
             body: JSON.stringify({ token, senha_hash: senhaHash }),
         });

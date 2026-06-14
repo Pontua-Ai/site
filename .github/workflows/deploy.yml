@@ -23,11 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Criar config.js com chaves
+      - name: Criar config.js com chave OpenRouter
         run: |
           echo "export const config = {" > src/scripts/config.js
-          echo '  SUPABASE_URL: "https://nsacgpcnhqzxassfvuts.supabase.co",' >> src/scripts/config.js
-          echo '  SUPABASE_KEY: "sb_publishable_R228vwOOokXUE9Uzrqnnqg_FwfnkXXH",' >> src/scripts/config.js
           echo "  OPENROUTER_API_KEY: \"${{ secrets.OPENROUTER_API_KEY }}\"" >> src/scripts/config.js
           echo "};" >> src/scripts/config.js
 
