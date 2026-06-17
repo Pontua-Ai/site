@@ -159,6 +159,48 @@ export async function redefinirSenha(token, novaSenha) {
     }
 }
 
+export async function reenviarConfirmacao(email) {
+    try {
+        const { data: user, error } = await supabaseClient
+            .from("users")
+            .select("username, token_confirmacao, confirmado, tipo_conta")
+            .eq("email", email)
+            .single();
+
+        if (error || !user) {
+            return { success: false, error: "Usuário não encontrado." };
+        }
+
+        if (user.confirmado) {
+            return { success: false, error: "Este email já foi confirmado." };
+        }
+
+        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
+        const response = await fetch(functionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": config.SUPABASE_KEY,
+            },
+            body: JSON.stringify({
+                email,
+                username: user.username,
+                token: user.token_confirmacao,
+                tipo_conta: user.tipo_conta,
+                site_url: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, ""),
+            }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+            return { success: false, error: data.error || "Erro ao reenviar email." };
+        }
+        return { success: true };
+    } catch (e) {
+        console.error("Erro ao reenviar confirmação:", e);
+        return { success: false, error: "Erro de conexão. Tente novamente." };
+    }
+}
+
 export async function excluirConta(idUsuario) {
     const { error } = await supabaseClient
         .from("users")

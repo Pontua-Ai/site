@@ -136,25 +136,16 @@ body.dark {
     opacity: 0.6;
 }
 
-.callback-box {
+.callback-ajuda {
     margin-top: 30px;
-    padding: 20px;
-    background: var(--gray);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-}
-
-.callback-box-text {
     font-size: 14px;
     color: var(--text-primary);
     opacity: 0.7;
 }
 
-.callback-box-subtext {
-    font-size: 13px;
-    color: var(--text-primary);
-    opacity: 0.5;
-    margin-top: 4px;
+.callback-ajuda a {
+    color: var(--terceary-color);
+    text-decoration: none;
 }
 
 .callback-link {

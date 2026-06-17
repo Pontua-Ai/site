@@ -24,26 +24,16 @@
             <p class="callback-subtext">
                 Clique no link enviado no email para ativar sua conta.
             </p>
-            <div class="callback-box">
-                <p class="callback-box-text">Não recebeu o email?</p>
-                <p class="callback-box-subtext">Verifique a caixa de spam ou lixeira.</p>
-            </div>
+            <p class="callback-ajuda">
+                Não recebeu o e-mail? <a href="#" id="linkReenviar">Reenviar</a>
+            </p>
             <p class="callback-link">
                 <a href="inicio.html">Voltar para o início</a>
             </p>
         </div>
     </div>
 
-    <script>
-        const saved = localStorage.getItem("theme");
-        if (saved === "dark") document.body.classList.add("dark");
-
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get("email");
-        if (email) {
-            document.getElementById("emailDisplay").textContent = email;
-        }
-    </script>
+    <script type="module" src="src/scripts/callback.js"></script>
 </body>
 
 </html>
