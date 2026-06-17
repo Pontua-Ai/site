@@ -1,6 +1,10 @@
 (function() {
     const saved = localStorage.getItem("theme");
-    if (saved === "dark") document.body.classList.add("dark");
+    if (saved === "dark") {
+        document.body.classList.add("dark");
+    } else if (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.body.classList.add("dark");
+    }
     window.toggleTheme = function() {
         document.body.classList.toggle("dark");
         const dark = document.body.classList.contains("dark");
