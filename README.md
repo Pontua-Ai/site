@@ -52,7 +52,7 @@ Assim como o coala sobe uma árvore com tranquilidade e constância, acreditamos
 O Pont representa exatamente isso: um guia amigável que acompanha o estudante na sua evolução.
 
 <p align="center">
-  <img src="./img/coala.png" alt="Mascote do Pontua Aí" width="200"/>
+  <img src="./img/coala-magro.png" alt="Mascote do Pontua Aí" width="200"/>
 </p>
 
 ---
