@@ -10,7 +10,7 @@
 
 <body>
     <script type="module">
-        import { config } from "./src/scripts/config.js";
+        import { SUPABASE_URL, SUPABASE_KEY } from "./src/scripts/supabase-config.js";
 
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
@@ -18,13 +18,13 @@
         if (!token) {
             window.location.href = "inicio.html?erro=Link+inv%C3%A1lido";
         } else {
-            const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/confirm-email";
+            const functionUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/confirm-email";
             try {
                 const res = await fetch(functionUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "apikey": config.SUPABASE_KEY,
+                        "apikey": SUPABASE_KEY,
                     },
                     body: JSON.stringify({ token }),
                 });

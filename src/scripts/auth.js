@@ -175,12 +175,12 @@ export async function reenviarConfirmacao(email) {
             return { success: false, error: "Este email já foi confirmado." };
         }
 
-        const functionUrl = config.SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
+        const functionUrl = SUPABASE_URL.replace(/\/+$/, "") + "/functions/v1/send-confirmation";
         const response = await fetch(functionUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "apikey": config.SUPABASE_KEY,
+                "apikey": SUPABASE_KEY,
             },
             body: JSON.stringify({
                 email,
