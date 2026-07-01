@@ -388,3 +388,117 @@ input:not(:placeholder-shown) {
     border-color: #6c757d;
     color: #6c757d;
 }
+
+.ql-snow .ql-toolbar button.ql-table i {
+    font-size: 15px;
+}
+
+/* --- Tabela no editor Quill --- */
+.ql-editor table,
+.ql-editor .ql-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+.ql-editor table td,
+.ql-editor .ql-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    min-width: 40px;
+    vertical-align: top;
+}
+
+.ql-editor table td:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
+/* --- Tabela no preview --- */
+#perguntaTextoPreview table,
+#perguntaTextoPreview .ql-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+#perguntaTextoPreview table td,
+#perguntaTextoPreview .ql-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    min-width: 40px;
+    vertical-align: top;
+}
+
+/* --- Modal de Inserir Tabela --- */
+.modal-tabela {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-tabela-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px 32px;
+    min-width: 300px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-tabela-content h3 {
+    margin: 0 0 20px 0;
+    color: var(--text-primary);
+    font-size: 20px;
+    text-align: center;
+}
+
+.modal-tabela-inputs {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.modal-tabela-inputs label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.modal-tabela-inputs input {
+    width: 80px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--input);
+    color: var(--text-primary);
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.modal-tabela-inputs input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.modal-tabela-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-tabela-actions .subjects-button {
+    min-width: 120px;
+}

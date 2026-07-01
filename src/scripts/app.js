@@ -12,7 +12,21 @@ let estaCadastrando = false;
 
 initTheme();
 initDadosConta();
-window.toggleTheme = toggleTheme;
+
+function atualizarCorIconeTabela() {
+    const isDark = document.body.classList.contains("dark");
+    const cor = isDark ? "#aaa" : "#777";
+    const icon = document.getElementById("tableIcon");
+    if (icon) icon.style.color = cor;
+    const delIcon = document.querySelector("#delTableIcon");
+    if (delIcon) delIcon.style.color = cor;
+}
+
+const toggleThemeOriginal = toggleTheme;
+window.toggleTheme = function () {
+    toggleThemeOriginal();
+    atualizarCorIconeTabela();
+};
 window.initExcluirConta = initExcluirConta;
 
 function initExcluirConta() {
@@ -102,7 +116,96 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
         });
+
+        const toolbarEl = quillEditor.getModule("toolbar").container;
+        const lastGroup = toolbarEl.querySelector(".ql-formats:last-child");
+        const tableBtn = document.createElement("button");
+        tableBtn.type = "button";
+        tableBtn.className = "ql-table";
+        tableBtn.innerHTML = '<i class="fa-solid fa-table" id="tableIcon"></i>';
+        tableBtn.title = "Inserir tabela";
+        tableBtn.addEventListener("click", () => {
+            document.getElementById("modalTabela").style.display = "flex";
+        });
+        lastGroup.appendChild(tableBtn);
+
+        const delTableBtn = document.createElement("button");
+        delTableBtn.type = "button";
+        delTableBtn.innerHTML = '<i class="fa-solid fa-trash-can" id="delTableIcon" style="font-size:15px"></i>';
+        delTableBtn.title = "Remover tabela";
+        delTableBtn.style.display = "none";
+        delTableBtn.addEventListener("click", () => {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            const node = sel.getRangeAt(0).startContainer;
+            const table = node.nodeType === 1 ? node.closest("table") : node.parentElement?.closest("table");
+            if (!table) return;
+
+            const tableBlot = Quill.find(table);
+            if (!tableBlot) return;
+
+            const index = quillEditor.getIndex(tableBlot);
+            const length = tableBlot.length();
+            quillEditor.deleteText(index, length + 1);
+            delTableBtn.style.display = "none";
+        });
+        lastGroup.appendChild(delTableBtn);
+
+        quillEditor.on("selection-change", () => {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) {
+                delTableBtn.style.display = "none";
+                return;
+            }
+            const node = sel.getRangeAt(0).startContainer;
+            const table = node.nodeType === 1 ? node.closest("table") : node.parentElement?.closest("table");
+            delTableBtn.style.display = table && table.closest(".ql-editor") ? "" : "none";
+        });
+
+        atualizarCorIconeTabela();
     } /* Cria o Quill.js para criar as opções de formatação de texto da pergunta*/
+
+    const modalTabela = document.getElementById("modalTabela");
+    const btnInserirTabela = document.getElementById("btnInserirTabela");
+    const btnCancelarTabela = document.getElementById("btnCancelarTabela");
+
+    if (modalTabela && btnInserirTabela && btnCancelarTabela) {
+        btnCancelarTabela.addEventListener("click", () => {
+            modalTabela.style.display = "none";
+        });
+
+        modalTabela.addEventListener("click", (e) => {
+            if (e.target === modalTabela) modalTabela.style.display = "none";
+        });
+
+        btnInserirTabela.addEventListener("click", () => {
+            const rows = parseInt(document.getElementById("tabelaLinhas").value) || 3;
+            const cols = parseInt(document.getElementById("tabelaColunas").value) || 3;
+
+            if (rows < 1 || cols < 1) {
+                toast("Número mínimo é 1", "error");
+                return;
+            }
+            if (rows > 20 || cols > 20) {
+                toast("Máximo é 20 linhas/colunas", "error");
+                return;
+            }
+
+            let html = '<table class="ql-table"><tbody>';
+            for (let r = 0; r < rows; r++) {
+                html += '<tr>';
+                for (let c = 0; c < cols; c++) {
+                    html += '<td></td>';
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+
+            const range = quillEditor.getSelection(true);
+            quillEditor.clipboard.dangerouslyPasteHTML(range.index, html);
+            modalTabela.style.display = "none";
+        });
+    }
     
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
