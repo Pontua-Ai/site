@@ -115,6 +115,26 @@
         </div>
     </main>
 
+    <div id="modalTabela" class="modal-tabela" style="display: none;">
+        <div class="modal-tabela-content">
+            <h3>Inserir Tabela</h3>
+            <div class="modal-tabela-inputs">
+                <label>
+                    Linhas
+                    <input type="number" id="tabelaLinhas" value="3" min="1" max="20">
+                </label>
+                <label>
+                    Colunas
+                    <input type="number" id="tabelaColunas" value="3" min="1" max="20">
+                </label>
+            </div>
+            <div class="modal-tabela-actions">
+                <button type="button" class="subjects-button" id="btnInserirTabela">Inserir</button>
+                <button type="button" class="subjects-button" id="btnCancelarTabela" style="background: var(--text-gray);">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="src/scripts/app.js"></script>
     <script type="module" src="src/scripts/perguntasProf.js"></script>
     <script type="module" src="src/scripts/chatBot.js"></script>
