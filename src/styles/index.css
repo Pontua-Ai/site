@@ -894,7 +894,6 @@ body.dark .footer-section a {
 
 .footer-section a:hover {
     color: var(--primary-color);
-    transform: translateX(5px);
 }
 
 .redes-sociais {
@@ -920,18 +919,6 @@ body.dark .redes-sociais a {
 .redes-sociais a img {
     width: 24px;
     height: 24px;
-}
-
-.redes-sociais a:hover {
-    background: var(--border-color);
-}
-
-body.dark .redes-sociais a:hover {
-    background: var(--badge-bg);
-}
-
-.redes-sociais a:hover img {
-    transform: scale(1.15);
 }
 
 .footer-bottom {
