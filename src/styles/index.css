@@ -80,10 +80,6 @@ main {
     gap: 8px;
 }
 
-.theme-toggle i {
-    margin: 0;
-}
-
 .theme-toggle .material-icons {
     font-size: 20px;
     vertical-align: middle;
@@ -108,8 +104,6 @@ main {
 
 .theme-switch input {
     opacity: 0;
-    width: 0;
-    height: 0;
 }
 
 .theme-switch .slider {
@@ -339,10 +333,6 @@ main {
     gap: 10px;
 }
 
-body.dark .stat-card {
-    border-color: var(--stat-card-border);
-}
-
 .stat-number {
     font-size: 36px;
     font-weight: 800;
@@ -458,12 +448,6 @@ body.dark .boxObjetivos {
     margin-bottom: 50px;
 }
 
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-}
-
 .feature-card {
     padding: 40px 25px;
     background: var(--background);
@@ -471,10 +455,6 @@ body.dark .boxObjetivos {
     transition: all 0.3s ease;
     border-top: 4px solid var(--primary-color);
     box-sizing: border-box;
-}
-
-.feature-card:hover {
-    border-color: var(--primary-color);
 }
 
 .feature-card i {
