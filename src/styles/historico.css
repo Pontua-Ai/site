@@ -141,3 +141,23 @@ h1{
     color: var(--primary-color);
     padding: 10px;
 }
+
+.correto-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #27ae60;
+    color: white !important;
+}
+
+.incorreto-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #e74c3c;
+    color: white !important;
+}
