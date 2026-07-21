@@ -282,7 +282,7 @@ export async function carregarProvasRecentesProfessor(idUsuario) {
         div.style.cursor = "pointer";
         div.innerHTML = `
             <i class="fa-solid fa-book-open"></i>
-            <p>${nomeMateria} - ${nomeConteudo}</p>
+            <p style="color: var(--text-primary)">${nomeMateria} - ${nomeConteudo}</p>
         `;
         div.addEventListener("click", () => {
             window.location.href = `historico_prof.html?materia=${encodeURIComponent(nomeMateria)}&conteudo=${encodeURIComponent(nomeConteudo)}`;
