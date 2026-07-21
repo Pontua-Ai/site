@@ -170,6 +170,10 @@ main{
     font-size: 16px;
 }
 
+.historicoAtividadesRecentes .cardAtividades p{
+    color: var(--text-primary);
+}
+
 .cardConfi i.fa, 
 .cardConfi i.material-icons {
     width: 24px;
@@ -223,6 +227,7 @@ main{
     justify-content: space-between;
     width: 100%;
     align-items: center;
+    gap: 20px;
 }
 
 .materia-conteudo {
