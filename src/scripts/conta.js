@@ -234,41 +234,18 @@ export async function carregarProvasRecentesProfessor(idUsuario) {
 
     const { data: perguntas } = await supabaseClient
         .from("perguntas")
-        .select("id_pergunta")
-        .eq("id_usuario", idUsuario);
+        .select("id_materia, id_conteudo")
+        .eq("id_usuario", idUsuario)
+        .order("data_pergunta", { ascending: false });
 
     if (!perguntas || perguntas.length === 0) {
         container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
         return;
     }
 
-    const idPerguntas = perguntas.map(p => p.id_pergunta);
-
-    const { data: alternativas } = await supabaseClient
-        .from("alternativa")
-        .select("id_alternativa, id_pergunta")
-        .in("id_pergunta", idPerguntas);
-
-    if (!alternativas || alternativas.length === 0) {
-        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
-        return;
-    }
-
-    const idAlternativas = alternativas.map(a => a.id_alternativa);
-
-    const { data: pontuacoes } = await supabaseClient
-        .from("pontuacao_atividade")
-        .select("id_materia, id_conteudo")
-        .in("id_alternativa", idAlternativas);
-
-    if (!pontuacoes || pontuacoes.length === 0) {
-        container.innerHTML = '<div class="cardAtividades"><p>Nenhuma atividade encontrada</p></div>';
-        return;
-    }
-
     const atividadesUnicas = [];
     const seen = new Set();
-    for (const p of pontuacoes) {
+    for (const p of perguntas) {
         const key = `${p.id_materia}-${p.id_conteudo}`;
         if (!seen.has(key)) {
             seen.add(key);
@@ -278,24 +255,24 @@ export async function carregarProvasRecentesProfessor(idUsuario) {
 
     container.innerHTML = '';
 
-    for (const pontuacao of atividadesUnicas.slice(0, 5)) {
+    for (const atividade of atividadesUnicas.slice(0, 5)) {
         let nomeMateria = "Matéria";
         let nomeConteudo = "Conteúdo";
 
-        if (pontuacao.id_materia) {
+        if (atividade.id_materia) {
             const { data: materia } = await supabaseClient
                 .from("materia")
                 .select("nome_materia")
-                .eq("id_materia", pontuacao.id_materia)
+                .eq("id_materia", atividade.id_materia)
                 .single();
             nomeMateria = materia?.nome_materia || "Matéria";
         }
 
-        if (pontuacao.id_conteudo) {
+        if (atividade.id_conteudo) {
             const { data: conteudo } = await supabaseClient
                 .from("conteudo")
                 .select("nome_conteudo")
-                .eq("id_conteudo", pontuacao.id_conteudo)
+                .eq("id_conteudo", atividade.id_conteudo)
                 .single();
             nomeConteudo = conteudo?.nome_conteudo || "Conteúdo";
         }
