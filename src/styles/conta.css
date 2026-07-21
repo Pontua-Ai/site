@@ -152,12 +152,12 @@ main{
     background-color: var(--gray);
     border-radius: 20px;
     padding: 10px;
-    color: var(--primary-color);
 }
 
 .title{
     font-size: 20px;
     font-weight: bold;
+    color: var(--primary-color);
 }
 
 .cardAtividades, .cardConfi{
@@ -166,12 +166,17 @@ main{
     gap: 15px;
     padding: 12px 15px;
     border-radius: 20px;
-    margin-top: 10px;
+    margin-top: 16px;
     font-size: 16px;
 }
 
-.historicoAtividadesRecentes .cardAtividades p{
+.historicoAtividadesRecentes .cardAtividades p,
+.historicoAtividadesRecentes .cardAtividades .info-prova p{
     color: var(--text-primary);
+}
+
+.cardConfi p{
+    color: var(--primary-color);
 }
 
 .cardConfi i.fa, 
@@ -230,17 +235,11 @@ main{
     gap: 15px;
 }
 
-.container-aluno .cardAtividades + .cardAtividades {
-    margin-top: 20px;
-}
-
 .materia-conteudo {
-    margin: 0;
     color: var(--text-primary);
 }
 
 .pontos {
-    margin: 0;
     font-weight: bold;
     color: var(--primary-color);
 }
