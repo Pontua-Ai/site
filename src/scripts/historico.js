@@ -46,12 +46,25 @@ export async function carregarHistorico() {
     for (const p of pontuacoes) {
         const materiaNome = p.materia?.nome_materia || "Matéria";
         const conteudoNome = p.conteudo?.nome_conteudo || "Conteúdo";
-        const textoPergunta = p.alternativa?.perguntas?.pergunta_texto?.replace(/<[^>]*>/g, "").substring(0, 150) || "";
+        const textoCompletoHtml = p.alternativa?.perguntas?.pergunta_texto || "";
+        const textoPlano = textoCompletoHtml.replace(/<[^>]*>/g, "");
+        const textoResumido = textoPlano.length > 150 ? textoPlano.substring(0, 150) + "..." : textoCompletoHtml;
+        const temMaisTexto = textoPlano.length > 150;
         const nomeAlternativa = p.alternativa?.nome_alternativa || "";
         const isCorreta = p.pontos_atividade === 1;
         const dataAtividade = p.data_atividade
             ? new Date(p.data_atividade).toLocaleDateString("pt-BR")
             : "";
+
+        let respostaCorreta = "";
+        if (!isCorreta && p.alternativa?.perguntas?.id_pergunta) {
+            const { data: alternativasCorretas } = await supabaseClient
+                .from("alternativa")
+                .select("nome_alternativa")
+                .eq("id_pergunta", p.alternativa.perguntas.id_pergunta)
+                .eq("correta", true);
+            respostaCorreta = alternativasCorretas?.[0]?.nome_alternativa || "";
+        }
 
         const div = document.createElement("div");
         div.className = "cardBox";
@@ -60,13 +73,29 @@ export async function carregarHistorico() {
                 <span class="materia-badge">${materiaNome}</span>
                 <span class="conteudo-badge">${conteudoNome}</span>
                 ${dataAtividade ? `<span class="data-info"><i class="fa-regular fa-calendar"></i> ${dataAtividade}</span>` : ''}
+                ${temMaisTexto ? `<div class="botoesAcoes">
+                    <button class="visualizar" title="Ver pergunta completa"><i class="fa-regular fa-eye"></i></button>
+                </div>` : ''}
             </div>
             <div class="headerBox">
-                <p class="texto-enunciado">${textoPergunta}</p>
-                <p>${nomeAlternativa}</p>
+                <p class="texto-enunciado">${textoResumido}</p>
+                <p class="resposta-alternativa"><strong>Sua resposta:</strong> ${nomeAlternativa}</p>
+                ${respostaCorreta ? `<p class="resposta-correta"><strong>Resposta correta:</strong> ${respostaCorreta}</p>` : ''}
                 <span class="${isCorreta ? 'correto-badge' : 'incorreto-badge'}">${isCorreta ? 'Correto' : 'Incorreto'}</span>
             </div>
         `;
+
+        const btnVisualizar = div.querySelector(".visualizar");
+        if (btnVisualizar) {
+            const pEnunciado = div.querySelector(".texto-enunciado");
+            btnVisualizar.addEventListener("click", () => {
+                const expandido = btnVisualizar.classList.toggle("expandido");
+                pEnunciado.innerHTML = expandido ? textoCompletoHtml : textoResumido;
+                pEnunciado.classList.toggle("texto-completo", expandido);
+                btnVisualizar.querySelector("i").className = expandido ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+            });
+        }
+
         container.appendChild(div);
     }
 
