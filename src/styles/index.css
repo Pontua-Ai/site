@@ -155,7 +155,7 @@ main {
 /* PARTE DEBAIXO DO HEADER */
 .hero-banner {
     background: var(--hero-gradient);
-    padding: 150px 0;
+    padding: 100px 0;
     margin-bottom: 0;
 }
 
@@ -258,7 +258,7 @@ main {
 
 /* SOBRE */
 .about-section {
-    padding: 100px 0;
+    padding: 10px 0;
     background: var(--background);
 }
 
@@ -301,7 +301,7 @@ main {
 /* IMPACTOS EM NÚMEROS */
 .stats-section {
     background: var(--stat-bg);
-    padding: 80px 0;
+    padding: 60px 0;
 }
 
 .stats-container {
@@ -372,7 +372,7 @@ body.dark .stat-label {
     font-size: 18px;
     color: var(--text-primary);
     opacity: 0.8;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 
 .objetivosImg {
@@ -430,7 +430,7 @@ body.dark .boxObjetivos {
 /* CARROSSEL */
 .features-section {
     width: 80%;
-    margin: 100px auto;
+    margin: 60px auto;
     text-align: center;
 }
 
@@ -587,7 +587,7 @@ body.dark .carousel-arrow {
 
 /* ========== FAQ ========== */
 .faq-section {
-    padding: 100px 0;
+    padding: 20px 0;
     background: var(--background);
 }
 
@@ -664,7 +664,7 @@ body.dark .faq-item {
 /* PRONTO PARA TRANSFORMAR SEUS ESTUDOS */
 .cta-section {
     background: var(--cta-bg);
-    padding: 80px 0;
+    padding: 50px 0;
     text-align: center;
 }
 
