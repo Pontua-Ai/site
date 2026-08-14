@@ -18,6 +18,10 @@ const state = {
     materiaNova: false
 };
 
+function criarDadosVazios() {
+    return { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+}
+
 let chatContainer = null;
 let chatMessages = null;
 let chatInput = null;
@@ -189,9 +193,16 @@ function sendMessage(text) {
     processUserInput(text.trim());
 }
 
+function getUserLogado() {
+    try {
+        return JSON.parse(localStorage.getItem("userLogado"));
+    } catch {
+        return null;
+    }
+}
+
 function getUserId() {
-    const user = JSON.parse(localStorage.getItem("userLogado"));
-    return user?.id_usuario || null;
+    return getUserLogado()?.id_usuario || null;
 }
 
 async function getMateriasOcultasIds() {
@@ -233,29 +244,39 @@ async function getConteudosOcultosIds() {
     return idsConteudos;
 }
 
+function queryMaterias(userId, idsOcultas, campos = 'id_materia, nome_materia') {
+    let query = supabaseClient
+        .from("materia")
+        .select(campos)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultas.length > 0) {
+        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+    }
+    return query;
+}
+
+function queryConteudos(userId, idsOcultos, idMateria = null, campos = 'id_conteudo, nome_conteudo') {
+    let query = supabaseClient
+        .from("conteudo")
+        .select(campos)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idMateria !== null) {
+        query = query.eq("id_materia", idMateria);
+    }
+    if (idsOcultos.length > 0) {
+        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+    }
+    return query;
+}
+
 async function buscarMateria(nome) {
     const userId = getUserId();
     const nomes = nome.trim();
     const idsOcultas = await getMateriasOcultasIds();
-    let query = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_materia", nomes);
-    if (idsOcultas.length > 0) {
-        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: exato } = await query.maybeSingle();
+    const { data: exato } = await queryMaterias(userId, idsOcultas).ilike("nome_materia", nomes).maybeSingle();
     if (exato) return exato;
 
-    let query2 = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultas.length > 0) {
-        query2 = query2.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: todas } = await query2;
+    const { data: todas } = await queryMaterias(userId, idsOcultas);
 
     if (!todas) return null;
 
@@ -267,27 +288,10 @@ async function buscarConteudo(nome, idMateria) {
     const userId = getUserId();
     const nomes = nome.trim();
     const idsOcultos = await getConteudosOcultosIds();
-    let query = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria)
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_conteudo", nomes);
-    if (idsOcultos.length > 0) {
-        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: exato } = await query.maybeSingle();
+    const { data: exato } = await queryConteudos(userId, idsOcultos, idMateria).ilike("nome_conteudo", nomes).maybeSingle();
     if (exato) return exato;
 
-    let query2 = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria)
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultos.length > 0) {
-        query2 = query2.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: todos } = await query2;
+    const { data: todos } = await queryConteudos(userId, idsOcultos, idMateria);
 
     if (!todos) return null;
 
@@ -317,8 +321,91 @@ async function criarConteudo(nome, idMateria) {
     return data;
 }
 
+async function criarConteudoDireto(texto, handlers) {
+    state.materiaNova = false;
+    const loading = addMessage('Criando conteúdo...', 'loading');
+    try {
+        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+        loading.remove();
+        state.dados.conteudo = novo.nome_conteudo;
+        state.dados.conteudoObj = novo;
+        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso!`);
+        handlers.aoCriar(novo);
+    } catch (e) {
+        loading.remove();
+        addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
+        handlers.aoErro(e);
+    }
+}
+
+async function tratarNaoEncontrado(texto, tipo, handlers) {
+    const userId = getUserId();
+    const rotulo = tipo === 'materia' ? 'Matéria' : 'Conteúdo';
+    const fem = tipo === 'materia';
+    const campo = tipo === 'materia' ? 'nome_materia' : 'nome_conteudo';
+
+    let todos = null;
+    if (tipo === 'materia') {
+        const idsOcultas = await getMateriasOcultasIds();
+        const { data } = await queryMaterias(userId, idsOcultas);
+        todos = data;
+    } else {
+        const idsOcultos = await getConteudosOcultosIds();
+        const { data } = await queryConteudos(userId, idsOcultos, state.dados.materiaObj.id_materia);
+        todos = data;
+    }
+
+    const sugestao = todos ? buscarSugestao(texto, todos, campo) : null;
+
+    const confirmarCriar = () => {
+        const m2 = addMessage(`${rotulo} <strong>${escapeHtml(texto)}</strong> não encontrada${fem ? '' : 'o'}. Deseja criar?`);
+        addConfirmButtons(m2,
+            async () => {
+                m2.querySelector('.chatbot-confirm')?.remove();
+                const loading = addMessage(`Criando ${rotulo.toLowerCase()}...`, 'loading');
+                try {
+                    const novo = tipo === 'materia'
+                        ? await criarMateria(texto)
+                        : await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                    loading.remove();
+                    state.dados[tipo] = novo[campo];
+                    state.dados[tipo + 'Obj'] = novo;
+                    if (tipo === 'materia') state.materiaNova = true;
+                    addMessage(`${rotulo} <strong>${escapeHtml(novo[campo])}</strong> criada${fem ? '' : 'o'} com sucesso!`);
+                    handlers.aoCriar(novo);
+                } catch (e) {
+                    loading.remove();
+                    addMessage(`Erro ao criar ${rotulo.toLowerCase()}: ${e.message}`, 'system');
+                    handlers.aoErro(e);
+                }
+            },
+            () => {
+                m2.querySelector('.chatbot-confirm')?.remove();
+                addMessage(`OK, digite outra ${rotulo.toLowerCase()}:`);
+            }
+        );
+    };
+
+    if (sugestao) {
+        const nomeSugerido = sugestao.sugestao[campo];
+        const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+        addConfirmButtons(m,
+            () => {
+                m.querySelector('.chatbot-confirm')?.remove();
+                handlers.aoConfirmar(nomeSugerido, sugestao.sugestao);
+            },
+            () => {
+                m.querySelector('.chatbot-confirm')?.remove();
+                confirmarCriar();
+            }
+        );
+    } else {
+        confirmarCriar();
+    }
+}
+
 async function criarPergunta() {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (!userLogado) {
         toast("Usuário não logado", "error");
         return null;
@@ -363,7 +450,7 @@ async function processUserInput(texto) {
 
     if (lower === 'cancelar' || lower === 'voltar' || lower === 'menu') {
         state.passo = 'start';
-        state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+        state.dados = criarDadosVazios();
         state.uploadFlow = false;
         setTimeout(() => startConversation(), 300);
         return;
@@ -381,103 +468,26 @@ async function processUserInput(texto) {
                 addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>!`);
                 setTimeout(() => perguntarConteudo(), 600);
             } else {
-                const userId = getUserId();
-                const idsOcultasM = await getMateriasOcultasIds();
-                let qMaterias = supabaseClient
-                    .from("materia")
-                    .select("id_materia, nome_materia")
-                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-                if (idsOcultasM.length > 0) {
-                    qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-                }
-                const { data: todasMaterias } = await qMaterias;
-                const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
-
-                if (sugestao) {
-                    const nomeSugerido = sugestao.sugestao.nome_materia;
-                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-                    addConfirmButtons(m,
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            state.dados.materia = nomeSugerido;
-                            state.dados.materiaObj = sugestao.sugestao;
-                            addMessage(`Matéria <strong>${escapeHtml(nomeSugerido)}</strong>!`);
-                            setTimeout(() => perguntarConteudo(), 600);
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                            addConfirmButtons(m2,
-                                async () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    const loading = addMessage('Criando matéria...', 'loading');
-                                    try {
-                                        const nova = await criarMateria(texto);
-                                        loading.remove();
-                                        state.dados.materia = nova.nome_materia;
-                                        state.dados.materiaObj = nova;
-                                        state.materiaNova = true;
-                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso!`);
-                                        setTimeout(() => perguntarVinculoTurma(), 600);
-                                    } catch (e) {
-                                        loading.remove();
-                                        addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
-                                        setTimeout(() => perguntarMateria(), 600);
-                                    }
-                                },
-                                () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    addMessage('OK, digite outra matéria:');
-                                }
-                            );
-                        }
-                    );
-                } else {
-                    const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                    addConfirmButtons(m,
-                        async () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando matéria...', 'loading');
-                            try {
-                                const nova = await criarMateria(texto);
-                                loading.remove();
-                                state.dados.materia = nova.nome_materia;
-                                state.dados.materiaObj = nova;
-                                state.materiaNova = true;
-                                addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso!`);
-                                setTimeout(() => perguntarVinculoTurma(), 600);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
-                                setTimeout(() => perguntarMateria(), 600);
-                            }
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outra matéria:');
-                        }
-                    );
-                }
+                await tratarNaoEncontrado(texto, 'materia', {
+                    aoConfirmar: (nome, obj) => {
+                        state.dados.materia = nome;
+                        state.dados.materiaObj = obj;
+                        addMessage(`Matéria <strong>${escapeHtml(nome)}</strong>!`);
+                        setTimeout(() => perguntarConteudo(), 600);
+                    },
+                    aoCriar: () => setTimeout(() => perguntarVinculoTurma(), 600),
+                    aoErro: () => setTimeout(() => perguntarMateria(), 600),
+                });
             }
             break;
         }
 
         case 'await_conteudo': {
             if (state.materiaNova) {
-                state.materiaNova = false;
-                const loading = addMessage('Criando conteúdo...', 'loading');
-                try {
-                    const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                    loading.remove();
-                    state.dados.conteudo = novo.nome_conteudo;
-                    state.dados.conteudoObj = novo;
-                    addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso!`);
-                    setTimeout(() => perguntarEnunciado(), 600);
-                } catch (e) {
-                    loading.remove();
-                    addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                    setTimeout(() => perguntarConteudo(), 600);
-                }
+                await criarConteudoDireto(texto, {
+                    aoCriar: () => setTimeout(() => perguntarEnunciado(), 600),
+                    aoErro: () => setTimeout(() => perguntarConteudo(), 600),
+                });
                 break;
             }
             const msg = addMessage('Verificando conteúdo...', 'loading');
@@ -490,82 +500,16 @@ async function processUserInput(texto) {
                 addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>!`);
                 setTimeout(() => perguntarEnunciado(), 600);
             } else {
-                const userId = getUserId();
-                const idsOcultosC = await getConteudosOcultosIds();
-                let qConteudos = supabaseClient
-                    .from("conteudo")
-                    .select("id_conteudo, nome_conteudo")
-                    .eq("id_materia", state.dados.materiaObj.id_materia)
-                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-                if (idsOcultosC.length > 0) {
-                    qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-                }
-                const { data: todosConteudos } = await qConteudos;
-                const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
-
-                if (sugestao) {
-                    const nomeSugerido = sugestao.sugestao.nome_conteudo;
-                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-                    addConfirmButtons(m,
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            state.dados.conteudo = nomeSugerido;
-                            state.dados.conteudoObj = sugestao.sugestao;
-                            addMessage(`Conteúdo <strong>${escapeHtml(nomeSugerido)}</strong>!`);
-                            setTimeout(() => perguntarEnunciado(), 600);
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                            addConfirmButtons(m2,
-                                async () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    const loading = addMessage('Criando conteúdo...', 'loading');
-                                    try {
-                                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                        loading.remove();
-                                        state.dados.conteudo = novo.nome_conteudo;
-                                        state.dados.conteudoObj = novo;
-                                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso!`);
-                                        setTimeout(() => perguntarEnunciado(), 600);
-                                    } catch (e) {
-                                        loading.remove();
-                                        addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                                        setTimeout(() => perguntarConteudo(), 600);
-                                    }
-                                },
-                                () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    addMessage('OK, digite outro conteúdo:');
-                                }
-                            );
-                        }
-                    );
-                } else {
-                    const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                    addConfirmButtons(m,
-                        async () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando conteúdo...', 'loading');
-                            try {
-                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                loading.remove();
-                                state.dados.conteudo = novo.nome_conteudo;
-                                state.dados.conteudoObj = novo;
-                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso!`);
-                                setTimeout(() => perguntarEnunciado(), 600);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                                setTimeout(() => perguntarConteudo(), 600);
-                            }
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outro conteúdo:');
-                        }
-                    );
-                }
+                await tratarNaoEncontrado(texto, 'conteudo', {
+                    aoConfirmar: (nome, obj) => {
+                        state.dados.conteudo = nome;
+                        state.dados.conteudoObj = obj;
+                        addMessage(`Conteúdo <strong>${escapeHtml(nome)}</strong>!`);
+                        setTimeout(() => perguntarEnunciado(), 600);
+                    },
+                    aoCriar: () => setTimeout(() => perguntarEnunciado(), 600),
+                    aoErro: () => setTimeout(() => perguntarConteudo(), 600),
+                });
             }
             break;
         }
@@ -867,7 +811,7 @@ function perguntarNova() {
     addConfirmButtons(msg,
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+            state.dados = criarDadosVazios();
             setTimeout(() => perguntarMateria(), 400);
         },
         () => {
@@ -921,25 +865,11 @@ async function processarOutro(texto) {
     }
 
     if (lower.includes('conteudo')) {
-        let qConteudos = supabaseClient
-            .from("conteudo")
-            .select("id_conteudo, nome_conteudo, id_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultosC.length > 0) {
-            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-        }
-        const { data: conteudos } = await qConteudos;
+        const { data: conteudos } = await queryConteudos(userId, idsOcultosC, null, 'id_conteudo, nome_conteudo, id_materia');
         if (!conteudos || conteudos.length === 0) {
             addMessage('Nenhum conteúdo cadastrado.');
         } else {
-            let qMaterias = supabaseClient
-                .from("materia")
-                .select("id_materia, nome_materia")
-                .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-            if (idsOcultasM.length > 0) {
-                qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-            }
-            const { data: materias } = await qMaterias;
+            const { data: materias } = await queryMaterias(userId, idsOcultasM);
             const mapMaterias = {};
             if (materias) materias.forEach(m => mapMaterias[m.id_materia] = m.nome_materia);
             const nomes = conteudos.map(c => {
@@ -953,14 +883,7 @@ async function processarOutro(texto) {
     }
 
     if (lower.includes('lista') || lower.includes('listar') || lower.includes('quai') || lower.includes('mostra') || lower.includes('materia')) {
-        let qMaterias = supabaseClient
-            .from("materia")
-            .select("id_materia, nome_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultasM.length > 0) {
-            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-        }
-        const { data: materias } = await qMaterias;
+        const { data: materias } = await queryMaterias(userId, idsOcultasM);
         if (!materias || materias.length === 0) {
             addMessage('Nenhuma matéria cadastrada.');
         } else {
@@ -1027,14 +950,7 @@ async function processarOcultarMateriaInput(texto) {
 async function processarOcultarConteudoInput(texto) {
     const userId = getUserId();
     const idsOcultos = await getConteudosOcultosIds();
-    let q = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo, id_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_conteudo", texto.trim());
-    if (idsOcultos.length > 0) {
-        q = q.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
+    const q = queryConteudos(userId, idsOcultos, null, 'id_conteudo, nome_conteudo, id_materia').ilike("nome_conteudo", texto.trim());
     const { data: conteudo } = await q.maybeSingle();
     if (conteudo) {
         const { data: materias } = await supabaseClient.from("materia").select("id_materia, nome_materia");
@@ -1356,14 +1272,7 @@ async function iniciarOcultarMateria() {
         .eq("id_usuario", userId);
     const idsOcultas = (ocultas || []).map(o => o.id_materia);
 
-    let query = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultas.length > 0) {
-        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: materias } = await query;
+    const { data: materias } = await queryMaterias(userId, idsOcultas);
 
     state.passo = 'await_ocultar_materia';
     setInputEnabled(true);
@@ -1428,14 +1337,7 @@ async function iniciarOcultarConteudo() {
         .eq("id_usuario", userId);
     const idsOcultos = (ocultos || []).map(o => o.id_conteudo);
 
-    let query = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo, id_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultos.length > 0) {
-        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: conteudos } = await query;
+    const { data: conteudos } = await queryConteudos(userId, idsOcultos, null, 'id_conteudo, nome_conteudo, id_materia');
 
     state.passo = 'await_ocultar_conteudo';
     setInputEnabled(true);
@@ -1501,7 +1403,7 @@ async function iniciarOutro() {
 
 function resetState() {
     state.passo = 'start';
-    state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+    state.dados = criarDadosVazios();
     state.questoes = [];
     state.uploadFlow = false;
 }
@@ -1525,83 +1427,16 @@ async function uploadFinalizarMateria(texto) {
         addMessage(`Matéria: <strong>${escapeHtml(materia.nome_materia)}</strong> `);
         setTimeout(() => uploadPerguntarConteudo(), 500);
     } else {
-        const userId = getUserId();
-        const idsOcultasM = await getMateriasOcultasIds();
-        let qMaterias = supabaseClient
-            .from("materia")
-            .select("id_materia, nome_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultasM.length > 0) {
-            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-        }
-        const { data: todasMaterias } = await qMaterias;
-        const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
-
-        if (sugestao) {
-            const nomeSugerido = sugestao.sugestao.nome_materia;
-            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-            addConfirmButtons(m,
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    state.dados.materia = nomeSugerido;
-                    state.dados.materiaObj = sugestao.sugestao;
-                    addMessage(`Matéria: <strong>${escapeHtml(nomeSugerido)}</strong> `);
-                    setTimeout(() => uploadPerguntarConteudo(), 500);
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                    addConfirmButtons(m2,
-                        async () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando matéria...', 'loading');
-                            try {
-                                        const nova = await criarMateria(texto);
-                                        loading.remove();
-                                        state.dados.materia = nova.nome_materia;
-                                        state.dados.materiaObj = nova;
-                                        state.materiaNova = true;
-                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! `);
-                                        setTimeout(() => perguntarVinculoTurma(), 500);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro: ${e.message}`, 'system');
-                                setTimeout(() => startUploadFlow(), 600);
-                            }
-                        },
-                        () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outra matéria:');
-                        }
-                    );
-                }
-            );
-        } else {
-            const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-            addConfirmButtons(m,
-                async () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const loading = addMessage('Criando matéria...', 'loading');
-                    try {
-                        const nova = await criarMateria(texto);
-                        loading.remove();
-                        state.dados.materia = nova.nome_materia;
-                        state.dados.materiaObj = nova;
-                        state.materiaNova = true;
-                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! `);
-                        setTimeout(() => perguntarVinculoTurma(), 500);
-                    } catch (e) {
-                        loading.remove();
-                        addMessage(`Erro: ${e.message}`, 'system');
-                        setTimeout(() => startUploadFlow(), 600);
-                    }
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    addMessage('OK, digite outra matéria:');
-                }
-            );
-        }
+        await tratarNaoEncontrado(texto, 'materia', {
+            aoConfirmar: (nome, obj) => {
+                state.dados.materia = nome;
+                state.dados.materiaObj = obj;
+                addMessage(`Matéria: <strong>${escapeHtml(nome)}</strong> `);
+                setTimeout(() => uploadPerguntarConteudo(), 500);
+            },
+            aoCriar: () => setTimeout(() => perguntarVinculoTurma(), 500),
+            aoErro: () => setTimeout(() => startUploadFlow(), 600),
+        });
     }
 }
 
@@ -1613,20 +1448,10 @@ function uploadPerguntarConteudo() {
 
 async function uploadFinalizarConteudo(texto) {
     if (state.materiaNova) {
-        state.materiaNova = false;
-        const loading = addMessage('Criando conteúdo...', 'loading');
-        try {
-            const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-            loading.remove();
-            state.dados.conteudo = novo.nome_conteudo;
-            state.dados.conteudoObj = novo;
-            addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! `);
-            setTimeout(() => uploadMostrarArea(), 500);
-        } catch (e) {
-            loading.remove();
-            addMessage(`Erro: ${e.message}`, 'system');
-            setTimeout(() => uploadPerguntarConteudo(), 600);
-        }
+        await criarConteudoDireto(texto, {
+            aoCriar: () => setTimeout(() => uploadMostrarArea(), 500),
+            aoErro: () => setTimeout(() => uploadPerguntarConteudo(), 600),
+        });
         return;
     }
     const msg = addMessage('Verificando conteúdo...', 'loading');
@@ -1639,82 +1464,16 @@ async function uploadFinalizarConteudo(texto) {
         addMessage(`Conteúdo: <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> `);
         setTimeout(() => uploadMostrarArea(), 500);
     } else {
-        const userId = getUserId();
-        const idsOcultosC = await getConteudosOcultosIds();
-        let qConteudos = supabaseClient
-            .from("conteudo")
-            .select("id_conteudo, nome_conteudo")
-            .eq("id_materia", state.dados.materiaObj.id_materia)
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultosC.length > 0) {
-            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-        }
-        const { data: todosConteudos } = await qConteudos;
-        const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
-
-        if (sugestao) {
-            const nomeSugerido = sugestao.sugestao.nome_conteudo;
-            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-            addConfirmButtons(m,
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    state.dados.conteudo = nomeSugerido;
-                    state.dados.conteudoObj = sugestao.sugestao;
-                    addMessage(`Conteúdo: <strong>${escapeHtml(nomeSugerido)}</strong> `);
-                    setTimeout(() => uploadMostrarArea(), 500);
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                    addConfirmButtons(m2,
-                        async () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando conteúdo...', 'loading');
-                            try {
-                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                loading.remove();
-                                state.dados.conteudo = novo.nome_conteudo;
-                                state.dados.conteudoObj = novo;
-                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! `);
-                                setTimeout(() => uploadMostrarArea(), 500);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro: ${e.message}`, 'system');
-                                setTimeout(() => uploadPerguntarConteudo(), 600);
-                            }
-                        },
-                        () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outro conteúdo:');
-                        }
-                    );
-                }
-            );
-        } else {
-            const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-            addConfirmButtons(m,
-                async () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const loading = addMessage('Criando conteúdo...', 'loading');
-                    try {
-                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                        loading.remove();
-                        state.dados.conteudo = novo.nome_conteudo;
-                        state.dados.conteudoObj = novo;
-                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! `);
-                        setTimeout(() => uploadMostrarArea(), 500);
-                    } catch (e) {
-                        loading.remove();
-                        addMessage(`Erro: ${e.message}`, 'system');
-                        setTimeout(() => uploadPerguntarConteudo(), 600);
-                    }
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    addMessage('OK, digite outro conteúdo:');
-                }
-            );
-        }
+        await tratarNaoEncontrado(texto, 'conteudo', {
+            aoConfirmar: (nome, obj) => {
+                state.dados.conteudo = nome;
+                state.dados.conteudoObj = obj;
+                addMessage(`Conteúdo: <strong>${escapeHtml(nome)}</strong> `);
+                setTimeout(() => uploadMostrarArea(), 500);
+            },
+            aoCriar: () => setTimeout(() => uploadMostrarArea(), 500),
+            aoErro: () => setTimeout(() => uploadPerguntarConteudo(), 600),
+        });
     }
 }
 
@@ -2241,7 +2000,7 @@ async function processarDocumentoMulti(file) {
 }
 
 async function criarMultiplasPerguntas() {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (!userLogado) {
         addMessage('Usuário não logado.', 'system');
         return;
@@ -2362,7 +2121,7 @@ function initChat() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (userLogado && userLogado.tipo_conta === 'professor') {
         initChat();
     }
