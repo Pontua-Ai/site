@@ -28,6 +28,7 @@ let chatInput = null;
 let chatSend = null;
 let chatToggle = null;
 let chatPanel = null;
+let chatFullscreen = null;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -79,7 +80,15 @@ function buscarSugestao(texto, lista, campo) {
 function addMessage(text, type = 'bot') {
     const msg = document.createElement('div');
     msg.className = `chatbot-msg ${type}`;
-    msg.innerHTML = text;
+    if (type === 'loading') {
+        msg.innerHTML = `
+            <span class="chatbot-typing">
+                <span class="chatbot-typing-avatar">🐨</span>
+                <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
+            </span>`;
+    } else {
+        msg.innerHTML = text;
+    }
     chatMessages.appendChild(msg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return msg;
@@ -166,7 +175,7 @@ function hideChat() {
     if (!chatPanel) return;
     chatPanel.classList.remove('open');
     chatToggle.classList.remove('open');
-    chatToggle.innerHTML = '';
+    chatToggle.innerHTML = '💬';
 }
 
 function toggleChat() {
@@ -175,6 +184,13 @@ function toggleChat() {
     } else {
         showChat();
     }
+}
+
+function toggleFullscreen() {
+    if (!chatPanel) return;
+    const isFullscreen = chatPanel.classList.toggle('fullscreen');
+    chatFullscreen.classList.toggle('active', isFullscreen);
+    chatFullscreen.innerHTML = isFullscreen ? '🗗' : '⛶';
 }
 
 function setInputEnabled(enabled) {
@@ -2086,6 +2102,7 @@ function initChat() {
                 <h3>Assistente PontuaAI</h3>
                 <p>Cadastre perguntas rapidamente</p>
             </div>
+            <button class="chatbot-fullscreen" id="chatFullscreen" title="Tela cheia">⛶</button>
         </div>
         <div class="chatbot-messages"></div>
         <div class="chatbot-input-area">
@@ -2100,6 +2117,8 @@ function initChat() {
     chatMessages = chatPanel.querySelector('.chatbot-messages');
     chatInput = chatPanel.querySelector('#chatInput');
     chatSend = chatPanel.querySelector('#chatSend');
+    chatFullscreen = chatPanel.querySelector('#chatFullscreen');
+    chatFullscreen.addEventListener('click', toggleFullscreen);
 
     function autoResizeTextarea() {
         chatInput.style.height = 'auto';
