@@ -21,6 +21,10 @@
     transform: scale(1.1);
 }
 
+.chatbot-toggle.above-panel {
+    z-index: 10000;
+}
+
 .chatbot-toggle.open {
     background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
@@ -186,6 +190,11 @@
     font-size: 15px;
     line-height: 1;
     animation: mascotPulse 1.2s ease-in-out infinite;
+}
+
+.chatbot-typing-text {
+    margin-left: 4px;
+    font-size: 13px;
 }
 
 .chatbot-typing-dots {

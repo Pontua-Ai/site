@@ -85,7 +85,8 @@ function addMessage(text, type = 'bot') {
             <span class="chatbot-typing">
                 <span class="chatbot-typing-avatar">🐨</span>
                 <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
-            </span>`;
+            </span>
+            <span class="chatbot-typing-text">${escapeHtml(text)}</span>`;
     } else {
         msg.innerHTML = text;
     }
@@ -173,9 +174,13 @@ function showChat() {
 
 function hideChat() {
     if (!chatPanel) return;
-    chatPanel.classList.remove('open');
-    chatToggle.classList.remove('open');
+    chatPanel.classList.remove('open', 'fullscreen');
+    chatToggle.classList.remove('open', 'above-panel');
     chatToggle.innerHTML = '💬';
+    if (chatFullscreen) {
+        chatFullscreen.classList.remove('active');
+        chatFullscreen.innerHTML = '⛶';
+    }
 }
 
 function toggleChat() {
@@ -191,6 +196,7 @@ function toggleFullscreen() {
     const isFullscreen = chatPanel.classList.toggle('fullscreen');
     chatFullscreen.classList.toggle('active', isFullscreen);
     chatFullscreen.innerHTML = isFullscreen ? '🗗' : '⛶';
+    chatToggle.classList.toggle('above-panel', isFullscreen);
 }
 
 function setInputEnabled(enabled) {
@@ -475,7 +481,16 @@ async function processUserInput(texto) {
     switch (state.passo) {
         case 'await_materia': {
             const msg = addMessage('Verificando matéria...', 'loading');
-            const materia = await buscarMateria(texto);
+            let materia;
+            try {
+                materia = await buscarMateria(texto);
+            } catch (e) {
+                msg.remove();
+                addMessage(`Erro ao verificar matéria: ${e.message}`, 'system');
+                state.passo = 'await_materia';
+                setInputEnabled(true);
+                break;
+            }
             msg.remove();
 
             if (materia) {
@@ -507,7 +522,16 @@ async function processUserInput(texto) {
                 break;
             }
             const msg = addMessage('Verificando conteúdo...', 'loading');
-            const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+            let conteudo;
+            try {
+                conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+            } catch (e) {
+                msg.remove();
+                addMessage(`Erro ao verificar conteúdo: ${e.message}`, 'system');
+                state.passo = 'await_conteudo';
+                setInputEnabled(true);
+                break;
+            }
             msg.remove();
 
             if (conteudo) {
@@ -1434,7 +1458,16 @@ function startUploadFlow() {
 
 async function uploadFinalizarMateria(texto) {
     const msg = addMessage('Verificando matéria...', 'loading');
-    const materia = await buscarMateria(texto);
+    let materia;
+    try {
+        materia = await buscarMateria(texto);
+    } catch (e) {
+        msg.remove();
+        addMessage(`Erro ao verificar matéria: ${e.message}`, 'system');
+        state.passo = 'upload_await_materia';
+        setInputEnabled(true);
+        return;
+    }
     msg.remove();
 
     if (materia) {
@@ -1471,7 +1504,16 @@ async function uploadFinalizarConteudo(texto) {
         return;
     }
     const msg = addMessage('Verificando conteúdo...', 'loading');
-    const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+    let conteudo;
+    try {
+        conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+    } catch (e) {
+        msg.remove();
+        addMessage(`Erro ao verificar conteúdo: ${e.message}`, 'system');
+        state.passo = 'upload_await_conteudo';
+        setInputEnabled(true);
+        return;
+    }
     msg.remove();
 
     if (conteudo) {
@@ -1908,7 +1950,12 @@ async function processarDocumentoMulti(file) {
         let imagensConvertidas = null;
 
         if (imgMatch && imgMatch.length > 0) {
-            loadingEl.innerHTML = '📄 Lendo documento... convertendo imagens...';
+            loadingEl.innerHTML = `
+                <span class="chatbot-typing">
+                    <span class="chatbot-typing-avatar">🐨</span>
+                    <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
+                </span>
+                <span class="chatbot-typing-text">📄 Lendo documento... convertendo imagens...</span>`;
 
             if (typeof JSZip !== 'undefined') {
                 imagensConvertidas = await extrairImagensZip(arrayBuffer);
@@ -2010,6 +2057,9 @@ async function processarDocumentoMulti(file) {
         visMsg.appendChild(visOpts);
 
     } catch (e) {
+        if (loadingEl && loadingEl.isConnected) {
+            loadingEl.remove();
+        }
         addMessage(`Erro: ${e.message}`, 'system');
         console.error('[ChatBot]', e);
     }
