@@ -18,12 +18,17 @@ const state = {
     materiaNova: false
 };
 
+function criarDadosVazios() {
+    return { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+}
+
 let chatContainer = null;
 let chatMessages = null;
 let chatInput = null;
 let chatSend = null;
 let chatToggle = null;
 let chatPanel = null;
+let chatFullscreen = null;
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -75,7 +80,16 @@ function buscarSugestao(texto, lista, campo) {
 function addMessage(text, type = 'bot') {
     const msg = document.createElement('div');
     msg.className = `chatbot-msg ${type}`;
-    msg.innerHTML = text;
+    if (type === 'loading') {
+        msg.innerHTML = `
+            <span class="chatbot-typing">
+                <span class="chatbot-typing-avatar">🐨</span>
+                <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
+            </span>
+            <span class="chatbot-typing-text">${escapeHtml(text)}</span>`;
+    } else {
+        msg.innerHTML = text;
+    }
     chatMessages.appendChild(msg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return msg;
@@ -160,9 +174,13 @@ function showChat() {
 
 function hideChat() {
     if (!chatPanel) return;
-    chatPanel.classList.remove('open');
-    chatToggle.classList.remove('open');
+    chatPanel.classList.remove('open', 'fullscreen');
+    chatToggle.classList.remove('open', 'above-panel');
     chatToggle.innerHTML = '💬';
+    if (chatFullscreen) {
+        chatFullscreen.classList.remove('active');
+        chatFullscreen.innerHTML = '⛶';
+    }
 }
 
 function toggleChat() {
@@ -171,6 +189,14 @@ function toggleChat() {
     } else {
         showChat();
     }
+}
+
+function toggleFullscreen() {
+    if (!chatPanel) return;
+    const isFullscreen = chatPanel.classList.toggle('fullscreen');
+    chatFullscreen.classList.toggle('active', isFullscreen);
+    chatFullscreen.innerHTML = isFullscreen ? '🗗' : '⛶';
+    chatToggle.classList.toggle('above-panel', isFullscreen);
 }
 
 function setInputEnabled(enabled) {
@@ -189,9 +215,16 @@ function sendMessage(text) {
     processUserInput(text.trim());
 }
 
+function getUserLogado() {
+    try {
+        return JSON.parse(localStorage.getItem("userLogado"));
+    } catch {
+        return null;
+    }
+}
+
 function getUserId() {
-    const user = JSON.parse(localStorage.getItem("userLogado"));
-    return user?.id_usuario || null;
+    return getUserLogado()?.id_usuario || null;
 }
 
 async function getMateriasOcultasIds() {
@@ -233,29 +266,39 @@ async function getConteudosOcultosIds() {
     return idsConteudos;
 }
 
+function queryMaterias(userId, idsOcultas, campos = 'id_materia, nome_materia') {
+    let query = supabaseClient
+        .from("materia")
+        .select(campos)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idsOcultas.length > 0) {
+        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
+    }
+    return query;
+}
+
+function queryConteudos(userId, idsOcultos, idMateria = null, campos = 'id_conteudo, nome_conteudo') {
+    let query = supabaseClient
+        .from("conteudo")
+        .select(campos)
+        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
+    if (idMateria !== null) {
+        query = query.eq("id_materia", idMateria);
+    }
+    if (idsOcultos.length > 0) {
+        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
+    }
+    return query;
+}
+
 async function buscarMateria(nome) {
     const userId = getUserId();
     const nomes = nome.trim();
     const idsOcultas = await getMateriasOcultasIds();
-    let query = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_materia", nomes);
-    if (idsOcultas.length > 0) {
-        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: exato } = await query.maybeSingle();
+    const { data: exato } = await queryMaterias(userId, idsOcultas).ilike("nome_materia", nomes).maybeSingle();
     if (exato) return exato;
 
-    let query2 = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultas.length > 0) {
-        query2 = query2.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: todas } = await query2;
+    const { data: todas } = await queryMaterias(userId, idsOcultas);
 
     if (!todas) return null;
 
@@ -267,27 +310,10 @@ async function buscarConteudo(nome, idMateria) {
     const userId = getUserId();
     const nomes = nome.trim();
     const idsOcultos = await getConteudosOcultosIds();
-    let query = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria)
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_conteudo", nomes);
-    if (idsOcultos.length > 0) {
-        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: exato } = await query.maybeSingle();
+    const { data: exato } = await queryConteudos(userId, idsOcultos, idMateria).ilike("nome_conteudo", nomes).maybeSingle();
     if (exato) return exato;
 
-    let query2 = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo")
-        .eq("id_materia", idMateria)
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultos.length > 0) {
-        query2 = query2.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: todos } = await query2;
+    const { data: todos } = await queryConteudos(userId, idsOcultos, idMateria);
 
     if (!todos) return null;
 
@@ -317,8 +343,91 @@ async function criarConteudo(nome, idMateria) {
     return data;
 }
 
+async function criarConteudoDireto(texto, handlers) {
+    state.materiaNova = false;
+    const loading = addMessage('Criando conteúdo...', 'loading');
+    try {
+        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
+        loading.remove();
+        state.dados.conteudo = novo.nome_conteudo;
+        state.dados.conteudoObj = novo;
+        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso!`);
+        handlers.aoCriar(novo);
+    } catch (e) {
+        loading.remove();
+        addMessage(`Erro ao criar conteúdo: ${escapeHtml(e.message)}`, 'system');
+        handlers.aoErro(e);
+    }
+}
+
+async function tratarNaoEncontrado(texto, tipo, handlers) {
+    const userId = getUserId();
+    const rotulo = tipo === 'materia' ? 'Matéria' : 'Conteúdo';
+    const fem = tipo === 'materia';
+    const campo = tipo === 'materia' ? 'nome_materia' : 'nome_conteudo';
+
+    let todos = null;
+    if (tipo === 'materia') {
+        const idsOcultas = await getMateriasOcultasIds();
+        const { data } = await queryMaterias(userId, idsOcultas);
+        todos = data;
+    } else {
+        const idsOcultos = await getConteudosOcultosIds();
+        const { data } = await queryConteudos(userId, idsOcultos, state.dados.materiaObj.id_materia);
+        todos = data;
+    }
+
+    const sugestao = todos ? buscarSugestao(texto, todos, campo) : null;
+
+    const confirmarCriar = () => {
+        const m2 = addMessage(`${rotulo} <strong>${escapeHtml(texto)}</strong> não encontrada${fem ? '' : 'o'}. Deseja criar?`);
+        addConfirmButtons(m2,
+            async () => {
+                m2.querySelector('.chatbot-confirm')?.remove();
+                const loading = addMessage(`Criando ${rotulo.toLowerCase()}...`, 'loading');
+                try {
+                    const novo = tipo === 'materia'
+                        ? await criarMateria(texto)
+                        : await criarConteudo(texto, state.dados.materiaObj.id_materia);
+                    loading.remove();
+                    state.dados[tipo] = novo[campo];
+                    state.dados[tipo + 'Obj'] = novo;
+                    if (tipo === 'materia') state.materiaNova = true;
+                    addMessage(`${rotulo} <strong>${escapeHtml(novo[campo])}</strong> criada${fem ? '' : 'o'} com sucesso!`);
+                    handlers.aoCriar(novo);
+                } catch (e) {
+                    loading.remove();
+                    addMessage(`Erro ao criar ${rotulo.toLowerCase()}: ${escapeHtml(e.message)}`, 'system');
+                    handlers.aoErro(e);
+                }
+            },
+            () => {
+                m2.querySelector('.chatbot-confirm')?.remove();
+                addMessage(`OK, digite outra ${rotulo.toLowerCase()}:`);
+            }
+        );
+    };
+
+    if (sugestao) {
+        const nomeSugerido = sugestao.sugestao[campo];
+        const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
+        addConfirmButtons(m,
+            () => {
+                m.querySelector('.chatbot-confirm')?.remove();
+                handlers.aoConfirmar(nomeSugerido, sugestao.sugestao);
+            },
+            () => {
+                m.querySelector('.chatbot-confirm')?.remove();
+                confirmarCriar();
+            }
+        );
+    } else {
+        confirmarCriar();
+    }
+}
+
 async function criarPergunta() {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (!userLogado) {
         toast("Usuário não logado", "error");
         return null;
@@ -363,7 +472,7 @@ async function processUserInput(texto) {
 
     if (lower === 'cancelar' || lower === 'voltar' || lower === 'menu') {
         state.passo = 'start';
-        state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+        state.dados = criarDadosVazios();
         state.uploadFlow = false;
         setTimeout(() => startConversation(), 300);
         return;
@@ -372,200 +481,75 @@ async function processUserInput(texto) {
     switch (state.passo) {
         case 'await_materia': {
             const msg = addMessage('Verificando matéria...', 'loading');
-            const materia = await buscarMateria(texto);
+            let materia;
+            try {
+                materia = await buscarMateria(texto);
+            } catch (e) {
+                msg.remove();
+                addMessage(`Erro ao verificar matéria: ${escapeHtml(e.message)}`, 'system');
+                state.passo = 'await_materia';
+                setInputEnabled(true);
+                break;
+            }
             msg.remove();
 
             if (materia) {
                 state.dados.materia = materia.nome_materia;
                 state.dados.materiaObj = materia;
-                addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>! ✅`);
+                addMessage(`Encontrei a matéria <strong>${escapeHtml(materia.nome_materia)}</strong>!`);
                 setTimeout(() => perguntarConteudo(), 600);
             } else {
-                const userId = getUserId();
-                const idsOcultasM = await getMateriasOcultasIds();
-                let qMaterias = supabaseClient
-                    .from("materia")
-                    .select("id_materia, nome_materia")
-                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-                if (idsOcultasM.length > 0) {
-                    qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-                }
-                const { data: todasMaterias } = await qMaterias;
-                const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
-
-                if (sugestao) {
-                    const nomeSugerido = sugestao.sugestao.nome_materia;
-                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-                    addConfirmButtons(m,
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            state.dados.materia = nomeSugerido;
-                            state.dados.materiaObj = sugestao.sugestao;
-                            addMessage(`Matéria <strong>${escapeHtml(nomeSugerido)}</strong>! ✅`);
-                            setTimeout(() => perguntarConteudo(), 600);
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                            addConfirmButtons(m2,
-                                async () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    const loading = addMessage('Criando matéria...', 'loading');
-                                    try {
-                                        const nova = await criarMateria(texto);
-                                        loading.remove();
-                                        state.dados.materia = nova.nome_materia;
-                                        state.dados.materiaObj = nova;
-                                        state.materiaNova = true;
-                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
-                                        setTimeout(() => perguntarVinculoTurma(), 600);
-                                    } catch (e) {
-                                        loading.remove();
-                                        addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
-                                        setTimeout(() => perguntarMateria(), 600);
-                                    }
-                                },
-                                () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    addMessage('OK, digite outra matéria:');
-                                }
-                            );
-                        }
-                    );
-                } else {
-                    const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                    addConfirmButtons(m,
-                        async () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando matéria...', 'loading');
-                            try {
-                                const nova = await criarMateria(texto);
-                                loading.remove();
-                                state.dados.materia = nova.nome_materia;
-                                state.dados.materiaObj = nova;
-                                state.materiaNova = true;
-                                addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada com sucesso! ✅`);
-                                setTimeout(() => perguntarVinculoTurma(), 600);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro ao criar matéria: ${e.message}`, 'system');
-                                setTimeout(() => perguntarMateria(), 600);
-                            }
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outra matéria:');
-                        }
-                    );
-                }
+                await tratarNaoEncontrado(texto, 'materia', {
+                    aoConfirmar: (nome, obj) => {
+                        state.dados.materia = nome;
+                        state.dados.materiaObj = obj;
+                        addMessage(`Matéria <strong>${escapeHtml(nome)}</strong>!`);
+                        setTimeout(() => perguntarConteudo(), 600);
+                    },
+                    aoCriar: () => setTimeout(() => perguntarVinculoTurma(), 600),
+                    aoErro: () => setTimeout(() => perguntarMateria(), 600),
+                });
             }
             break;
         }
 
         case 'await_conteudo': {
             if (state.materiaNova) {
-                state.materiaNova = false;
-                const loading = addMessage('Criando conteúdo...', 'loading');
-                try {
-                    const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                    loading.remove();
-                    state.dados.conteudo = novo.nome_conteudo;
-                    state.dados.conteudoObj = novo;
-                    addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
-                    setTimeout(() => perguntarEnunciado(), 600);
-                } catch (e) {
-                    loading.remove();
-                    addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                    setTimeout(() => perguntarConteudo(), 600);
-                }
+                await criarConteudoDireto(texto, {
+                    aoCriar: () => setTimeout(() => perguntarEnunciado(), 600),
+                    aoErro: () => setTimeout(() => perguntarConteudo(), 600),
+                });
                 break;
             }
             const msg = addMessage('Verificando conteúdo...', 'loading');
-            const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+            let conteudo;
+            try {
+                conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+            } catch (e) {
+                msg.remove();
+                addMessage(`Erro ao verificar conteúdo: ${escapeHtml(e.message)}`, 'system');
+                state.passo = 'await_conteudo';
+                setInputEnabled(true);
+                break;
+            }
             msg.remove();
 
             if (conteudo) {
                 state.dados.conteudo = conteudo.nome_conteudo;
                 state.dados.conteudoObj = conteudo;
-                addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>! ✅`);
+                addMessage(`Encontrei o conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong>!`);
                 setTimeout(() => perguntarEnunciado(), 600);
             } else {
-                const userId = getUserId();
-                const idsOcultosC = await getConteudosOcultosIds();
-                let qConteudos = supabaseClient
-                    .from("conteudo")
-                    .select("id_conteudo, nome_conteudo")
-                    .eq("id_materia", state.dados.materiaObj.id_materia)
-                    .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-                if (idsOcultosC.length > 0) {
-                    qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-                }
-                const { data: todosConteudos } = await qConteudos;
-                const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
-
-                if (sugestao) {
-                    const nomeSugerido = sugestao.sugestao.nome_conteudo;
-                    const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-                    addConfirmButtons(m,
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            state.dados.conteudo = nomeSugerido;
-                            state.dados.conteudoObj = sugestao.sugestao;
-                            addMessage(`Conteúdo <strong>${escapeHtml(nomeSugerido)}</strong>! ✅`);
-                            setTimeout(() => perguntarEnunciado(), 600);
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                            addConfirmButtons(m2,
-                                async () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    const loading = addMessage('Criando conteúdo...', 'loading');
-                                    try {
-                                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                        loading.remove();
-                                        state.dados.conteudo = novo.nome_conteudo;
-                                        state.dados.conteudoObj = novo;
-                                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
-                                        setTimeout(() => perguntarEnunciado(), 600);
-                                    } catch (e) {
-                                        loading.remove();
-                                        addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                                        setTimeout(() => perguntarConteudo(), 600);
-                                    }
-                                },
-                                () => {
-                                    m2.querySelector('.chatbot-confirm')?.remove();
-                                    addMessage('OK, digite outro conteúdo:');
-                                }
-                            );
-                        }
-                    );
-                } else {
-                    const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                    addConfirmButtons(m,
-                        async () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando conteúdo...', 'loading');
-                            try {
-                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                loading.remove();
-                                state.dados.conteudo = novo.nome_conteudo;
-                                state.dados.conteudoObj = novo;
-                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado com sucesso! ✅`);
-                                setTimeout(() => perguntarEnunciado(), 600);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
-                                setTimeout(() => perguntarConteudo(), 600);
-                            }
-                        },
-                        () => {
-                            m.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outro conteúdo:');
-                        }
-                    );
-                }
+                await tratarNaoEncontrado(texto, 'conteudo', {
+                    aoConfirmar: (nome, obj) => {
+                        state.dados.conteudo = nome;
+                        state.dados.conteudoObj = obj;
+                        addMessage(`Conteúdo <strong>${escapeHtml(nome)}</strong>!`);
+                        setTimeout(() => perguntarEnunciado(), 600);
+                    },
+                    aoCriar: () => setTimeout(() => perguntarEnunciado(), 600),
+                    aoErro: () => setTimeout(() => perguntarConteudo(), 600),
+                });
             }
             break;
         }
@@ -577,7 +561,7 @@ async function processUserInput(texto) {
             }
             state.dados.enunciado = texto;
             setInputEnabled(false);
-            addMessage('Enunciado salvo! ✅');
+            addMessage('Enunciado salvo!');
             setTimeout(() => perguntarAlternativas(), 400);
             break;
         }
@@ -594,7 +578,7 @@ async function processUserInput(texto) {
             }
             state.dados.alternativas = linhas.map(l => l.trim());
             setInputEnabled(false);
-            addMessage(`${linhas.length} alternativas salvas! ✅`);
+            addMessage(`${linhas.length} alternativas salvas!`);
             setTimeout(() => perguntarCorreta(), 400);
             break;
         }
@@ -607,7 +591,7 @@ async function processUserInput(texto) {
             }
             state.dados.correta = num;
             setInputEnabled(false);
-            addMessage(`Alternativa correta: <strong>${num}</strong> ✅`);
+            addMessage(`Alternativa correta: <strong>${num}</strong>`);
             setTimeout(() => perguntarVisibilidade(), 400);
             break;
         }
@@ -624,7 +608,7 @@ async function processUserInput(texto) {
             }
             setInputEnabled(false);
             const label = state.dados.visibilidade === 'publico' ? 'Público' : 'Privado';
-            addMessage(`Visibilidade: <strong>${label}</strong> ✅`);
+            addMessage(`Visibilidade: <strong>${label}</strong>`);
             setTimeout(() => mostrarResumo(), 400);
             break;
         }
@@ -666,7 +650,7 @@ function perguntarMateria() {
     }
     state.passo = 'await_materia';
     setInputEnabled(true);
-    addMessage('📚 Qual a <strong>matéria</strong> da pergunta? (ex: Matemática, Português...)');
+    addMessage('Qual a <strong>matéria</strong> da pergunta? (ex: Matemática, Português...)');
 }
 
 function perguntarConteudo() {
@@ -676,7 +660,7 @@ function perguntarConteudo() {
     }
     state.passo = 'await_conteudo';
     setInputEnabled(true);
-    addMessage(`📖 Qual o <strong>conteúdo</strong> dentro de <strong>${escapeHtml(state.dados.materia)}</strong>? (ex: Álgebra, Fonética...)`);
+    addMessage(`Qual o <strong>conteúdo</strong> dentro de <strong>${escapeHtml(state.dados.materia)}</strong>? (ex: Álgebra, Fonética...)`);
 }
 
 function proximoAposVinculo() {
@@ -711,7 +695,7 @@ async function perguntarVinculoTurma() {
     const msg = addMessage(`Deseja vincular <strong>${escapeHtml(state.dados.materia)}</strong> a alguma turma?<br><small>Digite os números separados por vírgula ou <strong>0</strong> para pular.</small>`);
     const options = addBotOptions([
         ...turmas.map(t => ({ label: t.nome_turma, value: String(t.id_turma) })),
-        { label: '⏭️ Pular', value: 'pular' },
+        { label: 'Pular', value: 'pular' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'pular') {
@@ -731,11 +715,11 @@ async function vincularMateriaTurmas(idsTurmas) {
             idsTurmas.map(id => ({ id_materia: idMateria, id_turma: id }))
         );
         loading.remove();
-        addMessage(`✅ Matéria vinculada a ${idsTurmas.length} turma(s)!`);
+        addMessage(` Matéria vinculada a ${idsTurmas.length} turma(s)!`);
         toast("Matéria vinculada às turmas!", "success");
     } catch (e) {
         loading.remove();
-        addMessage(`Erro ao vincular: ${e.message}`, 'system');
+        addMessage(`Erro ao vincular: ${escapeHtml(e.message)}`, 'system');
     }
     setTimeout(() => proximoAposVinculo(), 600);
 }
@@ -775,7 +759,7 @@ function perguntarEnunciado() {
     }
     state.passo = 'await_enunciado';
     setInputEnabled(true);
-    addMessage('✏️ Digite o <strong>enunciado</strong> da pergunta:');
+    addMessage('Digite o <strong>enunciado</strong> da pergunta:');
 }
 
 function perguntarAlternativas() {
@@ -785,7 +769,7 @@ function perguntarAlternativas() {
     }
     state.passo = 'await_alternativas';
     setInputEnabled(true);
-    addMessage('📝 Digite as <strong>alternativas</strong> (uma por linha, mínimo 2, máximo 6):');
+    addMessage(' Digite as <strong>alternativas</strong> (uma por linha, mínimo 2, máximo 6):');
     addMessage('Exemplo:<br><br>Nenhuma das alternativas<br>Todas as alternativas<br>Apenas I e II<br>Apenas II e III');
 }
 
@@ -796,7 +780,7 @@ function perguntarCorreta() {
     }
     state.passo = 'await_correta';
     setInputEnabled(true);
-    let html = '✅ Qual é a <strong>alternativa correta</strong>? Digite o número:<br><br>';
+    let html = ' Qual é a <strong>alternativa correta</strong>? Digite o número:<br><br>';
     state.dados.alternativas.forEach((alt, i) => {
         html += `<strong>${i + 1}.</strong> ${escapeHtml(alt)}<br>`;
     });
@@ -810,11 +794,11 @@ function perguntarVisibilidade() {
     }
     state.passo = 'await_visibilidade';
     setInputEnabled(true);
-    addMessage('👁️ As perguntas serão <strong>Públicas</strong> ou <strong>Privadas</strong>?<br><br>1 - Público (todos podem ver)<br>2 - Privado (só você vê)');
+    addMessage(' As perguntas serão <strong>Públicas</strong> ou <strong>Privadas</strong>?<br><br>1 - Público (todos podem ver)<br>2 - Privado (só você vê)');
 }
 
 function mostrarResumo() {
-    let html = '📋 <strong>Prévia da pergunta:</strong><br><br>';
+    let html = ' <strong>Prévia da pergunta:</strong><br><br>';
     html += `<div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:14px;margin-bottom:10px">`;
     html += `<div style="font-size:11px;color:var(--text-gray);margin-bottom:6px">
         <strong>${escapeHtml(state.dados.materia)}</strong> &middot; ${escapeHtml(state.dados.conteudo)}
@@ -826,7 +810,7 @@ function mostrarResumo() {
         const bg = isCorreta ? 'rgba(76, 175, 80, 0.1)' : 'var(--gray)';
         const border = isCorreta ? '1.5px solid var(--success-color)' : '1.5px solid transparent';
         html += `<div style="padding:8px 12px;margin:4px 0;border-radius:8px;background:${bg};border:${border};font-size:13px">
-            <strong>${letra}.</strong> ${escapeHtml(alt)} ${isCorreta ? '✅' : ''}
+            <strong>${letra}.</strong> ${escapeHtml(alt)} ${isCorreta ? '<strong>✓</strong>' : ''}
         </div>`;
     });
     html += `</div>`;
@@ -841,7 +825,7 @@ function mostrarResumo() {
                 const pergunta = await criarPergunta();
                 loading.remove();
                 if (pergunta) {
-                    addMessage('✅ <strong>Pergunta cadastrada com sucesso!</strong>');
+                    addMessage('<strong>Pergunta cadastrada com sucesso!</strong>');
                     toast("Pergunta criada pelo assistente!", "success");
                     setTimeout(() => perguntarNova(), 800);
                 } else {
@@ -850,7 +834,7 @@ function mostrarResumo() {
                 }
             } catch (e) {
                 loading.remove();
-                addMessage(`Erro: ${e.message}`, 'system');
+                addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                 setTimeout(() => startConversation(), 600);
             }
         },
@@ -867,12 +851,12 @@ function perguntarNova() {
     addConfirmButtons(msg,
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+            state.dados = criarDadosVazios();
             setTimeout(() => perguntarMateria(), 400);
         },
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            addMessage('OK! Se precisar, é só clicar no 💬 novamente. 😊', 'bot');
+            addMessage('OK! Se precisar, é só clicar no botão do chat novamente.', 'bot');
             state.passo = 'done';
             setInputEnabled(false);
         }
@@ -921,51 +905,30 @@ async function processarOutro(texto) {
     }
 
     if (lower.includes('conteudo')) {
-        let qConteudos = supabaseClient
-            .from("conteudo")
-            .select("id_conteudo, nome_conteudo, id_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultosC.length > 0) {
-            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-        }
-        const { data: conteudos } = await qConteudos;
+        const { data: conteudos } = await queryConteudos(userId, idsOcultosC, null, 'id_conteudo, nome_conteudo, id_materia');
         if (!conteudos || conteudos.length === 0) {
             addMessage('Nenhum conteúdo cadastrado.');
         } else {
-            let qMaterias = supabaseClient
-                .from("materia")
-                .select("id_materia, nome_materia")
-                .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-            if (idsOcultasM.length > 0) {
-                qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-            }
-            const { data: materias } = await qMaterias;
+            const { data: materias } = await queryMaterias(userId, idsOcultasM);
             const mapMaterias = {};
             if (materias) materias.forEach(m => mapMaterias[m.id_materia] = m.nome_materia);
             const nomes = conteudos.map(c => {
                 const materiaNome = mapMaterias[c.id_materia] || 'Sem matéria';
                 return `${escapeHtml(c.nome_conteudo)} (${escapeHtml(materiaNome)})`;
             }).join(', ');
-            addMessage(`📖 <strong>Conteúdos disponíveis:</strong> ${nomes}`);
+            addMessage(` <strong>Conteúdos disponíveis:</strong> ${nomes}`);
         }
         setTimeout(() => perguntarVoltarMenu(), 1200);
         return;
     }
 
     if (lower.includes('lista') || lower.includes('listar') || lower.includes('quai') || lower.includes('mostra') || lower.includes('materia')) {
-        let qMaterias = supabaseClient
-            .from("materia")
-            .select("id_materia, nome_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultasM.length > 0) {
-            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-        }
-        const { data: materias } = await qMaterias;
+        const { data: materias } = await queryMaterias(userId, idsOcultasM);
         if (!materias || materias.length === 0) {
             addMessage('Nenhuma matéria cadastrada.');
         } else {
             const nomes = materias.map(m => m.nome_materia).join(', ');
-            addMessage(`📚 <strong>Matérias disponíveis:</strong> ${escapeHtml(nomes)}`);
+            addMessage(` <strong>Matérias disponíveis:</strong> ${escapeHtml(nomes)}`);
         }
         setTimeout(() => perguntarVoltarMenu(), 1200);
         return;
@@ -976,7 +939,7 @@ async function processarOutro(texto) {
         return;
     }
 
-    addMessage('Não entendi. Pode tentar de outro jeito? 😅<br><small>Digite <strong>menu</strong> para voltar ao início.</small>');
+    addMessage('Não entendi. Pode tentar de outro jeito? <br><small>Digite <strong>menu</strong> para voltar ao início.</small>');
     state.passo = 'await_outro';
     setInputEnabled(true);
 }
@@ -1002,12 +965,12 @@ async function processarOcultarMateriaInput(texto) {
                         );
                     }
                     load.remove();
-                    addMessage(`🙈 Matéria <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos ocultados da sua conta!`);
+                    addMessage(` Matéria <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos ocultados da sua conta!`);
                     toast("Matéria e conteúdos ocultados!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1027,14 +990,7 @@ async function processarOcultarMateriaInput(texto) {
 async function processarOcultarConteudoInput(texto) {
     const userId = getUserId();
     const idsOcultos = await getConteudosOcultosIds();
-    let q = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo, id_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`)
-        .ilike("nome_conteudo", texto.trim());
-    if (idsOcultos.length > 0) {
-        q = q.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
+    const q = queryConteudos(userId, idsOcultos, null, 'id_conteudo, nome_conteudo, id_materia').ilike("nome_conteudo", texto.trim());
     const { data: conteudo } = await q.maybeSingle();
     if (conteudo) {
         const { data: materias } = await supabaseClient.from("materia").select("id_materia, nome_materia");
@@ -1049,12 +1005,12 @@ async function processarOcultarConteudoInput(texto) {
                 try {
                     await supabaseClient.from("conteudo_oculto").insert({ id_conteudo: conteudo.id_conteudo, id_usuario: userId });
                     load.remove();
-                    addMessage(`🙈 Conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ocultado da sua conta!`);
+                    addMessage(` Conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ocultado da sua conta!`);
                     toast("Conteúdo ocultado!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1096,10 +1052,10 @@ function startConversation() {
     `);
 
     const options = addBotOptions([
-        { label: '📝 Cadastrar pergunta', value: 'cadastrar' },
-        { label: '🙈 Ocultar', value: 'ocultar' },
-        { label: '👁️ Visualizar', value: 'visualizar' },
-        { label: '💬 Outro', value: 'outro' },
+        { label: ' Cadastrar pergunta', value: 'cadastrar' },
+        { label: ' Ocultar', value: 'ocultar' },
+        { label: ' Visualizar', value: 'visualizar' },
+        { label: ' Outro', value: 'outro' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         switch (value) {
@@ -1123,9 +1079,9 @@ function startConversation() {
 function mostrarOpcoesCadastro() {
     const msg = addMessage('Como você quer cadastrar a pergunta?');
     const options = addBotOptions([
-        { label: '✏️ Digitar manualmente', value: 'manual' },
-        { label: '📄 Enviar arquivo Word', value: 'upload' },
-        { label: '⬅️ Voltar', value: 'voltar' },
+        { label: ' Digitar manualmente', value: 'manual' },
+        { label: ' Enviar arquivo Word', value: 'upload' },
+        { label: ' Voltar', value: 'voltar' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1142,9 +1098,9 @@ function mostrarOpcoesCadastro() {
 function mostrarOpcoesOcultar() {
     const msg = addMessage('O que você quer ocultar?');
     const options = addBotOptions([
-        { label: '🙈 Ocultar matéria', value: 'materia' },
-        { label: '🙈 Ocultar conteúdo', value: 'conteudo' },
-        { label: '⬅️ Voltar', value: 'voltar' },
+        { label: ' Ocultar matéria', value: 'materia' },
+        { label: ' Ocultar conteúdo', value: 'conteudo' },
+        { label: ' Voltar', value: 'voltar' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1161,9 +1117,9 @@ function mostrarOpcoesOcultar() {
 function mostrarOpcoesVisualizar() {
     const msg = addMessage('O que você quer visualizar?');
     const options = addBotOptions([
-        { label: '👁️ Matérias ocultas', value: 'materias' },
-        { label: '👁️ Conteúdos ocultos', value: 'conteudos' },
-        { label: '⬅️ Voltar', value: 'voltar' },
+        { label: ' Matérias ocultas', value: 'materias' },
+        { label: ' Conteúdos ocultos', value: 'conteudos' },
+        { label: ' Voltar', value: 'voltar' },
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1219,7 +1175,7 @@ async function visualizarMateriasOcultas() {
     const msg = addMessage('Matérias ocultas — clique para reexibir:');
     const options = addBotOptions([
         ...materias.map(m => ({ label: m.nome_materia, value: String(m.id_materia) })),
-        { label: '⬅️ Voltar', value: 'voltar' }
+        { label: ' Voltar', value: 'voltar' }
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1243,12 +1199,12 @@ async function visualizarMateriasOcultas() {
                         await supabaseClient.from("conteudo_oculto").delete().in("id_conteudo", idsC).eq("id_usuario", userId);
                     }
                     load.remove();
-                    addMessage(`👁️ <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos reexibidos!`);
+                    addMessage(` <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos reexibidos!`);
                     toast("Matéria reexibida!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1313,7 +1269,7 @@ async function visualizarConteudosOcultos() {
             label: `${c.nome_conteudo} (${mapMaterias[c.id_materia] || '?'})`,
             value: String(c.id_conteudo)
         })),
-        { label: '⬅️ Voltar', value: 'voltar' }
+        { label: 'Vol tar', value: 'voltar' }
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1329,12 +1285,12 @@ async function visualizarConteudosOcultos() {
                 try {
                     await supabaseClient.from("conteudo_oculto").delete().eq("id_conteudo", conteudo.id_conteudo).eq("id_usuario", userId);
                     load.remove();
-                    addMessage(`👁️ <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> reexibido!`);
+                    addMessage(` <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> reexibido!`);
                     toast("Conteúdo reexibido!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1356,14 +1312,7 @@ async function iniciarOcultarMateria() {
         .eq("id_usuario", userId);
     const idsOcultas = (ocultas || []).map(o => o.id_materia);
 
-    let query = supabaseClient
-        .from("materia")
-        .select("id_materia, nome_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultas.length > 0) {
-        query = query.not('id_materia', 'in', `(${idsOcultas.join(',')})`);
-    }
-    const { data: materias } = await query;
+    const { data: materias } = await queryMaterias(userId, idsOcultas);
 
     state.passo = 'await_ocultar_materia';
     setInputEnabled(true);
@@ -1376,7 +1325,7 @@ async function iniciarOcultarMateria() {
     const msg = addMessage('Qual matéria você quer ocultar da sua conta?<br><small>Clique no botão ou digite o nome:</small>');
     const options = addBotOptions([
         ...materias.map(m => ({ label: m.nome_materia, value: String(m.id_materia) })),
-        { label: '⬅️ Voltar', value: 'voltar' }
+        { label: ' Voltar', value: 'voltar' }
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1401,12 +1350,12 @@ async function iniciarOcultarMateria() {
                         );
                     }
                     load.remove();
-                    addMessage(`🙈 Matéria <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos ocultados da sua conta!`);
+                    addMessage(` Matéria <strong>${escapeHtml(materia.nome_materia)}</strong> e seus conteúdos ocultados da sua conta!`);
                     toast("Matéria e conteúdos ocultados!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1428,14 +1377,7 @@ async function iniciarOcultarConteudo() {
         .eq("id_usuario", userId);
     const idsOcultos = (ocultos || []).map(o => o.id_conteudo);
 
-    let query = supabaseClient
-        .from("conteudo")
-        .select("id_conteudo, nome_conteudo, id_materia")
-        .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-    if (idsOcultos.length > 0) {
-        query = query.not('id_conteudo', 'in', `(${idsOcultos.join(',')})`);
-    }
-    const { data: conteudos } = await query;
+    const { data: conteudos } = await queryConteudos(userId, idsOcultos, null, 'id_conteudo, nome_conteudo, id_materia');
 
     state.passo = 'await_ocultar_conteudo';
     setInputEnabled(true);
@@ -1457,7 +1399,7 @@ async function iniciarOcultarConteudo() {
             label: `${c.nome_conteudo} (${mapMaterias[c.id_materia] || '?'})`,
             value: String(c.id_conteudo)
         })),
-        { label: '⬅️ Voltar', value: 'voltar' }
+        { label: ' Voltar', value: 'voltar' }
     ], (value) => {
         msg.querySelector('.msg-options')?.remove();
         if (value === 'voltar') {
@@ -1474,12 +1416,12 @@ async function iniciarOcultarConteudo() {
                 try {
                     await supabaseClient.from("conteudo_oculto").insert({ id_conteudo: conteudo.id_conteudo, id_usuario: userId });
                     load.remove();
-                    addMessage(`🙈 Conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ocultado da sua conta!`);
+                    addMessage(` Conteúdo <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ocultado da sua conta!`);
                     toast("Conteúdo ocultado!", "success");
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1496,12 +1438,12 @@ async function iniciarOcultarConteudo() {
 async function iniciarOutro() {
     state.passo = 'await_outro';
     setInputEnabled(true);
-    addMessage('Pode perguntar! Tento ajudar com o que precisar. 😊<br><small>Ex: "liste as matérias", "quais conteúdos têm", etc.</small>');
+    addMessage('Pode perguntar! Tento ajudar com o que precisar. <br><small>Ex: "liste as matérias", "quais conteúdos têm", etc.</small>');
 }
 
 function resetState() {
     state.passo = 'start';
-    state.dados = { materia: null, materiaObj: null, conteudo: null, conteudoObj: null, enunciado: '', alternativas: [], correta: null, visibilidade: null };
+    state.dados = criarDadosVazios();
     state.questoes = [];
     state.uploadFlow = false;
 }
@@ -1509,219 +1451,94 @@ function resetState() {
 function startUploadFlow() {
     state.questoes = [];
     state.uploadFlow = true;
-    addMessage('📄 Ótimo! Primeiro, me diga a <strong>matéria</strong> dessas questões:');
+    addMessage(' Ótimo! Primeiro, me diga a <strong>matéria</strong> dessas questões:');
     state.passo = 'upload_await_materia';
     setInputEnabled(true);
 }
 
 async function uploadFinalizarMateria(texto) {
     const msg = addMessage('Verificando matéria...', 'loading');
-    const materia = await buscarMateria(texto);
+    let materia;
+    try {
+        materia = await buscarMateria(texto);
+    } catch (e) {
+        msg.remove();
+        addMessage(`Erro ao verificar matéria: ${escapeHtml(e.message)}`, 'system');
+        state.passo = 'upload_await_materia';
+        setInputEnabled(true);
+        return;
+    }
     msg.remove();
 
     if (materia) {
         state.dados.materia = materia.nome_materia;
         state.dados.materiaObj = materia;
-        addMessage(`Matéria: <strong>${escapeHtml(materia.nome_materia)}</strong> ✅`);
+        addMessage(`Matéria: <strong>${escapeHtml(materia.nome_materia)}</strong> `);
         setTimeout(() => uploadPerguntarConteudo(), 500);
     } else {
-        const userId = getUserId();
-        const idsOcultasM = await getMateriasOcultasIds();
-        let qMaterias = supabaseClient
-            .from("materia")
-            .select("id_materia, nome_materia")
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultasM.length > 0) {
-            qMaterias = qMaterias.not('id_materia', 'in', `(${idsOcultasM.join(',')})`);
-        }
-        const { data: todasMaterias } = await qMaterias;
-        const sugestao = todasMaterias ? buscarSugestao(texto, todasMaterias, 'nome_materia') : null;
-
-        if (sugestao) {
-            const nomeSugerido = sugestao.sugestao.nome_materia;
-            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-            addConfirmButtons(m,
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    state.dados.materia = nomeSugerido;
-                    state.dados.materiaObj = sugestao.sugestao;
-                    addMessage(`Matéria: <strong>${escapeHtml(nomeSugerido)}</strong> ✅`);
-                    setTimeout(() => uploadPerguntarConteudo(), 500);
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const m2 = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-                    addConfirmButtons(m2,
-                        async () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando matéria...', 'loading');
-                            try {
-                                        const nova = await criarMateria(texto);
-                                        loading.remove();
-                                        state.dados.materia = nova.nome_materia;
-                                        state.dados.materiaObj = nova;
-                                        state.materiaNova = true;
-                                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
-                                        setTimeout(() => perguntarVinculoTurma(), 500);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro: ${e.message}`, 'system');
-                                setTimeout(() => startUploadFlow(), 600);
-                            }
-                        },
-                        () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outra matéria:');
-                        }
-                    );
-                }
-            );
-        } else {
-            const m = addMessage(`Matéria <strong>${escapeHtml(texto)}</strong> não encontrada. Deseja criar?`);
-            addConfirmButtons(m,
-                async () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const loading = addMessage('Criando matéria...', 'loading');
-                    try {
-                        const nova = await criarMateria(texto);
-                        loading.remove();
-                        state.dados.materia = nova.nome_materia;
-                        state.dados.materiaObj = nova;
-                        state.materiaNova = true;
-                        addMessage(`Matéria <strong>${escapeHtml(nova.nome_materia)}</strong> criada! ✅`);
-                        setTimeout(() => perguntarVinculoTurma(), 500);
-                    } catch (e) {
-                        loading.remove();
-                        addMessage(`Erro: ${e.message}`, 'system');
-                        setTimeout(() => startUploadFlow(), 600);
-                    }
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    addMessage('OK, digite outra matéria:');
-                }
-            );
-        }
+        await tratarNaoEncontrado(texto, 'materia', {
+            aoConfirmar: (nome, obj) => {
+                state.dados.materia = nome;
+                state.dados.materiaObj = obj;
+                addMessage(`Matéria: <strong>${escapeHtml(nome)}</strong> `);
+                setTimeout(() => uploadPerguntarConteudo(), 500);
+            },
+            aoCriar: () => setTimeout(() => perguntarVinculoTurma(), 500),
+            aoErro: () => setTimeout(() => startUploadFlow(), 600),
+        });
     }
 }
 
 function uploadPerguntarConteudo() {
-    addMessage(`📖 Agora, qual o <strong>conteúdo</strong> dentro de ${escapeHtml(state.dados.materia)}?`);
+    addMessage(`Agora, qual o <strong>conteúdo</strong> dentro de ${escapeHtml(state.dados.materia)}?`);
     state.passo = 'upload_await_conteudo';
     setInputEnabled(true);
 }
 
 async function uploadFinalizarConteudo(texto) {
     if (state.materiaNova) {
-        state.materiaNova = false;
-        const loading = addMessage('Criando conteúdo...', 'loading');
-        try {
-            const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-            loading.remove();
-            state.dados.conteudo = novo.nome_conteudo;
-            state.dados.conteudoObj = novo;
-            addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
-            setTimeout(() => uploadMostrarArea(), 500);
-        } catch (e) {
-            loading.remove();
-            addMessage(`Erro: ${e.message}`, 'system');
-            setTimeout(() => uploadPerguntarConteudo(), 600);
-        }
+        await criarConteudoDireto(texto, {
+            aoCriar: () => setTimeout(() => uploadMostrarArea(), 500),
+            aoErro: () => setTimeout(() => uploadPerguntarConteudo(), 600),
+        });
         return;
     }
     const msg = addMessage('Verificando conteúdo...', 'loading');
-    const conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+    let conteudo;
+    try {
+        conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
+    } catch (e) {
+        msg.remove();
+        addMessage(`Erro ao verificar conteúdo: ${escapeHtml(e.message)}`, 'system');
+        state.passo = 'upload_await_conteudo';
+        setInputEnabled(true);
+        return;
+    }
     msg.remove();
 
     if (conteudo) {
         state.dados.conteudo = conteudo.nome_conteudo;
         state.dados.conteudoObj = conteudo;
-        addMessage(`Conteúdo: <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> ✅`);
+        addMessage(`Conteúdo: <strong>${escapeHtml(conteudo.nome_conteudo)}</strong> `);
         setTimeout(() => uploadMostrarArea(), 500);
     } else {
-        const userId = getUserId();
-        const idsOcultosC = await getConteudosOcultosIds();
-        let qConteudos = supabaseClient
-            .from("conteudo")
-            .select("id_conteudo, nome_conteudo")
-            .eq("id_materia", state.dados.materiaObj.id_materia)
-            .or(`id_usuario.is.null,id_usuario.eq.${userId}`);
-        if (idsOcultosC.length > 0) {
-            qConteudos = qConteudos.not('id_conteudo', 'in', `(${idsOcultosC.join(',')})`);
-        }
-        const { data: todosConteudos } = await qConteudos;
-        const sugestao = todosConteudos ? buscarSugestao(texto, todosConteudos, 'nome_conteudo') : null;
-
-        if (sugestao) {
-            const nomeSugerido = sugestao.sugestao.nome_conteudo;
-            const m = addMessage(`Você quis dizer <strong>${escapeHtml(nomeSugerido)}</strong>?`);
-            addConfirmButtons(m,
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    state.dados.conteudo = nomeSugerido;
-                    state.dados.conteudoObj = sugestao.sugestao;
-                    addMessage(`Conteúdo: <strong>${escapeHtml(nomeSugerido)}</strong> ✅`);
-                    setTimeout(() => uploadMostrarArea(), 500);
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const m2 = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-                    addConfirmButtons(m2,
-                        async () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            const loading = addMessage('Criando conteúdo...', 'loading');
-                            try {
-                                const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                                loading.remove();
-                                state.dados.conteudo = novo.nome_conteudo;
-                                state.dados.conteudoObj = novo;
-                                addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
-                                setTimeout(() => uploadMostrarArea(), 500);
-                            } catch (e) {
-                                loading.remove();
-                                addMessage(`Erro: ${e.message}`, 'system');
-                                setTimeout(() => uploadPerguntarConteudo(), 600);
-                            }
-                        },
-                        () => {
-                            m2.querySelector('.chatbot-confirm')?.remove();
-                            addMessage('OK, digite outro conteúdo:');
-                        }
-                    );
-                }
-            );
-        } else {
-            const m = addMessage(`Conteúdo <strong>${escapeHtml(texto)}</strong> não encontrado. Deseja criar?`);
-            addConfirmButtons(m,
-                async () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    const loading = addMessage('Criando conteúdo...', 'loading');
-                    try {
-                        const novo = await criarConteudo(texto, state.dados.materiaObj.id_materia);
-                        loading.remove();
-                        state.dados.conteudo = novo.nome_conteudo;
-                        state.dados.conteudoObj = novo;
-                        addMessage(`Conteúdo <strong>${escapeHtml(novo.nome_conteudo)}</strong> criado! ✅`);
-                        setTimeout(() => uploadMostrarArea(), 500);
-                    } catch (e) {
-                        loading.remove();
-                        addMessage(`Erro: ${e.message}`, 'system');
-                        setTimeout(() => uploadPerguntarConteudo(), 600);
-                    }
-                },
-                () => {
-                    m.querySelector('.chatbot-confirm')?.remove();
-                    addMessage('OK, digite outro conteúdo:');
-                }
-            );
-        }
+        await tratarNaoEncontrado(texto, 'conteudo', {
+            aoConfirmar: (nome, obj) => {
+                state.dados.conteudo = nome;
+                state.dados.conteudoObj = obj;
+                addMessage(`Conteúdo: <strong>${escapeHtml(nome)}</strong> `);
+                setTimeout(() => uploadMostrarArea(), 500);
+            },
+            aoCriar: () => setTimeout(() => uploadMostrarArea(), 500),
+            aoErro: () => setTimeout(() => uploadPerguntarConteudo(), 600),
+        });
     }
 }
 
 function uploadMostrarArea() {
     state.passo = 'await_file';
     setInputEnabled(false);
-    addMessage(`📤 <strong>Tudo pronto!</strong> Matéria: ${escapeHtml(state.dados.materia)} · Conteúdo: ${escapeHtml(state.dados.conteudo)}<br><br>Agora envie o arquivo .docx com as questões.`);
+    addMessage(`<strong>Tudo pronto!</strong> Matéria: ${escapeHtml(state.dados.materia)} · Conteúdo: ${escapeHtml(state.dados.conteudo)}<br><br>Agora envie o arquivo .docx com as questões.`);
     addMessage(`<small>Formatos reconhecidos: "1. texto", "Questão 1: texto", "a) alt", "I. alt", "a) alt | b) alt". Gabarito pode vir como "Resposta: B" ou "Gabarito: 2".</small>`, 'system');
 
     const msg = addMessage(`
@@ -1751,7 +1568,7 @@ function uploadMostrarArea() {
             area.style.borderColor = '';
             area.style.background = '';
             const file = e.dataTransfer.files[0];
-            if (!file || !file.name.toLowerCase().endsWith('.docx')) { addMessage('⚠️ Apenas .docx.', 'system'); return; }
+            if (!file || !file.name.toLowerCase().endsWith('.docx')) { addMessage(' Apenas .docx.', 'system'); return; }
             addMessage(`📎 <strong>${escapeHtml(file.name)}</strong> selecionado. Processando...`, 'system');
             await processarDocumentoMulti(file);
         });
@@ -1863,6 +1680,62 @@ function marcadoresParaHtml(texto) {
         .replace(/\n/g, '<br>');
 }
 
+function sanitizarHtml(html) {
+    if (!html) return '';
+    const tagsPermitidas = new Set(['b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'br', 'p', 'div', 'span', 'img', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'hr', 'pre', 'code', 'small']);
+    const tagsRemovidas = new Set(['script', 'iframe', 'object', 'embed', 'link', 'meta', 'base', 'form', 'input', 'button', 'textarea', 'select', 'svg', 'math', 'template', 'style']);
+
+    let limpo = String(html);
+    limpo = limpo.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+    limpo = limpo.replace(/<script\b[^>]*\/?>/gi, '');
+    limpo = limpo.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+    limpo = limpo.replace(/<style\b[^>]*\/?>/gi, '');
+    limpo = limpo.replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+    limpo = limpo.replace(/\s(?:href|src|srcset|xlink:href)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, (match) => {
+        const lower = match.toLowerCase();
+        if (/javascript:/i.test(lower) || (/data:/i.test(lower) && !/data:image\//i.test(lower))) {
+            return '';
+        }
+        return match;
+    });
+
+    const temp = document.createElement('div');
+    temp.innerHTML = limpo;
+
+    temp.querySelectorAll('*').forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        if (tagsRemovidas.has(tag)) {
+            el.remove();
+            return;
+        }
+        if (!tagsPermitidas.has(tag)) {
+            const parent = el.parentNode;
+            while (el.firstChild) parent.insertBefore(el.firstChild, el);
+            el.remove();
+            return;
+        }
+        const style = el.getAttribute('style');
+        if (style && /(javascript|expression\s*\(|url\s*\(\s*['"]?\s*javascript)/i.test(style)) {
+            el.removeAttribute('style');
+        }
+        Array.from(el.attributes).forEach(attr => {
+            const nome = attr.name.toLowerCase();
+            const valor = (attr.value || '').toLowerCase();
+            if (nome.startsWith('on')) {
+                el.removeAttribute(attr.name);
+                return;
+            }
+            if (nome === 'href' || nome === 'src' || nome === 'srcset' || nome === 'xlink:href' || nome === 'action') {
+                if (/javascript:/i.test(valor) || (/data:/i.test(valor) && !/data:image\//i.test(valor))) {
+                    el.removeAttribute(attr.name);
+                }
+            }
+        });
+    });
+
+    return temp.innerHTML;
+}
+
 function inserirSeparadores(texto) {
     const linhas = texto.split('\n');
     const saida = [];
@@ -1902,7 +1775,8 @@ async function extrairComGemini(html) {
 
     const limite = 10000;
     const htmlTruncado = htmlComPlaceholders.length > limite ? htmlComPlaceholders.slice(0, limite) + "..." : htmlComPlaceholders;
-    const textoMarcado = htmlParaMarcadores(htmlTruncado);
+    const htmlLimpo = sanitizarHtml(htmlTruncado);
+    const textoMarcado = htmlParaMarcadores(htmlLimpo);
     const textoComSeparadores = inserirSeparadores(textoMarcado);
 
     function formatosRenderizaveis(contentType) {
@@ -1928,7 +1802,7 @@ async function extrairComGemini(html) {
                     return imgTag.replace(src, png);
                 }
                 const ext = tipo.replace('image/', '').toUpperCase();
-                return `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:6px 0;text-align:center;font-size:13px;color:#856404">📷 ${alt ? `"${alt}"` : `Imagem ${ext}`}<br><small>Formato não suportado pelo navegador</small></div>`;
+                return `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:6px 0;text-align:center;font-size:13px;color:#856404">${alt ? `"${alt}"` : `Imagem ${ext}`}<br><small>Formato não suportado pelo navegador</small></div>`;
             }
             return imgTag;
         });
@@ -1953,9 +1827,11 @@ async function extrairComGemini(html) {
             q.enunciado = q.enunciado.replace(/^===\s*/gm, '').trim();
             q.enunciado = marcadoresParaHtml(q.enunciado);
             q.enunciado = restaurarImagens(q.enunciado);
+            q.enunciado = sanitizarHtml(q.enunciado);
             q.alternativas = q.alternativas.map(a => marcadoresParaHtml(a));
             q.alternativas = q.alternativas.map(a => restaurarImagens(a));
             q.alternativas = q.alternativas.map(a => limparAlternativa(a));
+            q.alternativas = q.alternativas.map(a => sanitizarHtml(a));
         });
         return lista;
     }
@@ -2121,7 +1997,7 @@ async function processarDocumentoMulti(file) {
         return;
     }
 
-    const loadingEl = addMessage('📄 Lendo documento...', 'loading');
+    const loadingEl = addMessage('Lendo documento...', 'loading');
 
     try {
         const arrayBuffer = await file.arrayBuffer();
@@ -2133,7 +2009,12 @@ async function processarDocumentoMulti(file) {
         let imagensConvertidas = null;
 
         if (imgMatch && imgMatch.length > 0) {
-            loadingEl.innerHTML = '📄 Lendo documento... convertendo imagens...';
+            loadingEl.innerHTML = `
+                <span class="chatbot-typing">
+                    <span class="chatbot-typing-avatar">🐨</span>
+                    <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
+                </span>
+                <span class="chatbot-typing-text">Lendo documento... convertendo imagens...</span>`;
 
             if (typeof JSZip !== 'undefined') {
                 imagensConvertidas = await extrairImagensZip(arrayBuffer);
@@ -2164,7 +2045,7 @@ async function processarDocumentoMulti(file) {
             state.questoes = await extrairComGemini(htmlDoc);
         } catch (e) {
             analiseEl.remove();
-            addMessage(`Erro ao processar com IA: ${e.message}`, 'system');
+            addMessage(`Erro ao processar com IA: ${escapeHtml(e.message)}`, 'system');
             return;
         }
 
@@ -2185,11 +2066,11 @@ async function processarDocumentoMulti(file) {
                 const bg = isCorreta ? 'rgba(76,175,80,0.1)' : 'transparent';
                 const border = isCorreta ? '1.5px solid #4caf50' : '1px solid transparent';
                 return `<div style="padding:4px 8px;margin:2px 0;border-radius:6px;background:${bg};border:${border};font-size:13px">
-                    <strong>${letras[j]}.</strong> ${alt} ${isCorreta ? '✅' : ''}</div>`;
+                    <strong>${letras[j]}.</strong> ${alt} ${isCorreta ? '<strong>✓</strong>' : ''}</div>`;
             }).join('');
         }
 
-        let html = `📋 <strong>Encontrei ${state.questoes.length} questões!</strong><br><br>`;
+        let html = `<strong>Encontrei ${state.questoes.length} questões!</strong><br><br>`;
         state.questoes.forEach((q, i) => {
             const idToggle = `ver-mais-${i}`;
             const idConteudo = `conteudo-${i}`;
@@ -2209,15 +2090,15 @@ async function processarDocumentoMulti(file) {
 
         addMessage(html);
 
-        const visMsg = addMessage('👁️ Essas questões serão <strong>Públicas</strong> ou <strong>Privadas</strong>?');
+        const visMsg = addMessage('Essas questões serão <strong>Públicas</strong> ou <strong>Privadas</strong>?');
         const visOpts = addBotOptions([
-            { label: '🌍 Público', value: 'publico' },
-            { label: '🔒 Privado', value: 'privado' },
+            { label: 'Público', value: 'publico' },
+            { label: 'Privado', value: 'privado' },
         ], (value) => {
             visMsg.querySelector('.msg-options')?.remove();
             state.dados.visibilidade = value;
             const label = value === 'publico' ? 'Público' : 'Privado';
-            visMsg.innerHTML = `👁️ Visibilidade: <strong>${label}</strong> ✅`;
+            visMsg.innerHTML = `Visibilidade: <strong>${label}</strong>`;
 
             const confirmMsg = addMessage(`Deseja <strong>cadastrar todas</strong> as ${state.questoes.length} questões?`);
             addConfirmButtons(confirmMsg,
@@ -2235,13 +2116,16 @@ async function processarDocumentoMulti(file) {
         visMsg.appendChild(visOpts);
 
     } catch (e) {
-        addMessage(`Erro: ${e.message}`, 'system');
+        if (loadingEl && loadingEl.isConnected) {
+            loadingEl.remove();
+        }
+        addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
         console.error('[ChatBot]', e);
     }
 }
 
 async function criarMultiplasPerguntas() {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (!userLogado) {
         addMessage('Usuário não logado.', 'system');
         return;
@@ -2249,7 +2133,7 @@ async function criarMultiplasPerguntas() {
 
     const total = state.questoes.length;
     let criadas = 0;
-    const loading = addMessage(`🔄 Cadastrando questões... 0/${total}`, 'loading');
+    const loading = addMessage(`Cadastrando questões... 0/${total}`, 'loading');
 
     for (let i = 0; i < total; i++) {
         const q = state.questoes[i];
@@ -2283,11 +2167,11 @@ async function criarMultiplasPerguntas() {
         }
 
         criadas++;
-        loading.innerHTML = `🔄 Cadastrando questões... ${criadas}/${total}`;
+        loading.innerHTML = `Cadastrando questões... ${criadas}/${total}`;
     }
 
     loading.remove();
-    addMessage(`✅ <strong>${criadas} de ${total} questões cadastradas com sucesso!</strong>`);
+    addMessage(`<strong>${criadas} de ${total} questões cadastradas com sucesso!</strong>`);
     toast(`${criadas} questões criadas pelo assistente!`, "success");
 
     const msg = addMessage('Deseja <strong>criar outras questões</strong> com matéria/conteúdo diferentes?');
@@ -2299,7 +2183,7 @@ async function criarMultiplasPerguntas() {
         },
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            addMessage('OK! Se precisar, é só clicar no 💬. 😊');
+            addMessage('OK! Se precisar, é só clicar no botão do chat novamente.');
             state.passo = 'done';
             setInputEnabled(false);
         }
@@ -2327,6 +2211,7 @@ function initChat() {
                 <h3>Assistente PontuaAI</h3>
                 <p>Cadastre perguntas rapidamente</p>
             </div>
+            <button class="chatbot-fullscreen" id="chatFullscreen" title="Tela cheia">⛶</button>
         </div>
         <div class="chatbot-messages"></div>
         <div class="chatbot-input-area">
@@ -2341,6 +2226,8 @@ function initChat() {
     chatMessages = chatPanel.querySelector('.chatbot-messages');
     chatInput = chatPanel.querySelector('#chatInput');
     chatSend = chatPanel.querySelector('#chatSend');
+    chatFullscreen = chatPanel.querySelector('#chatFullscreen');
+    chatFullscreen.addEventListener('click', toggleFullscreen);
 
     function autoResizeTextarea() {
         chatInput.style.height = 'auto';
@@ -2362,7 +2249,7 @@ function initChat() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const userLogado = JSON.parse(localStorage.getItem("userLogado"));
+    const userLogado = getUserLogado();
     if (userLogado && userLogado.tipo_conta === 'professor') {
         initChat();
     }
