@@ -1718,6 +1718,19 @@ function sanitizarHtml(html) {
         if (style && /(javascript|expression\s*\(|url\s*\(\s*['"]?\s*javascript)/i.test(style)) {
             el.removeAttribute('style');
         }
+        Array.from(el.attributes).forEach(attr => {
+            const nome = attr.name.toLowerCase();
+            const valor = (attr.value || '').toLowerCase();
+            if (nome.startsWith('on')) {
+                el.removeAttribute(attr.name);
+                return;
+            }
+            if (nome === 'href' || nome === 'src' || nome === 'srcset' || nome === 'xlink:href' || nome === 'action') {
+                if (/javascript:/i.test(valor) || (/data:/i.test(valor) && !/data:image\//i.test(valor))) {
+                    el.removeAttribute(attr.name);
+                }
+            }
+        });
     });
 
     return temp.innerHTML;
