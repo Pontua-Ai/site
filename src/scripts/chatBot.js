@@ -355,7 +355,7 @@ async function criarConteudoDireto(texto, handlers) {
         handlers.aoCriar(novo);
     } catch (e) {
         loading.remove();
-        addMessage(`Erro ao criar conteúdo: ${e.message}`, 'system');
+        addMessage(`Erro ao criar conteúdo: ${escapeHtml(e.message)}`, 'system');
         handlers.aoErro(e);
     }
 }
@@ -397,7 +397,7 @@ async function tratarNaoEncontrado(texto, tipo, handlers) {
                     handlers.aoCriar(novo);
                 } catch (e) {
                     loading.remove();
-                    addMessage(`Erro ao criar ${rotulo.toLowerCase()}: ${e.message}`, 'system');
+                    addMessage(`Erro ao criar ${rotulo.toLowerCase()}: ${escapeHtml(e.message)}`, 'system');
                     handlers.aoErro(e);
                 }
             },
@@ -486,7 +486,7 @@ async function processUserInput(texto) {
                 materia = await buscarMateria(texto);
             } catch (e) {
                 msg.remove();
-                addMessage(`Erro ao verificar matéria: ${e.message}`, 'system');
+                addMessage(`Erro ao verificar matéria: ${escapeHtml(e.message)}`, 'system');
                 state.passo = 'await_materia';
                 setInputEnabled(true);
                 break;
@@ -527,7 +527,7 @@ async function processUserInput(texto) {
                 conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
             } catch (e) {
                 msg.remove();
-                addMessage(`Erro ao verificar conteúdo: ${e.message}`, 'system');
+                addMessage(`Erro ao verificar conteúdo: ${escapeHtml(e.message)}`, 'system');
                 state.passo = 'await_conteudo';
                 setInputEnabled(true);
                 break;
@@ -719,7 +719,7 @@ async function vincularMateriaTurmas(idsTurmas) {
         toast("Matéria vinculada às turmas!", "success");
     } catch (e) {
         loading.remove();
-        addMessage(`Erro ao vincular: ${e.message}`, 'system');
+        addMessage(`Erro ao vincular: ${escapeHtml(e.message)}`, 'system');
     }
     setTimeout(() => proximoAposVinculo(), 600);
 }
@@ -834,7 +834,7 @@ function mostrarResumo() {
                 }
             } catch (e) {
                 loading.remove();
-                addMessage(`Erro: ${e.message}`, 'system');
+                addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                 setTimeout(() => startConversation(), 600);
             }
         },
@@ -970,7 +970,7 @@ async function processarOcultarMateriaInput(texto) {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1010,7 +1010,7 @@ async function processarOcultarConteudoInput(texto) {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1204,7 +1204,7 @@ async function visualizarMateriasOcultas() {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1290,7 +1290,7 @@ async function visualizarConteudosOcultos() {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1355,7 +1355,7 @@ async function iniciarOcultarMateria() {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1421,7 +1421,7 @@ async function iniciarOcultarConteudo() {
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 } catch (e) {
                     load.remove();
-                    addMessage(`Erro: ${e.message}`, 'system');
+                    addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
                     setTimeout(() => perguntarVoltarMenu(), 1500);
                 }
             },
@@ -1463,7 +1463,7 @@ async function uploadFinalizarMateria(texto) {
         materia = await buscarMateria(texto);
     } catch (e) {
         msg.remove();
-        addMessage(`Erro ao verificar matéria: ${e.message}`, 'system');
+        addMessage(`Erro ao verificar matéria: ${escapeHtml(e.message)}`, 'system');
         state.passo = 'upload_await_materia';
         setInputEnabled(true);
         return;
@@ -1509,7 +1509,7 @@ async function uploadFinalizarConteudo(texto) {
         conteudo = await buscarConteudo(texto, state.dados.materiaObj.id_materia);
     } catch (e) {
         msg.remove();
-        addMessage(`Erro ao verificar conteúdo: ${e.message}`, 'system');
+        addMessage(`Erro ao verificar conteúdo: ${escapeHtml(e.message)}`, 'system');
         state.passo = 'upload_await_conteudo';
         setInputEnabled(true);
         return;
@@ -1986,7 +1986,7 @@ async function processarDocumentoMulti(file) {
             state.questoes = await extrairComGemini(htmlDoc);
         } catch (e) {
             analiseEl.remove();
-            addMessage(`Erro ao processar com IA: ${e.message}`, 'system');
+            addMessage(`Erro ao processar com IA: ${escapeHtml(e.message)}`, 'system');
             return;
         }
 
@@ -2060,7 +2060,7 @@ async function processarDocumentoMulti(file) {
         if (loadingEl && loadingEl.isConnected) {
             loadingEl.remove();
         }
-        addMessage(`Erro: ${e.message}`, 'system');
+        addMessage(`Erro: ${escapeHtml(e.message)}`, 'system');
         console.error('[ChatBot]', e);
     }
 }
