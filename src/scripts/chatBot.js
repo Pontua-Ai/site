@@ -810,7 +810,7 @@ function mostrarResumo() {
         const bg = isCorreta ? 'rgba(76, 175, 80, 0.1)' : 'var(--gray)';
         const border = isCorreta ? '1.5px solid var(--success-color)' : '1.5px solid transparent';
         html += `<div style="padding:8px 12px;margin:4px 0;border-radius:8px;background:${bg};border:${border};font-size:13px">
-            <strong>${letra}.</strong> ${escapeHtml(alt)} ${isCorreta ? '✅' : ''}
+            <strong>${letra}.</strong> ${escapeHtml(alt)} ${isCorreta ? '<strong>✓</strong>' : ''}
         </div>`;
     });
     html += `</div>`;
@@ -856,7 +856,7 @@ function perguntarNova() {
         },
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            addMessage('OK! Se precisar, é só clicar no 💬 novamente.', 'bot');
+            addMessage('OK! Se precisar, é só clicar no botão do chat novamente.', 'bot');
             state.passo = 'done';
             setInputEnabled(false);
         }
@@ -1490,7 +1490,7 @@ async function uploadFinalizarMateria(texto) {
 }
 
 function uploadPerguntarConteudo() {
-    addMessage(`📖 Agora, qual o <strong>conteúdo</strong> dentro de ${escapeHtml(state.dados.materia)}?`);
+    addMessage(`Agora, qual o <strong>conteúdo</strong> dentro de ${escapeHtml(state.dados.materia)}?`);
     state.passo = 'upload_await_conteudo';
     setInputEnabled(true);
 }
@@ -1538,7 +1538,7 @@ async function uploadFinalizarConteudo(texto) {
 function uploadMostrarArea() {
     state.passo = 'await_file';
     setInputEnabled(false);
-    addMessage(`📤 <strong>Tudo pronto!</strong> Matéria: ${escapeHtml(state.dados.materia)} · Conteúdo: ${escapeHtml(state.dados.conteudo)}<br><br>Agora envie o arquivo .docx com as questões.`);
+    addMessage(`<strong>Tudo pronto!</strong> Matéria: ${escapeHtml(state.dados.materia)} · Conteúdo: ${escapeHtml(state.dados.conteudo)}<br><br>Agora envie o arquivo .docx com as questões.`);
     addMessage(`<small>Formatos reconhecidos: "1. texto", "Questão 1: texto", "a) alt", "I. alt", "a) alt | b) alt". Gabarito pode vir como "Resposta: B" ou "Gabarito: 2".</small>`, 'system');
 
     const msg = addMessage(`
@@ -1680,6 +1680,49 @@ function marcadoresParaHtml(texto) {
         .replace(/\n/g, '<br>');
 }
 
+function sanitizarHtml(html) {
+    if (!html) return '';
+    const tagsPermitidas = new Set(['b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'br', 'p', 'div', 'span', 'img', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'hr', 'pre', 'code', 'small']);
+    const tagsRemovidas = new Set(['script', 'iframe', 'object', 'embed', 'link', 'meta', 'base', 'form', 'input', 'button', 'textarea', 'select', 'svg', 'math', 'template', 'style']);
+
+    let limpo = String(html);
+    limpo = limpo.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+    limpo = limpo.replace(/<script\b[^>]*\/?>/gi, '');
+    limpo = limpo.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+    limpo = limpo.replace(/<style\b[^>]*\/?>/gi, '');
+    limpo = limpo.replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+    limpo = limpo.replace(/\s(?:href|src|srcset|xlink:href)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, (match) => {
+        const lower = match.toLowerCase();
+        if (/javascript:/i.test(lower) || (/data:/i.test(lower) && !/data:image\//i.test(lower))) {
+            return '';
+        }
+        return match;
+    });
+
+    const temp = document.createElement('div');
+    temp.innerHTML = limpo;
+
+    temp.querySelectorAll('*').forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        if (tagsRemovidas.has(tag)) {
+            el.remove();
+            return;
+        }
+        if (!tagsPermitidas.has(tag)) {
+            const parent = el.parentNode;
+            while (el.firstChild) parent.insertBefore(el.firstChild, el);
+            el.remove();
+            return;
+        }
+        const style = el.getAttribute('style');
+        if (style && /(javascript|expression\s*\(|url\s*\(\s*['"]?\s*javascript)/i.test(style)) {
+            el.removeAttribute('style');
+        }
+    });
+
+    return temp.innerHTML;
+}
+
 function inserirSeparadores(texto) {
     const linhas = texto.split('\n');
     const saida = [];
@@ -1719,7 +1762,8 @@ async function extrairComGemini(html) {
 
     const limite = 10000;
     const htmlTruncado = htmlComPlaceholders.length > limite ? htmlComPlaceholders.slice(0, limite) + "..." : htmlComPlaceholders;
-    const textoMarcado = htmlParaMarcadores(htmlTruncado);
+    const htmlLimpo = sanitizarHtml(htmlTruncado);
+    const textoMarcado = htmlParaMarcadores(htmlLimpo);
     const textoComSeparadores = inserirSeparadores(textoMarcado);
 
     function formatosRenderizaveis(contentType) {
@@ -1745,7 +1789,7 @@ async function extrairComGemini(html) {
                     return imgTag.replace(src, png);
                 }
                 const ext = tipo.replace('image/', '').toUpperCase();
-                return `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:6px 0;text-align:center;font-size:13px;color:#856404">📷 ${alt ? `"${alt}"` : `Imagem ${ext}`}<br><small>Formato não suportado pelo navegador</small></div>`;
+                return `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:6px 0;text-align:center;font-size:13px;color:#856404">${alt ? `"${alt}"` : `Imagem ${ext}`}<br><small>Formato não suportado pelo navegador</small></div>`;
             }
             return imgTag;
         });
@@ -1770,9 +1814,11 @@ async function extrairComGemini(html) {
             q.enunciado = q.enunciado.replace(/^===\s*/gm, '').trim();
             q.enunciado = marcadoresParaHtml(q.enunciado);
             q.enunciado = restaurarImagens(q.enunciado);
+            q.enunciado = sanitizarHtml(q.enunciado);
             q.alternativas = q.alternativas.map(a => marcadoresParaHtml(a));
             q.alternativas = q.alternativas.map(a => restaurarImagens(a));
             q.alternativas = q.alternativas.map(a => limparAlternativa(a));
+            q.alternativas = q.alternativas.map(a => sanitizarHtml(a));
         });
         return lista;
     }
@@ -1938,7 +1984,7 @@ async function processarDocumentoMulti(file) {
         return;
     }
 
-    const loadingEl = addMessage('📄 Lendo documento...', 'loading');
+    const loadingEl = addMessage('Lendo documento...', 'loading');
 
     try {
         const arrayBuffer = await file.arrayBuffer();
@@ -1955,7 +2001,7 @@ async function processarDocumentoMulti(file) {
                     <span class="chatbot-typing-avatar">🐨</span>
                     <span class="chatbot-typing-dots"><span></span><span></span><span></span></span>
                 </span>
-                <span class="chatbot-typing-text">📄 Lendo documento... convertendo imagens...</span>`;
+                <span class="chatbot-typing-text">Lendo documento... convertendo imagens...</span>`;
 
             if (typeof JSZip !== 'undefined') {
                 imagensConvertidas = await extrairImagensZip(arrayBuffer);
@@ -2007,11 +2053,11 @@ async function processarDocumentoMulti(file) {
                 const bg = isCorreta ? 'rgba(76,175,80,0.1)' : 'transparent';
                 const border = isCorreta ? '1.5px solid #4caf50' : '1px solid transparent';
                 return `<div style="padding:4px 8px;margin:2px 0;border-radius:6px;background:${bg};border:${border};font-size:13px">
-                    <strong>${letras[j]}.</strong> ${alt} ${isCorreta ? '✅' : ''}</div>`;
+                    <strong>${letras[j]}.</strong> ${alt} ${isCorreta ? '<strong>✓</strong>' : ''}</div>`;
             }).join('');
         }
 
-        let html = `📋 <strong>Encontrei ${state.questoes.length} questões!</strong><br><br>`;
+        let html = `<strong>Encontrei ${state.questoes.length} questões!</strong><br><br>`;
         state.questoes.forEach((q, i) => {
             const idToggle = `ver-mais-${i}`;
             const idConteudo = `conteudo-${i}`;
@@ -2031,15 +2077,15 @@ async function processarDocumentoMulti(file) {
 
         addMessage(html);
 
-        const visMsg = addMessage('👁️ Essas questões serão <strong>Públicas</strong> ou <strong>Privadas</strong>?');
+        const visMsg = addMessage('Essas questões serão <strong>Públicas</strong> ou <strong>Privadas</strong>?');
         const visOpts = addBotOptions([
-            { label: '🌍 Público', value: 'publico' },
-            { label: '🔒 Privado', value: 'privado' },
+            { label: 'Público', value: 'publico' },
+            { label: 'Privado', value: 'privado' },
         ], (value) => {
             visMsg.querySelector('.msg-options')?.remove();
             state.dados.visibilidade = value;
             const label = value === 'publico' ? 'Público' : 'Privado';
-            visMsg.innerHTML = `👁️ Visibilidade: <strong>${label}</strong> ✅`;
+            visMsg.innerHTML = `Visibilidade: <strong>${label}</strong>`;
 
             const confirmMsg = addMessage(`Deseja <strong>cadastrar todas</strong> as ${state.questoes.length} questões?`);
             addConfirmButtons(confirmMsg,
@@ -2074,7 +2120,7 @@ async function criarMultiplasPerguntas() {
 
     const total = state.questoes.length;
     let criadas = 0;
-    const loading = addMessage(`🔄 Cadastrando questões... 0/${total}`, 'loading');
+    const loading = addMessage(`Cadastrando questões... 0/${total}`, 'loading');
 
     for (let i = 0; i < total; i++) {
         const q = state.questoes[i];
@@ -2108,11 +2154,11 @@ async function criarMultiplasPerguntas() {
         }
 
         criadas++;
-        loading.innerHTML = `🔄 Cadastrando questões... ${criadas}/${total}`;
+        loading.innerHTML = `Cadastrando questões... ${criadas}/${total}`;
     }
 
     loading.remove();
-    addMessage(`✅ <strong>${criadas} de ${total} questões cadastradas com sucesso!</strong>`);
+    addMessage(`<strong>${criadas} de ${total} questões cadastradas com sucesso!</strong>`);
     toast(`${criadas} questões criadas pelo assistente!`, "success");
 
     const msg = addMessage('Deseja <strong>criar outras questões</strong> com matéria/conteúdo diferentes?');
@@ -2124,7 +2170,7 @@ async function criarMultiplasPerguntas() {
         },
         () => {
             msg.querySelector('.chatbot-confirm')?.remove();
-            addMessage('OK! Se precisar, é só clicar no 💬. 😊');
+            addMessage('OK! Se precisar, é só clicar no botão do chat novamente.');
             state.passo = 'done';
             setInputEnabled(false);
         }
