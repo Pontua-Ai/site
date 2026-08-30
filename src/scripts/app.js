@@ -1,7 +1,6 @@
 import { signup, loginUsuario, verificarSenha, excluirConta, enviarRecuperacao, redefinirSenha, validarSenha } from "./auth.js";
 import supabaseClient from "./supabase.js";
 import { carregarConteudo } from './buscarConteudo.js';
-import { carregarMaterias, carregarConteudos } from "./genereAsk.js";
 import { carregarPerguntas, exibirPergunta, verificarResposta } from "./exibePergunta.js";
 import { toast } from "./utils.js";
 import { initTheme, toggleTheme } from "./theme.js";
@@ -116,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
         });
+        window.quillEditor = quillEditor;
 
         const toolbarEl = quillEditor.getModule("toolbar").container;
         const lastGroup = toolbarEl.querySelector(".ql-formats:last-child");
@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
             modalTabela.style.display = "none";
         });
     }
-    
+
     const signupForm = document.getElementById("signupForm");
     if (signupForm) {
         signupForm.addEventListener("submit", async (event) => {
@@ -430,6 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formPergunta) {
         formPergunta.addEventListener("submit", async function (notReaload) {
             if (estaCadastrando) return;
+            if (window.modoEdicao) return;
             notReaload.preventDefault();
             const botao = formPergunta.querySelector('button[type="submit"]');
 
@@ -464,6 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const userLogado = JSON.parse(localStorage.getItem('userLogado'));
                 const visibilidade = document.getElementById("visibilidade")?.value || "publico";
+
                 const { data: perguntaCriada, error: erroPergunta } = await supabaseClient
                     .from("perguntas")
                     .insert([

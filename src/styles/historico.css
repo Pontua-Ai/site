@@ -109,7 +109,7 @@ h1{
     flex-shrink: 0;
 }
 
-.lixo, .mudar, .visualizar{
+.lixo, .editar, .visualizar{
     width: 42px;
     height: 42px;
     border-radius: 8px;
@@ -128,7 +128,7 @@ h1{
     color: white;
 }
 
-.mudar:hover {
+.editar:hover {
     background: #f39c12;
     color: white;
 }

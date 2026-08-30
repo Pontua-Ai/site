@@ -55,25 +55,26 @@ export async function carregarMaterias() {
 };
 
 if(document.getElementById("materia")){
-    carregarMaterias();
-    $('#materia').select2({
-        minimumResultsForSearch: 0,
-        language: {
-            noResults: function() {
-                return "Nenhuma matéria encontrada";
+    carregarMaterias().then(() => {
+        $('#materia').select2({
+            minimumResultsForSearch: 0,
+            language: {
+                noResults: function() {
+                    return "Nenhuma matéria encontrada";
+                }
             }
-        }
-    });
-    $('#conteudo').select2({
-        minimumResultsForSearch: 0,
-        language: {
-            noResults: function() {
-                return "Nenhum conteúdo encontrado";
+        });
+        $('#conteudo').select2({
+            minimumResultsForSearch: 0,
+            language: {
+                noResults: function() {
+                    return "Nenhum conteúdo encontrado";
+                }
             }
-        }
-    });
-    $('#materia').on('change', function() {
-        carregarConteudos();
+        });
+        $('#materia').on('change', function() {
+            carregarConteudos();
+        });
     });
 };
 

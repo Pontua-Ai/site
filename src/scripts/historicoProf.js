@@ -46,62 +46,10 @@ function configurarBotoes() {
             return;
         }
         // Editar pergunta
-        const btnMudar = e.target.closest('.mudar');
-        if (!btnMudar) return;
-
-        const idPergunta = btnMudar.dataset.id;
-        const card = btnMudar.closest('.cardBox');
-        const p = card.querySelector('.headerBox p');
-
-        if (p.querySelector('input')) return;
-
-        const textoOriginal = p.textContent;
-        p.innerHTML = `<input type="text" class="input-pergunta" value="${textoOriginal}" style="width: 100%; border: 1px solid var(--primary-color); padding: 4px; border-radius: 4px; background: var(--bg-color); color: var(--text-color);">`;
-        const inputPergunta = p.querySelector('.input-pergunta');
-        inputPergunta.focus();
-
-        let salvando = false;
-
-        async function salvarAlteracoes() { 
-            if (salvando) return;
-            salvando = true;
-
-            const novoTexto = inputPergunta.value.trim();
-            if (!novoTexto) {
-                carregarHistorico();
-                return;
-            }
-
-            if (novoTexto !== textoOriginal) {
-                const { error } = await supabaseClient
-                    .from("perguntas")
-                    .update({ pergunta_texto: novoTexto })
-                    .eq("id_pergunta", idPergunta);
-
-                if (error) {
-                    toast("Erro ao atualizar pergunta", "error");
-                    carregarHistorico();
-                    return;
-                }
-                toast("Atualizado com sucesso!", "success");
-            }
-
-            carregarHistorico();
-            salvando = false;
+        const btnEditar = e.target.closest('.editar');
+        if (btnEditar) {
+            window.location.href = "perguntas_prof.html?editar=" + btnEditar.dataset.id;
         }
-
-        card.querySelectorAll('input').forEach((input) => {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') salvarAlteracoes();
-                if (e.key === 'Escape') carregarHistorico();
-            });
-        });
-
-        card.addEventListener('focusout', (e) => {
-            if (!card.contains(e.relatedTarget)) {
-                salvarAlteracoes();
-            }
-        });
     });
 }
 
@@ -180,11 +128,11 @@ export async function carregarHistorico() {
 
         const materiaNome = pergunta.materia?.nome_materia || "Matéria";
         const conteudoNome = pergunta.conteudo?.nome_conteudo || "Conteúdo";
-        
-        let textoPergunta = pergunta.pergunta_texto.replace(/<[^>]*>/g, "");
-        if (textoPergunta.length > 150) {
-            textoPergunta = textoPergunta.substring(0, 150) + "...";
-        }
+
+        const textoCompletoHtml = pergunta.pergunta_texto || "";
+        const textoPlano = textoCompletoHtml.replace(/<[^>]*>/g, "");
+        const textoResumido = textoPlano.length > 150 ? textoPlano.substring(0, 150) + "..." : textoCompletoHtml;
+        const temMaisTexto = textoPlano.length > 150;
 
         const dataPergunta = pergunta.data_pergunta
             ? new Date(pergunta.data_pergunta).toLocaleDateString("pt-BR")
@@ -198,18 +146,30 @@ export async function carregarHistorico() {
                 <span class="conteudo-badge">${conteudoNome}</span>
                 ${dataPergunta ? `<span class="data-info"><i class="fa-regular fa-calendar"></i> ${dataPergunta}</span>` : ''}
                 <div class="botoesAcoes">
-                    <button class="visualizar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-eye"></i></button>
-                    <button class="mudar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>
+                    ${temMaisTexto ? `<button class="visualizar" title="Ver pergunta completa"><i class="fa-regular fa-eye"></i></button>` : ''}
+                    <button class="editar" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-pen-to-square"></i></button>
                     <button class="lixo" data-id="${pergunta.id_pergunta}"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             </div>
             <div class="headerBox">
-                <p class="texto-enunciado">${textoPergunta}</p>
+                <p class="texto-enunciado">${textoResumido}</p>
             </div>
             <div class="mainBox">
                 <p>${respostas} respostas | ${respostas > 0 ? Math.round((acertos / respostas) * 100) : 0}% de acertos</p>
             </div>
         `;
+
+        const btnVisualizar = div.querySelector(".visualizar");
+        if (btnVisualizar) {
+            const pEnunciado = div.querySelector(".texto-enunciado");
+            btnVisualizar.addEventListener("click", () => {
+                const expandido = btnVisualizar.classList.toggle("expandido");
+                pEnunciado.innerHTML = expandido ? textoCompletoHtml : textoResumido;
+                pEnunciado.classList.toggle("texto-completo", expandido);
+                btnVisualizar.querySelector("i").className = expandido ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+            });
+        }
+
         if (!primeiraRenderizada) {
             container.innerHTML = '';
             primeiraRenderizada = true;
