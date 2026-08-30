@@ -15,6 +15,25 @@ function configurarBotoes() {
             const card = btnLixo.closest('.cardBox');
 
             if (confirm("Tem certeza que deseja excluir esta pergunta?")) {
+                const { data: alternativas } = await supabaseClient
+                    .from("alternativa")
+                    .select("id_alternativa")
+                    .eq("id_pergunta", idPergunta);
+
+                const idsAlternativas = alternativas?.map(a => a.id_alternativa) || [];
+
+                if (idsAlternativas.length > 0) {
+                    const { error: errorPont } = await supabaseClient
+                        .from("pontuacao_atividade")
+                        .delete()
+                        .in("id_alternativa", idsAlternativas);
+
+                    if (errorPont) {
+                        toast("Erro ao excluir pontuações", "error");
+                        return;
+                    }
+                }
+
                 const { error: errorAlt } = await supabaseClient
                     .from("alternativa")
                     .delete()

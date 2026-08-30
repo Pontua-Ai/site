@@ -395,7 +395,7 @@ ${texto}
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "google/gemma-4-31b-it:free",
+            model: "google/gemma-4-26b-a4b-it:free",
             messages: [{ role: "user", content: prompt }],
             max_tokens: 4000,
             temperature: 0.7
