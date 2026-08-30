@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const correta = document.querySelector('input[name="alternativa"]:checked')?.value;
 
                 if (!document.getElementById("conteudo").value || !pergunta || !document.getElementById("materia").value) {
-                    toast("Selecione o conteúdo e a pergunta!", "error");
+                    toast("Selecione o conteúdo e a matéria!", "error");
                     return;
                 }
                 if (!correta) {
