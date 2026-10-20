@@ -116,7 +116,7 @@ function inserirNaAlternativa(el, char) {
         document.execCommand('insertText', false, char);
     }
 }
-
+    //EDICAO
 async function initModoEdicao(idPergunta) {
     const userLogado = JSON.parse(localStorage.getItem("userLogado"));
     if (!userLogado) return;
