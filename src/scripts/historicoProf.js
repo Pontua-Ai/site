@@ -121,6 +121,10 @@ export async function carregarHistorico() {
     }
 
     container.innerHTML = '<div class="empty-state" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 20px;color:var(--text-gray)"><span class="loading-spinner"></span> Carregando perguntas...</div>';
+    // Liga os botões (editar/excluir) antes de renderizar: o listener é
+    // delegado no container, então funciona mesmo com o carregamento em curso
+    configurarBotoes();
+
     let primeiraRenderizada = false;
 
     for (const pergunta of perguntasFiltradas) {
@@ -131,7 +135,7 @@ export async function carregarHistorico() {
             .order("id_alternativa", { ascending: true });
 
         const idAlternativas = alternativas?.map(a => a.id_alternativa) || [];
-        
+
         let acertos = 0;
         let respostas = 0;
 
@@ -140,7 +144,7 @@ export async function carregarHistorico() {
                 .from("pontuacao_atividade")
                 .select("pontos_atividade")
                 .in("id_alternativa", idAlternativas);
-            
+
             respostas = pontuacoes?.length || 0;
             acertos = pontuacoes?.filter(p => p.pontos_atividade === 1).length || 0;
         }
@@ -195,6 +199,4 @@ export async function carregarHistorico() {
         }
         container.appendChild(div);
     }
-
-    configurarBotoes();
 }
